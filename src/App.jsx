@@ -1,11 +1,13 @@
+import HomePage from "./HomePage";
 import LoginPage from "./LoginPage";
+import NotePage from "./NotePage";
 
 export default function App() {
   return(
     <>
-      <div className="h-screen">
-        <LoginPage></LoginPage>
-      </div>
+      {/* <LoginPage></LoginPage> */}
+      {/* <NotePage></NotePage> */}
+      <HomePage></HomePage>
     </>
   );
 }
