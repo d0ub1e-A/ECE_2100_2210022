@@ -26,7 +26,7 @@ export default function LoginPage() {
           
           {/* Section that will be changing with the value with the changing state */}
           
-          <div className={`w-full flex flex-col gap-5 text[1rem] md:text-[1.1rem] bg-slate-50 py-8 px-5 ${inLogInPage ? 'rounded-tr-[10rem] rounded-b-xl md:rounded-l-xl md:rounded-br-none' : 'rounded-tl-[10rem] rounded-b-xl md:rounded-r-xl md:rounded-bl-none md:translate-x-full'} transition duration-300`}>
+          <div className={`w-full flex flex-col gap-5 text-[1rem] md:text-[1.1rem] bg-slate-50 py-8 px-5 ${inLogInPage ? 'rounded-tr-[10rem] rounded-b-xl md:rounded-l-xl md:rounded-br-none' : 'rounded-tl-[10rem] rounded-b-xl md:rounded-r-xl md:rounded-bl-none md:translate-x-full'} transition duration-300`}>
             <form className={`flex flex-col gap-5 relative ${inLogInPage ? 'login-slide-in' : 'signup-slide-in'}`}>
               <h2 className={`text-center font-bold mb-3 text-3xl`}>{inLogInPage ? 'Login' : 'Sign Up'}</h2>
 

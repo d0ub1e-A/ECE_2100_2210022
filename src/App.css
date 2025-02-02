@@ -1,11 +1,30 @@
 @import "tailwindcss";
 
+@media(prefers-reduced-motion: no-preference) {
+  * {
+     scroll-behavior: smooth;
+  }
+}
+
+.menu-path {
+  transition: d 0.4s ease-in-out;
+}
+
 .login-slide-in {
   animation: sliding-in-login 500ms ease-in;
 }
 
 .signup-slide-in {
   animation: sliding-in-signup 500ms ease-in;
+}
+
+#homepage-section {
+  background-image: url(assets/HomeBG.svg);
+  background-size: 1rem;
+}
+
+#home {
+  font-family: walter turncoat;
 }
 
 @keyframes sliding-in-login {
