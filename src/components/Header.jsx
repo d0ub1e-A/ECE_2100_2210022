@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import MenuIcon from "./MenuIcon";
+// import "../App.css";
 
 export default function Header() {
   const [spreadMenu, setSpreadMenu] = useState(window.innerWidth > 768);
@@ -32,22 +33,22 @@ export default function Header() {
         <nav>
           {spreadMenu && (
             <ul className="flex gap-5 md:text-[20px] font-bold font-[roboto] text-[#29a7a7] items-end md:items-center">
-              <li><a href={`#home`}>Home</a></li>
-              <li><a href={`#about`}>About</a></li>
-              <li><Link to={`/login`}>Login/Register</Link></li>
+              <li><a className=" hover:text-indigo-300" href={`#home`}>Home</a></li>
+              <li><a className=" hover:text-indigo-300" href={`#about`}>About</a></li>
+              <li><Link className=" hover:text-indigo-300" to={`/login`}>Login/Register</Link></li>
             </ul>
           )}
           {!spreadMenu && (
-            <div className="w-fit p-1.5 border-gray-400 rounded-md cursor-pointer z-20">
+            <div className="w-fit p-1.5 border-gray-400 rounded-md cursor-pointer relative">
               <div className="flex items-center justify-end gap-4" onClick={() => setIsOpen(!isOpen)}>
-                <span className="font-bold font-[roboto] text-[#29a7a7] w-fit text-[20px]">{selectedValue}</span>
+                <span className="font-bold font-[roboto] text-[#29a7a7] text-[20px]">{selectedValue}</span>
                 <MenuIcon open={isOpen}></MenuIcon>
               </div>
               {isOpen && (
-                <ul className="flex flex-col bg-slate-200 rounded-b-md transition">
-                  <li><a href={`#home`} className="p-2 hover:text-indigo-400" onClick={() => updateSelectMenu("Home")}>Home</a></li>
-                  <li><a href={`#about`} className="p-2 hover:text-indigo-400" onClick={() => updateSelectMenu("About")}>About</a></li>
-                  <li><Link to={`/login`} className="p-2 hover:text-indigo-400" onClick={() => updateSelectMenu("Login/Register")}>Login/Register</Link></li>
+                <ul className={`flex flex-col gap-2 px-1 py-4 bg-slate-300 rounded-b-md {transition} absolute top-full right-0 mt-1 w-35 z-10 shadow-xl ${isOpen && "animate-fade-zoom-in"}`}>
+                  <li><a href={`#home`} className="p-2 hover:text-indigo-600 font-bold" onClick={() => updateSelectMenu("Home")}>Home</a></li>
+                  <li><a href={`#about`} className="p-2 hover:text-indigo-600 font-bold" onClick={() => updateSelectMenu("About")}>About</a></li>
+                  <li><Link to={`/login`} className="p-2 hover:text-indigo-600 font-bold" onClick={() => updateSelectMenu("Login/Register")}>Login/Register</Link></li>
                 </ul>
               )}
             </div>

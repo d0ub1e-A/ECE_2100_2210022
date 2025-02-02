@@ -1,5 +1,40 @@
 @import 'tailwindcss';
 
-/* * {
-  @apply border-2;
-} */
+@theme {
+  --animate-slide-from-left: slide-from-left 0.5s ease-out;
+  --animate-slide-from-right: slide-from-right 0.5s ease-out;
+  --animate-fade-zoom-in: fade-zoom-in 150ms ease-in;
+
+  @keyframes slide-from-left {
+    0% {
+      right: 100%;
+      opacity: 0;
+    }
+    100% {
+      right: 0%;
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slide-from-right {
+    0% {
+      left: 100%;
+      opacity: 0;
+    }
+    100% {
+      left: 0%;
+      opacity: 1;
+    }
+  }
+
+  @keyframes fade-zoom-in {
+    0% {
+      opacity: 0.2;
+      scale: 0.9;
+    }
+    100% {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+}
