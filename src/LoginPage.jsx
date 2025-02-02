@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import MailIcon from './components/MailIcon';
 import PasswordIcon from './components/PasswordIcon';
 import PersonIcon from './components/PersonIcon';
@@ -21,11 +22,15 @@ export default function LoginPage() {
 
   return(
     <>
-      <div className={`h-screen flex items-center justify-center ${isDark() && 'bg-slate-800'}`}>
+      <div className={`h-screen flex flex-col gap-5 items-center justify-center ${isDark() && 'bg-slate-800'}`}>
+        <Link to={`/`}>
+          <h1 className={`text-5xl md:text-7xl text-center -mt-10 bg-transparent ${isDark ? "text-white" : "text-[#1b1d3f]"} font-bold font-[roboto]`}>Quick Notes</h1>
+        </Link>
+
         <div className={`flex flex-col-reverse gap-6 md:gap-0 md:flex-row shadow-2xl bg-indigo-600 rounded-2xl`}>
-          
+
           {/* Section that will be changing with the value with the changing state */}
-          
+
           <div className={`w-full flex flex-col gap-5 text-[1rem] md:text-[1.1rem] bg-slate-50 py-8 px-5 ${inLogInPage ? 'rounded-tr-[10rem] rounded-b-xl md:rounded-l-xl md:rounded-br-none' : 'rounded-tl-[10rem] rounded-b-xl md:rounded-r-xl md:rounded-bl-none md:translate-x-full'} transition duration-300`}>
             <form className={`flex flex-col gap-5 relative ${inLogInPage ? 'login-slide-in' : 'signup-slide-in'}`}>
               <h2 className={`text-center font-bold mb-3 text-3xl`}>{inLogInPage ? 'Login' : 'Sign Up'}</h2>

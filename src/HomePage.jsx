@@ -6,7 +6,7 @@ import ContactCard from "./components/ContactCard";
 export default function HomePage() {
   return(
     <>
-      <Header></Header>
+      <Header></Header>      
       <main id="homepage-section">
         <section id="home" className="flex flex-col items-center justify-center h-screen font-bold text-gray-800">
           <div className="p-4 backdrop-blur-xs bg-gray-300/25 rounded-2xl text-6xl md:text-7xl lg:text-8xl text-center">
