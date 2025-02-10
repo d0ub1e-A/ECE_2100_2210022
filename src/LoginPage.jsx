@@ -24,7 +24,7 @@ export default function LoginPage() {
     <>
       <div className={`h-screen flex flex-col gap-5 items-center justify-center ${isDark() && 'bg-slate-800'}`}>
         <Link to={`/`}>
-          <h1 className={`text-5xl md:text-7xl text-center -mt-10 bg-transparent ${isDark ? "text-white" : "text-[#1b1d3f]"} font-bold font-[roboto] hover:scale-110 transition`}>Quick Notes</h1>
+          <h1 className={`text-5xl md:text-7xl text-center -mt-10 bg-transparent ${isDark() ? "text-white" : "text-slate-800"} font-bold font-[roboto] hover:scale-110 transition`}>Quick Notes</h1>
         </Link>
 
         <div className={`flex flex-col-reverse gap-6 md:gap-0 md:flex-row shadow-2xl bg-indigo-600 rounded-2xl`}>
