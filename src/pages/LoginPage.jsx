@@ -12,9 +12,11 @@ export default function LoginPage() {
 
   // Get the greeting message
   function getMessage() {
-    if (new Date().getHours() >= 5 && new Date().getHours() < 12) return 'Morning';
-    if (new Date().getHours() >= 12 && new Date().getHours() < 18) return 'Afternoon';
-    if (new Date().getHours() >= 18 && new Date().getHours() < 22) return 'Evening';
+    const now = new Date();
+    
+    if (now.getHours() >= 5 && now.getHours() < 12) return 'Morning';
+    if (now.getHours() >= 12 && now.getHours() < 18) return 'Afternoon';
+    if (now.getHours() >= 18 && now.getHours() < 22) return 'Evening';
     else return 'Night';
   }
 
@@ -35,6 +37,7 @@ export default function LoginPage() {
     const formData = new FormData(e.currentTarget);
     const userInput = Object.fromEntries(formData);
 
+    // Demonstrtes the post method
     console.log(inLogInPage ? userInput : {
       ...userInput,
       name: clearName(userInput.name)

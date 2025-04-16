@@ -4,12 +4,21 @@ import LoginPage from "./pages/LoginPage";
 import NotePage from './pages/NotePage.jsx';
 
 export default function App() {
-  return(
+  return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />}></Route>
-        <Route path="/login-signup" element={<LoginPage />}></Route>
-        <Route path="/notes" element={<NotePage/>}></Route>
+        <Route
+          path="/"
+          element={<HomePage />}
+        ></Route>
+        <Route
+          path="/login-signup"
+          element={<LoginPage />}
+        ></Route>
+        <Route
+          path="/notes"
+          element={<NotePage />}
+        ></Route>
       </Routes>
     </BrowserRouter>
   );
