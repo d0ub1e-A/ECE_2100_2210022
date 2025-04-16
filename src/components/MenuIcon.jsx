@@ -1,5 +1,4 @@
 import React from 'react';
-import "../App.css";
 
 export function MenuIcon({open}) {
   const closePath = "M5 5L12 12L19 5M12 12H12M5 19L12 12L19 19";

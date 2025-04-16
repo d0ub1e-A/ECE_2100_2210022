@@ -1,9 +1,8 @@
 @import 'tailwindcss';
 
 @theme {
-  --animate-slide-from-left: slide-from-left 0.5s ease-out;
-  --animate-slide-from-right: slide-from-right 0.5s ease-out;
-  --animate-fade-zoom-in: fade-zoom-in 150ms ease-in;
+  --animate-slide-from-left: slide-from-left 0.3s ease-out;
+  --animate-slide-from-right: slide-from-right 0.3s ease-out;
 
   @keyframes slide-from-left {
     0% {
@@ -26,15 +25,21 @@
       opacity: 1;
     }
   }
+}
 
-  @keyframes fade-zoom-in {
-    0% {
-      opacity: 0.2;
-      scale: 0.9;
-    }
-    100% {
-      opacity: 1;
-      scale: 1;
-    }
-  }
+* {
+  scroll-behavior: smooth;
+}
+
+.menu-path {
+  transition: d 0.3s ease-in-out;
+}
+
+.homepage-section {
+  background-image: url(assets/HomeBG.svg);
+  background-size: 1rem;
+}
+
+.walter {
+  font-family: walter turncoat;
 }
