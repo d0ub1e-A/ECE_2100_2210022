@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import MenuIcon from "./MenuIcon";
 
-export default function Header({scrollTo}) {
+export default function HomePageHeader({scrollTo}) {
   const [showBurgerMenu, setShowBurgerMenu] = useState(window.innerWidth < 768);
   const [isBurgerMenuOpen, setIsBurgerMenuOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState('');
@@ -85,19 +85,19 @@ export default function Header({scrollTo}) {
           </div>
           :
           // Active other than mobile width
-          <div className="flex gap-5 md:text-[20px] font-bold font-[roboto] text-[#29a7a7] items-end md:items-center">
+          <div className="flex gap-5 md:text-[20px] font-bold font-[roboto] text-[#e8f1f1] items-end md:items-center">
 
             <button
               onClick={() => scrollTo.homeSection?.current.scrollIntoView()}
-              className=" hover:text-indigo-300"
+              className="hover:text-indigo-200 cursor-pointer"
             >Home</button>
             <button
               onClick={() => scrollTo.contactsSection?.current.scrollIntoView()}
-              className=" hover:text-indigo-300"
+              className="hover:text-indigo-200 cursor-pointer"
             >Contacts</button>
             <Link
               to={`/login-signup`}
-              className=" hover:text-indigo-300"
+              className="hover:text-indigo-200"
             >Login/Register</Link>
 
           </div>

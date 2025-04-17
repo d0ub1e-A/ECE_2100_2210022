@@ -1,19 +1,26 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { isValidMail, isValidPassword, isValidName } from "../assets/checkInfo";
 
 import MailIcon from '../components/MailIcon';
 import PasswordIcon from '../components/PasswordIcon';
 import PersonIcon from '../components/PersonIcon';
 
 export default function LoginPage() {
+  const formRef = useRef(null);
+  const nameRef = useRef(null);
+  const mailRef = useRef(null);
+  const passRef = useRef(null);
+
   const [inLogInPage, setInLoginPage] = useState(true);
+  const [wrongInput, setWrongInput] = useState([]);
 
   const navigateTo = useNavigate();
 
   // Get the greeting message
   function getMessage() {
     const now = new Date();
-    
+
     if (now.getHours() >= 5 && now.getHours() < 12) return 'Morning';
     if (now.getHours() >= 12 && now.getHours() < 18) return 'Afternoon';
     if (now.getHours() >= 18 && now.getHours() < 22) return 'Evening';
@@ -30,31 +37,65 @@ export default function LoginPage() {
     return name.trim().replace(regex, ' ').replace(/\s+/g, ' ');
   }
 
+  // Handles swapping of signup and login section
+  function swapSignLogin() {
+    setInLoginPage(prevCond => !prevCond);
+    setWrongInput([]);
+    formRef.current.reset();
+    setTimeout(() => formRef.current[0].focus(), 300);
+  }
+
   // Store user input
   function handleSubmit(e) {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
     const userInput = Object.fromEntries(formData);
+    
+    isValidMail(userInput.email) ?
+    setWrongInput(prevInputs => prevInputs.filter(input => input !== mailRef)) :
+    setWrongInput(prevInputs => wrongInput.includes(mailRef) ? [...prevInputs] : [...prevInputs, mailRef]);
+    
+    isValidPassword(userInput.password) ?
+    setWrongInput(prevInputs => prevInputs.filter(input => input !== passRef)) :
+    setWrongInput(prevInputs => wrongInput.includes(passRef) ? [...prevInputs] : [...prevInputs, passRef]);
+    
+    if(!inLogInPage) {
+      isValidPassword(clearName(userInput.name)) ?
+        setWrongInput(prevInputs => prevInputs.filter(input => input !== nameRef)) :
+        setWrongInput(prevInputs => wrongInput.includes(nameRef) ? [...prevInputs] : [...prevInputs, nameRef]);
+    }
 
     // Demonstrtes the post method
-    console.log(inLogInPage ? userInput : {
-      ...userInput,
-      name: clearName(userInput.name)
-    });
+    // console.log(inLogInPage ? userInput : {
+    //   ...userInput,
+    //   name: clearName(userInput.name)
+    // });
 
-    e.currentTarget.reset();
+    if(inLogInPage) {
+      if (isValidMail(userInput.email) && isValidPassword(userInput.password)) {
+        e.currentTarget.reset();
+        setWrongInput([]);
+      }
+    }
+    else {
+      if (isValidMail(userInput.email) && isValidPassword(userInput.password) && isValidName(clearName(userInput.name))) {
+        e.currentTarget.reset();
+        setWrongInput([]);
+      }
+    }
   }
 
+  useEffect(() => inLogInPage ? mailRef.current?.focus() : nameRef.current?.focus(), []);
 
   return (
     <div className={`h-screen flex flex-col gap-5 items-center justify-center ${isDark() && 'bg-slate-800'}`}>
 
-      {/* App name */}
+      {/* App name + link to go to home page */}
       <Link to={`/`}>
         <h1
           title="Go back to home page"
-          className={`text-5xl md:text-7xl text-center -mt-10 bg-transparent ${isDark() ? "text-white" : "text-slate-800"} font-bold font-[roboto] hover:scale-110 transition duration-300`}
+          className={`text-6xl md:text-7xl text-center -mt-10 bg-transparent ${isDark() ? "text-white" : "text-slate-800"} font-bold font-[roboto] hover:scale-110 transition duration-300`}
         >Quick Notes</h1>
       </Link>
 
@@ -65,6 +106,7 @@ export default function LoginPage() {
           {/* Login + Signup form */}
           <form
             onSubmit={handleSubmit}
+            ref={formRef}
             className={`flex flex-col gap-5 relative ${inLogInPage ? 'animate-slide-from-left' : 'animate-slide-from-right'}`}
           >
 
@@ -72,51 +114,62 @@ export default function LoginPage() {
 
             {!inLogInPage && (
               <label>
-                <span className="flex gap-2 items-center"><PersonIcon></PersonIcon>Name</span>
+                <span className="flex gap-2 items-center"><PersonIcon />Name</span>
                 <input
                   required
                   type="text"
                   name="name"
-                  defaultValue={`Abdur Rahman`}
+                  ref={nameRef}
                   placeholder="e.g. Abdur Rahman"
-                  className={`border-b-2 border-b-gray-400 focus:border-b-black transition-all duration-300 outline-none py-2 w-full`}
+                  className={`border-b-2 ${wrongInput.includes(nameRef) ? 'border-red-600' : 'border-gray-400 focus:border-blue-700'} transition-all duration-300 outline-none py-2 w-full`}
                 />
+                {wrongInput.includes(nameRef) &&
+                  <p className={`text-red-500 text-xs md:text-sm py-1`}>Name can't be empty</p>
+                }
               </label>
             )}
+
             <label>
-              <span className="flex gap-2 items-center"><MailIcon></MailIcon>Mail</span>
+              <span className="flex gap-2 items-center"><MailIcon />Mail</span>
               <input
                 required
                 type="email"
                 name="email"
-                defaultValue={`a@a`}
+                ref={mailRef}
                 placeholder="e.g. yourname@example.com"
-                className="border-b-2 border-b-gray-400 focus:border-b-black transition-all duration-300 outline-none py-2 text-md w-full"
+                className={`border-b-2 ${wrongInput.includes(mailRef) ? 'border-red-600' : 'border-gray-400 focus:border-blue-700'} transition-all duration-300 outline-none py-2 text-md w-full`}
               />
+              {wrongInput.includes(mailRef) &&
+                <p className={`text-red-500 text-xs md:text-sm py-1`}>Please enter a valid mail</p>
+              }
             </label>
+
             <label>
-              <span className="flex gap-2 items-center"><PasswordIcon></PasswordIcon>Password</span>
+              <span className="flex gap-2 items-center"><PasswordIcon />Password</span>
               <input
                 required
                 type="password"
                 name="password"
-                defaultValue={`abcdefghij`}
-                className="border-b-2 border-b-gray-400 focus:border-b-black transition-all duration-300 outline-none py-2 mb-3 w-full"
+                ref={passRef}
+                className={`border-b-2 ${wrongInput.includes(passRef) ? 'border-red-600' : 'border-gray-400 focus:border-blue-700'} transition-all duration-300 outline-none py-2 w-full`}
               />
+              {wrongInput.includes(passRef) &&
+                <p className={`text-red-500 text-xs md:text-sm py-1`}>Need at least 8 characters</p>
+              }
             </label>
 
             <button
-              onClick={() => navigateTo('/notes')}
+              // onClick={() => navigateTo('/notes')} // This should not be here. rather it will interact with backend
               className="text-white cursor-pointer bg-slate-800 py-1 rounded-3xl hover:shadow-xl"
             >{inLogInPage ? 'Login' : 'Register'}</button>
 
           </form>
 
-          {/* Jump between login and signup section */}
+          {/* Button for jumping between login and signup section */}
           <div className="flex  gap-3 justify-center text-[.9rem]">
             <span>{inLogInPage ? 'Don\'t have ' : 'Already have '}an account?</span>
             <button
-              onClick={() => setInLoginPage(prev => !prev)}
+              onClick={swapSignLogin}
               className="text-indigo-600 cursor-pointer hover:scale-125 transition duration-200"
             >{inLogInPage ? 'Sign Up' : 'Login'}</button>
           </div>

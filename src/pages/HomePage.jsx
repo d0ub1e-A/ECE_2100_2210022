@@ -1,5 +1,5 @@
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import HomePageHeader from "../components/HomePageHeader";
+import HomePageFooter from "../components/HomePageFooter";
 import ContactCard from "../components/ContactCard";
 import { useRef } from "react";
 
@@ -9,12 +9,12 @@ export default function HomePage() {
   
   return (
     <>
-      <Header
+      <HomePageHeader
         scrollTo={{
           homeSection: home,
           contactsSection: contacts,
         }}
-      ></Header>
+      />
 
       <main className={`homepage-section`}>
 
@@ -51,7 +51,7 @@ export default function HomePage() {
 
       </main>
 
-      <Footer></Footer>
+      <HomePageFooter/>
     </>
   );
 }
