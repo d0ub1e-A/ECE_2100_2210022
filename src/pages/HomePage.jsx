@@ -1,22 +1,24 @@
 import HomePageHeader from "../components/HomePageHeader";
-import HomePageFooter from "../components/HomePageFooter";
 import ContactCard from "../components/ContactCard";
 import { useRef } from "react";
 
 export default function HomePage() {
   const home = useRef(null);
   const contacts = useRef(null);
-  
-  return (
-    <>
-      <HomePageHeader
-        scrollTo={{
-          homeSection: home,
-          contactsSection: contacts,
-        }}
-      />
 
-      <main className={`homepage-section`}>
+  return (
+    <div className={`fixed w-screen h-screen grid grid-cols-12 grid-rows-12`}>
+
+      <header className={`col-span-12 row-start-0 row-end-1`}>
+        <HomePageHeader
+          scrollTo={{
+            homeSection: home,
+            contactsSection: contacts,
+          }}
+        />
+      </header>
+
+      <main className={`homepage-section col-span-12 row-start-1 row-end-13 overflow-y-scroll`}>
 
         {/* Welcome section */}
         <section
@@ -32,10 +34,10 @@ export default function HomePage() {
         {/* Contacts section */}
         <section
           ref={contacts}
-          className="pt-32 h-screen flex flex-col gap-20"
+          className="pt-32 h-screen"
         >
-          <h1 className="h-fit pt-20 text-center text-4xl sm:text-6xl font-[roboto] text-[#10466b]">Reach me through</h1>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+          <h1 className="h-fit_ block py-20 text-center text-4xl sm:text-6xl font-[roboto] text-[#10466b]">Reach me through</h1>
+          <div className="flex justify-center gap-5 sm:gap-8 md:gap-14">
             <ContactCard
               link={`https://github.com/d0ub1e-A`}
               src={`src/assets/GithubIcon.svg`}
@@ -49,9 +51,11 @@ export default function HomePage() {
           </div>
         </section>
 
+        <footer className="bg-slate-700 flex justify-center items-center py-5 text-gray-300 font-[roboto] text-[1rem]">
+          ©{new Date().getFullYear()}. d0ub1e-A. All rights reserved.
+        </footer>
       </main>
 
-      <HomePageFooter/>
-    </>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 const validClients = ['gmail.com', 'outlook.com', 'yahoo.com'];
 
 export function isValidMail(mail) {
-  if(mail !== '' && validClients.includes(mail.split('@')[1])) return true;
+  if(mail !== '') return true;
   else return false;
 }
 

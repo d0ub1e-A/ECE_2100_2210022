@@ -3,6 +3,8 @@
 @theme {
   --animate-slide-from-left: slide-from-left 0.3s ease-out;
   --animate-slide-from-right: slide-from-right 0.3s ease-out;
+  --color-black: #1e1e1f;
+  --color-white: #fafafa;
 
   @keyframes slide-from-left {
     0% {
@@ -29,6 +31,14 @@
 
 * {
   scroll-behavior: smooth;
+}
+
+button {
+  @apply cursor-pointer;
+}
+
+input[type=submit] {
+  @apply cursor-pointer;
 }
 
 .menu-path {
