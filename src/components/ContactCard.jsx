@@ -1,6 +1,6 @@
 export default function ContactCard({ link, src, alt }) {
-  return (<>
-    <div className="hover:drop-shadow-lg hover:scale-110 transition duration-250">
+  return (
+    <div className={`hover:drop-shadow-lg hover:scale-110 transition duration-250`}>
       <a
         href={link}
         target="_blank"
@@ -12,5 +12,5 @@ export default function ContactCard({ link, src, alt }) {
         />
       </a>
     </div>
-  </>);
+  );
 }

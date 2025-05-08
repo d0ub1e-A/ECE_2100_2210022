@@ -1,37 +1,44 @@
 import { useRef, useState, useEffect, useContext } from "react";
 import { GlobalState } from "../App";
 
-export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setShowForm, closeForm }) {
+export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setShowForm }) {
   const titleRef = useRef(null);
   const formRef = useRef(null);
   const { width } = useContext(GlobalState);
 
-  const [show, setShow] = useState(false);
   const [title, setTitle] = useState('');
   const [note, setNote] = useState('');
   const [tag, setTag] = useState('');
   const [warning, setWarning] = useState('');
   const [invalidTag, setInvalidTag] = useState(false);
-  const [closeReq, setCloseReq] = useState(false);
 
+  // Handles default job after opening or closing the not taking form
   useEffect(() => {
-    setShow(showForm);
-    titleRef.current?.focus();
-    formRef.current?.reset();
-    setWarning('');
-    setTitle('');
-    setNote('');
-    setTag('');
-    setInvalidTag(false);
+    if (showForm) {
+      titleRef.current?.focus();
+      formRef.current?.reset();
+      setWarning('');
+      setTitle('');
+      setNote('');
+      setTag('');
+      setInvalidTag(false);
+    }
   }, [showForm]);
 
+  // Prevents users from setting tag as 'untagged'
+  useEffect(() => setInvalidTag(tag.toLowerCase() === 'untagged'), [tag]);
+
+  // handles keydown event
   useEffect(() => {
-    setCloseReq(closeForm);
-    closeReq && closeNoteForm();
-  }, [closeForm]);
+    const handleKeydown = event =>
+      (event.key === 'Escape' && showForm) && closeNoteForm();
 
-  useEffect(() => setInvalidTag(tag === 'untagged' || tag === 'Untagged'), [tag]);
+    window.addEventListener('keydown', handleKeydown);
 
+    return () => window.removeEventListener('keydown', handleKeydown);
+  }, [showForm]);
+
+  // Primarily form data are turned into objects
   function acquireFormData(e) {
     const formData = new FormData(e.currentTarget);
     const noteData = Object.fromEntries(formData);
@@ -39,18 +46,20 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
     return noteData;
   }
 
+  // Thorough check on submitted data
   function handlesubmit(e) {
     e.preventDefault();
 
     const creationDate = new Date();
     const noteData = acquireFormData(e);
 
+    // add newly added note into local storage
     allNotes.unshift({
       ...noteData,
       'created_at': creationDate
     });
 
-    if(title && !invalidTag) {
+    if (title && !invalidTag) {
       localStorage.setItem('notes', JSON.stringify(allNotes));
       e.currentTarget.reset();
       setShowForm(false);
@@ -58,6 +67,7 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
     else setWarning('Provide a title to save the note...');
   }
 
+  // Check whether user want to close the form with unsaved data
   function closeNoteForm() {
     if (note !== '' || tag !== '' || title !== '') setShowDialog(true);
     else if (!note && !tag && !title) setShowForm(false);
@@ -67,7 +77,7 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
     <form
       ref={formRef}
       onSubmit={handlesubmit}
-      className={`bg-gray-100 fixed top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 border shadow-xl flex flex-col p-5 rounded-lg gap-2 md:gap-3 max-h-[90vh] overflow-scroll z-40 ${show ? 'scale-100 skew-0' : 'scale-0 -skew-x-15'} duration-400 transition-all`}
+      className={`bg-gray-100 fixed top-27 left-1/2 -translate-x-1/2 border shadow-xl flex flex-col p-5 rounded-lg gap-2 md:gap-3 max-h-[90svh] overflow-y-scroll z-30 ${showForm ? 'scale-100 skew-0' : 'scale-0 -skew-x-15'} duration-300 transition-all`}
     >
       {width <= 768 &&
         <button

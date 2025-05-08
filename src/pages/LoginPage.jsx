@@ -86,7 +86,10 @@ export default function LoginPage() {
     }
   }
 
-  useEffect(() => inLogInPage ? mailRef.current?.focus() : nameRef.current?.focus(), []);
+  useEffect(() => {
+    inLogInPage ? mailRef.current?.focus() : nameRef.current?.focus();
+    document.title = `Quick Notes - Never Lose Your Ideas`;
+  }, []);
 
   return (
     <div className={`h-screen flex flex-col gap-5 items-center justify-center ${isDark() && 'bg-slate-800'}`}>

@@ -11,10 +11,12 @@ export default function HomePageHeader({ scrollTo }) {
   const [isBurgerMenuOpen, setIsBurgerMenuOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState('');
 
+  // Handles menu closing on clicking outside the menu in mobile devices
   useEffect(() => {
     const toggelMenu = event =>
       (menuRef.current && !menuRef.current?.contains(event.target)) && setIsBurgerMenuOpen(false);
-
+    document.title = `Quick Notes - Never Lose Your Ideas`;
+    
     window.addEventListener('mousedown', toggelMenu);
 
     return () => window.removeEventListener('mousedown', toggelMenu);
@@ -28,12 +30,12 @@ export default function HomePageHeader({ scrollTo }) {
     }
 
     setSelectedValue(option);
-    // setIsBurgerMenuOpen(false);
+    document.title = option;
     scrollSection[option]?.current.scrollIntoView();
   }
 
   return (
-    <div className={`flex justify-between items-center px-4 md:px-8 py-2 md:py-1 bg-indigo-600  shadow-xl`}>
+    <div className={`flex justify-between items-center px-4 md:px-8 py-2 md:py-1 bg-indigo-600 shadow-xl`}>
 
       {/* Logo and name section */}
       <div className="flex gap-3 items-center w-full">

@@ -23,7 +23,7 @@ export default function HomePage() {
         {/* Welcome section */}
         <section
           ref={home}
-          className="flex flex-col items-center justify-center h-screen font-bold text-gray-800"
+          className="flex flex-col items-center justify-center h-svh font-bold text-gray-800"
         >
           <div className="p-4 backdrop-blur-xs bg-gray-300/25 rounded-2xl text-6xl md:text-7xl lg:text-8xl text-center">
             <h1 className="drop-shadow-lg walter">Never Lose</h1>
@@ -34,9 +34,10 @@ export default function HomePage() {
         {/* Contacts section */}
         <section
           ref={contacts}
-          className="pt-32 h-screen"
+          className="h-svh flex flex-col"
         >
-          <h1 className="h-fit_ block py-20 text-center text-4xl sm:text-6xl font-[roboto] text-[#10466b]">Reach me through</h1>
+          <h1 className="py-20 text-center text-4xl sm:text-6xl font-[roboto] text-[#10466b]">Reach me through</h1>
+          
           <div className="flex justify-center gap-5 sm:gap-8 md:gap-14">
             <ContactCard
               link={`https://github.com/d0ub1e-A`}
@@ -51,9 +52,9 @@ export default function HomePage() {
           </div>
         </section>
 
-        <footer className="bg-slate-700 flex justify-center items-center py-5 text-gray-300 font-[roboto] text-[1rem]">
+        <section className="bg-slate-700 flex justify-center items-center py-5 text-gray-300 font-[roboto] text-[1rem]">
           ©{new Date().getFullYear()}. d0ub1e-A. All rights reserved.
-        </footer>
+        </section>
       </main>
 
     </div>

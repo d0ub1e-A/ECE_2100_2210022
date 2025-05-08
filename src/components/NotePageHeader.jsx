@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function NotePageHeader() {
   return (
-    <div className={`fixed w-full flex justify-between items-center px-4 md:px-8 py-5 bg-indigo-600/90 backdrop-blur-sm shadow-xl z-70`}>
+    <div className={`flex justify-between items-center px-4 md:px-8 py-4 md:py-2 bg-indigo-600 shadow-xl`}>
 
       {/* Logo and name section */}
       <div className="flex gap-3 items-center">
