@@ -71,5 +71,5 @@ input[type=submit] {
 }
 
 .blur-effect {
-  @apply relative before:absolute before:bottom-0 before:w-full before:h-20 before:bg-gradient-to-t before:from-[#F8F7F7] before:to-transparent;
+  @apply relative before:absolute before:bottom-0 before:w-full before:h-20 before:bg-gradient-to-t before:from-[#F8F7F7] before:to-transparent before:dark:from-slate-600 before:dark:to-transparent;
 }

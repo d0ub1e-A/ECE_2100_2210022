@@ -1,6 +1,7 @@
 export const markdownStyling = {
   h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mb-4 farro" {...props}></h1>,
   h2: ({ node, ...props }) => <h2 className="text-xl font-bold mb-3 patrick-hand tracking-wider" {...props}></h2>,
+  h3: ({ node, ...props }) => <h3 className="font-bold mb-3 patrick-hand tracking-wider" {...props}></h3>,
   p: ({ node, ...props }) => <p className="mb-2 patrick-hand tracking-wider" {...props}></p>,
   ul: ({ node, ...props }) => <ul className="list-disc px-8 mb-4 patrick-hand tracking-wider" {...props}></ul>,
   ol: ({ node, ...props }) => <ol className="list-decimal ml-6 mb-4 patrick-hand tracking-wider" {...props}></ol>,
@@ -31,7 +32,7 @@ export const markdownStyling = {
     <pre className="my-4 rounded-md bg-transparent fira-mono" {...props}>
       {children}
     </pre>,
-  blockquote: ({ node, ...props }) => <blockquote className={`bg-gray-200 text-slate-800 p-2.5 rounded-lg`} {...props}></blockquote>,
+  blockquote: ({ node, ...props }) => <blockquote className={`bg-gray-200 text-slate-800 p-2.5 rounded-lg my-4`} {...props}></blockquote>,
 }
 
 export function markDownToText(mdText) {

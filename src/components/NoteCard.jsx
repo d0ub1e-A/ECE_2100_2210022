@@ -33,7 +33,7 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
   }
 
   return (
-    <div className={`relative flex flex-col gap-7 px-3 py-4 rounded-lg shadow-xl bg-amber-100/20 hover:scale-105 transition-all duration-300`}>
+    <div className={`relative flex flex-col gap-7 px-3 py-4 rounded-lg shadow-xl bg-amber-100/20 dark:bg-slate-700 dark:text-white hover:scale-105 transition-all duration-300`}>
 
       {/* Title + 3 dot menu section */}
       <div className={`relative items-center font-bold cal-sans text-xl md:text-3xl flex justify-between`}>
@@ -67,7 +67,7 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
       </div>
 
       {/* Note preview with preview + edit buttons */}
-      <div className={`relative h-50 overflow-hidden blur-effect group`}>
+      <div className={`relative h-50 overflow-hidden blur-effect group dark:bg-slate-700 dark:text-white`}>
         <Markdown
           remarkPlugins={[remarkGfm]}
           components={markdownStyling}
@@ -76,7 +76,7 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
 
         {/* Interactive buttons for desktop only */}
         {isDesktop &&
-          <div className={`absolute opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 inset-0 bg-gradient-to-b to-[#F8F7F7] from-transparent flex justify-around items-center gap-6 w-full transition-all duration-300`}>
+          <div className={`absolute opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 inset-0 bg-gradient-to-b to-[#F8F7F7] dark:to-slate-600 from-transparent flex justify-around items-center gap-6 w-full transition-all duration-300`}>
             <button
               onClick={previewNote}
               className={`bg-indigo-200 text-slate-800 p-2 rounded-full active:brightness-80 flex items-center gap-2 w-27 justify-center font-semibold hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 h-fit`}
@@ -97,8 +97,9 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
 
       {/* Note tag and creation date */}
       <div className={`flex justify-between items-center`}>
-        <p className={`bg-indigo-300 max-w-1/2 truncate p-1.5 rounded-full fira-mono`}>{note.tag ? note.tag : 'untagged'}</p>
-        <p className={`fira-mono max-w-1/2`}>{new Date(note['created_at'].replace('Z', '+06:00')).toISOString()}</p>
+        <p className={`bg-indigo-300 max-w-1/2 truncate p-1.5 rounded-full fira-mono`}>{note?.tag}</p>
+        {/* <p className={`fira-mono max-w-1/2`}>{new Date(note.created_at?.replace('Z', '+06:00')).toISOString()}</p> */}
+        <p className={`fira-mono max-w-1/2`}>{note?.created_at}</p>
       </div>
     </div>
   );

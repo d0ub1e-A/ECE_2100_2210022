@@ -12,7 +12,7 @@ export default function NotePageHeader() {
           className="w-10 md:w-16 drop-shadow-lg"
         />
         <Link to={`/`}>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl text-amber-100 font-bold font-[roboto]">Quick Notes</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl text-amber-100 font-bold patrick-hand">Quick Notes</h1>
         </Link>
       </div>
 
