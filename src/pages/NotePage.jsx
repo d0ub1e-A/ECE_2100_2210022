@@ -7,30 +7,22 @@ import CreateNoteForm from "../components/CreateNoteForm";
 import DialogBox from "../components/DialogBox";
 import AddIcon from "../assets/AddIcon";
 import NoteCard from "../components/NoteCard";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { markdownStyling, markDownToText } from "../assets/MarkdownStyling";
 
 export default function NotePage() {
   const { width } = useContext(GlobalState);
 
   const [showForm, setShowForm] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [editableContent, setEditableContent] = useState({});
+  const [previewableContent, setPreviewableContent] = useState({
+    'created_at': new Date().toISOString()
+  });
 
   const allNotes = JSON.parse(localStorage.getItem('notes')) || [];
-
-  // Handles keydown event (** WORK ON IT LATER **)
-  // useEffect(() => {
-  //   const handleEscape = e => {
-  //     if (e.key === "Escape") {
-  //       if (showForm && showDialog) setShowDialog(false);
-  //       else if (showForm) setShowForm(false);
-  //     }
-  //   }
-
-  //   document.addEventListener('keydown', handleEscape);
-
-  //   return () => {
-  //     document.removeEventListener('keydown', handleEscape);
-  //   }
-  // }, []);
 
   return (
     <div className={`fixed h-screen w-screen grid grid-cols-12 grid-rows-12`}>
@@ -41,7 +33,7 @@ export default function NotePage() {
 
       <main className={`col-span-12 row-start-1 row-end-13 overflow-y-scroll pb-18 bg-indigo-100/40`}>
 
-        {/* New note form */}
+        {/* Create or edit not form */}
         <>
           <div
             onClick={() => setShowForm(false)}
@@ -52,7 +44,28 @@ export default function NotePage() {
             showForm={showForm}
             setShowForm={setShowForm}
             setShowDialog={setShowDialog}
+            editableContent={editableContent}
           />
+        </>
+
+        {/* Note previewer */}
+        <>
+          <div
+            onClick={() => setShowPreview(false)}
+            className={`fixed z-20 bg-black/10 w-full h-full backdrop-blur-sm overflow-y-scroll ${!showPreview && 'hidden'}`}
+          ></div>
+          <div className={`fixed grid grid-cols-12 grid-rows-12 z-30 w-[90svw] lg:w-[80svw] xl:w-[60svw] h-[80svh] top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 px-7 pb-6 overflow-y-scroll rounded-md bg-white text-slate-800 dark:bg-slate-700 dark:text-white ${showPreview ? 'scale-100' : 'scale-0'} transition-all duration-300`}>
+            <h1 className={`cal-sans col-span-12 row-start-0 row-end-1 bg-white py-5 text-center text-2xl lg:text-4xl`}>{previewableContent?.title}</h1>
+            <h2 className={`fira-mono place-self-end col-start-7 col-end-13 row-start-1 row-end-2`}>{new Date(previewableContent['created_at'].replace('Z', '+06:00')).toLocaleDateString()}</h2>
+            <div className={`col-span-12 row-start-2 row-end-12 overflow-y-scroll`}>
+              <Markdown
+                remarkPlugins={[remarkGfm]}
+                components={markdownStyling}
+              >{markDownToText(previewableContent?.note)}
+              </Markdown>
+            </div>
+            <p className={`w-fit h-fit row-start-12 row-end-13 bg-gray-200 shadow-md fira-mono truncate p-1.5 flex items-center rounded-full`}>{previewableContent.tag ? previewableContent.tag : 'untagged'}</p>
+          </div>
         </>
 
         {/* Dialog box for confirmation of discarding unsaved changes */}
@@ -66,11 +79,15 @@ export default function NotePage() {
         </>
 
         {/* Notes Container */}
-        <section className={`pt-10 pb-16 px-7 w-full grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5`}>
+        <section className={`pt-10 pb-16 px-5 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5`}>
           {allNotes.map((note, index) =>
             <NoteCard
               key={index}
               note={note}
+              setPreviewableContent={setPreviewableContent}
+              setEditableContent={setEditableContent}
+              setShowPreview={setShowPreview}
+              setShowForm={setShowForm}
             />
           )}
         </section>

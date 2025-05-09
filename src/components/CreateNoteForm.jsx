@@ -1,10 +1,9 @@
-import { useRef, useState, useEffect, useContext } from "react";
-import { GlobalState } from "../App";
+import { useRef, useState, useEffect } from "react";
+import { isDesktop, isMobile, isTablet } from "react-device-detect";
 
-export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setShowForm }) {
+export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setShowForm, editableContent }) {
   const titleRef = useRef(null);
   const formRef = useRef(null);
-  const { width } = useContext(GlobalState);
 
   const [title, setTitle] = useState('');
   const [note, setNote] = useState('');
@@ -53,10 +52,10 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
     const creationDate = new Date();
     const noteData = acquireFormData(e);
 
-    // add newly added note into local storage
+    // // add newly added note into local storage
     allNotes.unshift({
       ...noteData,
-      'created_at': creationDate
+      createdAt: creationDate
     });
 
     if (title && !invalidTag) {
@@ -79,7 +78,7 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
       onSubmit={handlesubmit}
       className={`bg-gray-100 fixed top-27 left-1/2 -translate-x-1/2 border shadow-xl flex flex-col p-5 rounded-lg gap-2 md:gap-3 max-h-[90svh] overflow-y-scroll z-30 ${showForm ? 'scale-100 skew-0' : 'scale-0 -skew-x-15'} duration-300 transition-all`}
     >
-      {width <= 768 &&
+      {(isMobile || isTablet) &&
         <button
           type="button"
           onClick={closeNoteForm}
@@ -122,11 +121,11 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
           value="Create Note"
           className={`bg-purple-500 rounded p-1.5 text-lg w-full md:w-30 mx-auto font-semibold text-white sm:hover:scale-105 transition-all duration-300 shadow-md`}
         />
-        {width > 768 &&
+        {isDesktop &&
           <button
             type="button"
             onClick={closeNoteForm}
-            className={`bg-red-500/90 rounded p-1.5 text-lg w-full sm:w-30 mx-auto font-semibold text-white sm:hover:scale-105 transition-all duration-300 shadow-md`}
+            className={`bg-red-500/90 rounded p-1.5 text-lg w-full md:w-30 mx-auto font-semibold text-white sm:hover:scale-105 transition-all duration-300 shadow-md`}
           >Cancel</button>
         }
       </div>
