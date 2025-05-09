@@ -5,6 +5,8 @@ import { GlobalState } from "../App";
 import NotePageHeader from "../components/NotePageHeader";
 import CreateNoteForm from "../components/CreateNoteForm";
 import DialogBox from "../components/DialogBox";
+import AddIcon from "../assets/AddIcon";
+import NoteCard from "../components/NoteCard";
 
 export default function NotePage() {
   const { width } = useContext(GlobalState);
@@ -37,7 +39,7 @@ export default function NotePage() {
         <NotePageHeader allNotes={allNotes} />
       </header>
 
-      <main className={`col-span-12 row-start-1 row-end-13 overflow-y-scroll pb-18`}>
+      <main className={`col-span-12 row-start-1 row-end-13 overflow-y-scroll pb-18 bg-indigo-100/40`}>
 
         {/* New note form */}
         <>
@@ -64,19 +66,12 @@ export default function NotePage() {
         </>
 
         {/* Notes Container */}
-        <section className={`py-4 px-7 w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5`}>
+        <section className={`pt-10 pb-16 px-7 w-full grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5`}>
           {allNotes.map((note, index) =>
-            <div
+            <NoteCard
               key={index}
-              className={`relative p-3 max-h-50 rounded-lg shadow-xl bg-amber-100/10 hover:scale-105 transition-all duration-300`}
-            >
-              <h2 className={`py-7 font-bold cal-sans`}>{note.title ? note.title : 'Untitled'}
-                <span className={`absolute inset-0 cursor-pointer`}></span>
-              </h2>
-              <p className={`truncate`}>{note.note ? note.note : 'Nothing noted down'}</p>
-              <p>{note.tag ? note.tag : 'untagged'}</p>
-              <p>{new Date(note['created_at']).toLocaleTimeString()}</p>
-            </div>
+              note={note}
+            />
           )}
         </section>
 
@@ -84,8 +79,9 @@ export default function NotePage() {
         <button
           onClick={() => setShowForm(true)}
           title="Create Note"
-          className={`fixed ${showForm ? 'z-0 scale-0' : 'z-10 scale-100'} transition-all duration-400  top-[80vh] right-[5vw] shadow-2xl border border-slate-400 bg-amber-50 active:bg-white text-2xl p-2 rounded-xl`}
-        >➕</button>
+          className={`fixed ${showForm ? 'z-0 scale-0' : 'z-10 scale-100'} transition-all duration-400 top-[85svh] right-[10svw] shadow-2xl border border-slate-400 active:bg-white text-2xl p-2 md:p-3 rounded-xl bg-[#bbbdfb]/25 backdrop-blur-xs`}
+        ><AddIcon />
+        </button>
       </main>
 
     </div>

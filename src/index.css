@@ -55,5 +55,21 @@ input[type=submit] {
 }
 
 .cal-sans {
-  font-family: 'Cal Sans';
+  font-family: Farro, 'Cal Sans';
+}
+
+.fira-mono {
+  font-family: 'Fira Mono';
+}
+
+.farro {
+  font-family: Farro;
+}
+
+.patrick-hand {
+  font-family: 'Patrick Hand';
+}
+
+.blur-effect {
+  @apply relative before:absolute before:bottom-0 before:w-full before:h-20 before:bg-gradient-to-t before:from-[#F8F7F7] before:to-transparent;
 }
