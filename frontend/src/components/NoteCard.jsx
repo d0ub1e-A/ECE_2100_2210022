@@ -48,7 +48,7 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
             >
               <ThreeDotIcon />
             </button>
-            <div className={`absolute ${showMenu ? 'opacity-100 border border-slate-300 max-h-30' : 'opacity-0 max-h-0'} overflow-y-hidden z-10 right-0 top-10 flex flex-col divide-y divide-slate-300 bg-amber-50 rounded-lg shadow-lg transition-all duration-200`}>
+            <div className={`absolute ${showMenu ? 'opacity-100 border border-slate-300 max-h-40' : 'opacity-0 max-h-0'} overflow-y-hidden z-10 right-0 top-10 flex flex-col divide-y divide-slate-300 bg-amber-50 rounded-lg shadow-lg transition-all duration-200`}>
               <button
                 onClick={() => setShowMenu(false)}
                 className={`flex gap-3 text-sm p-4 active:bg-amber-100 items-center`}>

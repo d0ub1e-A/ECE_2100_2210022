@@ -27,15 +27,8 @@ export default function LoginPage() {
     else return 'Night';
   }
 
-  // Determine whether to switch dark mode or not
-  const isDark = () => getMessage() === 'Evening' || getMessage() === 'Night';
-
   // Clear the unwanted input from user name
-  function clearName(name) {
-    const regex = /[^a-zA-Z0-9\']/g;
-
-    return name.trim().replace(regex, ' ').replace(/\s+/g, ' ');
-  }
+  const clearName = name => name.trim().replace(/[^a-zA-Z0-9\']/g, ' ').replace(/\s+/g, ' ');
 
   // Handles swapping of signup and login section
   function swapSignLogin() {
@@ -92,13 +85,13 @@ export default function LoginPage() {
   }, []);
 
   return (
-    <div className={`h-screen flex flex-col gap-5 items-center justify-center ${isDark() && 'bg-slate-800'}`}>
+    <div className={`h-screen flex flex-col gap-5 items-center justify-center dark:bg-slate-800`}>
 
       {/* App name + link to go to home page */}
       <Link to={`/`}>
         <h1
           title="Go back to home page"
-          className={`text-6xl md:text-7xl text-center -mt-10 bg-transparent ${isDark() ? "text-white" : "text-slate-800"} font-bold font-[roboto] hover:scale-110 transition duration-300`}
+          className={`text-6xl md:text-7xl text-center -mt-10 bg-transparent text-white dark:text-slate-800 font-bold font-[roboto] hover:scale-110 transition duration-300`}
         >Quick Notes</h1>
       </Link>
 
@@ -117,7 +110,10 @@ export default function LoginPage() {
 
             {!inLogInPage && (
               <label>
-                <span className="flex gap-2 items-center"><PersonIcon />Name</span>
+                <span className="flex gap-2 items-center">
+                <PersonIcon />
+                Name
+                </span>
                 <input
                   required
                   type="text"
@@ -148,7 +144,10 @@ export default function LoginPage() {
             </label>
 
             <label>
-              <span className="flex gap-2 items-center"><PasswordIcon />Password</span>
+              <span className="flex gap-2 items-center">
+              <PasswordIcon />
+              Password
+              </span>
               <input
                 required
                 type="password"
