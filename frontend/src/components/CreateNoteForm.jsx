@@ -136,7 +136,7 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
       <div className="flex gap-3 flex-col sm:flex-row">
         <input
           type="submit"
-          value="Create Note"
+          value={editableContent.title ? 'Update Note' : 'Create Note'}
           className={`bg-purple-500 rounded p-1.5 text-lg w-full md:w-30 mx-auto font-semibold text-white sm:hover:scale-105 transition-all duration-300 shadow-md`}
         />
         {isDesktop &&
