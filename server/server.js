@@ -1,18 +1,15 @@
 import http from 'node:http';
-// import fs from 'node:fs'; // to read a content of a file
-// import path from 'node:path'; // to access any file from a path
+import { getIPAddresses } from './utils/getIpAddresses.js';
 
 const PORT = 4000;
-const LOCAL_IP = '192.168.1.116';
+const {wifi, ethernet} = getIPAddresses();
 
 const server = http.createServer((req, res) => {
-  // res.setHeader("Content-Type", "text/html");
-  // res.end(`<h1>Did it Hurt?</h1>`);
-  res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify({
-    message: `This server is created for managing notes.`,
-    dev: `Ahnaf Abid`
-  }));
+  // res.setHeader("Content-Type", "application/json");
+  res.setHeader("Content-Type", "text/html");
+  res.write(`<h1 style="text-align: center; padding: 10px 0; border: 5px solid red;">Isn't it a nice header?</h1>`)
+  res.end();
 });
 
-server.listen(PORT, LOCAL_IP, () => console.log(`Server up and running at ip: ${LOCAL_IP} on port: ${PORT}`));
+server.listen(PORT, wifi[0], () => console.log(`Server up and running at ip: ${wifi[0]} on port: ${PORT}`));
+// server.listen(PORT, ethernet[0], () => console.log(`Server up and running at ip: ${ethernet[0]} on port: ${PORT}`));
