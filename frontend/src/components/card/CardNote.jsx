@@ -1,12 +1,12 @@
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { markdownStyling, markDownToText } from "../assets/MarkdownStyling";
 import { useEffect, useRef, useState } from "react";
 import { isDesktop, isMobile, isTablet } from "react-device-detect";
+import { markdownStyling, markDownToText } from "../../assets/util/UtilMarkdownStyling.jsx";
 
-import PreviewIcon from '../assets/PreviewIcon';
-import EditIcon from '../assets/EditIcon';
-import ThreeDotIcon from '../assets/ThreeDotIcon.jsx';
+import PreviewIcon from '../../assets/icon/IconPreview.jsx';
+import EditIcon from '../../assets/icon/IconEdit.jsx';
+import ThreeDotIcon from '../../assets/icon/IconThreeDot.jsx';
 
 export default function NoteCard({ note, setPreviewableContent, setEditableContent, setShowPreview, setShowForm }) {
   const menuRef = useRef(null);

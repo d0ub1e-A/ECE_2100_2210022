@@ -1,7 +1,7 @@
 import { Route, BrowserRouter, Routes } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
-import NotePage from './pages/NotePage.jsx';
+import HomePage from "./pages/PageHome.jsx";
+import LoginPage from "./pages/PageLogin.jsx";
+import NotePage from './pages/PageNote.jsx';
 import { createContext, useEffect, useState } from "react";
 
 export const GlobalState = createContext(null);

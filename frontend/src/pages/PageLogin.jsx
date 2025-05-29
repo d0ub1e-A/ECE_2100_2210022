@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { isValidMail, isValidPassword, isValidName } from "../assets/checkInfo";
+import { isValidMail, isValidPassword, isValidName } from "../assets/util/UtilCheckInfo";
 
-import MailIcon from '../components/MailIcon';
-import PasswordIcon from '../components/PasswordIcon';
-import PersonIcon from '../components/PersonIcon';
+import MailIcon from '../assets/icon/IconMail';
+import PasswordIcon from '../assets/icon/IconPassword';
+import PersonIcon from '../assets/icon/IconPerson';
 
 export default function LoginPage() {
   const formRef = useRef(null);
@@ -91,7 +91,7 @@ export default function LoginPage() {
       <Link to={`/`}>
         <h1
           title="Go back to home page"
-          className={`text-6xl md:text-7xl text-center -mt-10 bg-transparent text-white dark:text-slate-800 font-bold font-[roboto] hover:scale-110 transition duration-300`}
+          className={`text-6xl md:text-7xl text-center -mt-10 bg-transparent dark:text-white text-slate-800 font-bold font-[roboto] hover:scale-110 transition duration-300`}
         >Quick Notes</h1>
       </Link>
 

@@ -1,5 +1,5 @@
-import HomePageHeader from "../components/HomePageHeader";
-import ContactCard from "../components/ContactCard";
+import HomePageHeader from "../components/header/HeaderHomePage";
+import ContactCard from "../components/card/CardContact";
 import { useRef } from "react";
 
 export default function HomePage() {

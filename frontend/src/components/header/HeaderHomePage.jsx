@@ -1,8 +1,8 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { GlobalState } from "../App";
+import { GlobalState } from "../../App";
 
-import MenuIcon from "./MenuIcon";
+import MenuIcon from "../../assets/icon/IconMenu";
 
 export default function HomePageHeader({ scrollTo }) {
   const { width } = useContext(GlobalState);
@@ -40,7 +40,7 @@ export default function HomePageHeader({ scrollTo }) {
       {/* Logo and name section */}
       <div className="flex gap-3 items-center w-full">
         <img
-          src="src\assets\quickNotesLogo.png"
+          src="src\components\ui\UIQuickNotesLogo.png"
           alt="Quick Notes Logo"
           className="w-15 md:w-25 drop-shadow-lg"
         />

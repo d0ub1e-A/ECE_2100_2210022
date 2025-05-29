@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import NotePageHeader from "../components/NotePageHeader";
-import CreateNoteForm from "../components/CreateNoteForm";
-import DialogBox from "../components/DialogBox";
-import AddIcon from "../assets/AddIcon";
-import NoteCard from "../components/NoteCard";
-import NotePreviewer from "../components/NotePreviewer";
+import NotePageHeader from "../components/header/HeaderNotePage";
+import CreateNoteForm from "../components/form/FormCreateNote";
+import DialogBox from "../components/modal/ModalDialogBox";
+import AddIcon from "../assets/icon/IconAdd";
+import NoteCard from "../components/card/CardNote";
+import NotePreviewer from "../components/misc/NotePreviewer";
 
 export default function NotePage() {
   const [showForm, setShowForm] = useState(false);

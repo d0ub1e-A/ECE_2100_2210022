@@ -1,5 +1,5 @@
 import remarkGfm from "remark-gfm";
-import { markdownStyling, markDownToText } from "../assets/MarkdownStyling";
+import { markdownStyling, markDownToText } from "../../assets/util/UtilMarkdownStyling.jsx";
 import Markdown from "react-markdown";
 
 export default function NotePreviewer({previewableContent, showPreview }) {

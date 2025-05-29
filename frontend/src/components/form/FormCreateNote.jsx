@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { isDesktop, isMobile, isTablet } from "react-device-detect";
-import EditIcon from "../assets/EditIcon";
+import EditIcon from "../../assets/icon/IconEdit";
 
 export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setShowForm, editableContent }) {
   const titleRef = useRef(null);
