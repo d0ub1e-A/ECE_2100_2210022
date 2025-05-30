@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { isDesktop, isMobile, isTablet } from "react-device-detect";
 import EditIcon from "../../assets/icon/IconEdit";
 
-export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setShowForm, editableContent }) {
+export default function CreateNoteForm({ showForm, setShowDialog, setShowForm, editableContent }) {
   const titleRef = useRef(null);
   const formRef = useRef(null);
 
@@ -13,7 +13,7 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
   const [invalidTag, setInvalidTag] = useState(false);
 
   // Handles default job after opening or closing the not taking form
-  useEffect(() => {console.log( editableContent ? 'something' : 'nothing');
+  useEffect(() => {
     if (showForm) {
       titleRef.current?.focus();
       formRef.current?.reset();
@@ -45,14 +45,6 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
 
     return noteData;
   }
-
-  function addNote(note) {
-    let noteIndex = null;
-    
-    allNotes.some((el, index) => {
-      noteIndex = (el.created_at === editableContent.created_at) ? index : null;
-    });
-  }
   
   // Thorough check on submitted data
   function handlesubmit(e) {
@@ -62,18 +54,10 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
     let noteData = acquireFormData(e);
 
     noteData = tag ? 
-    {...noteData} : {...noteData, tag: 'untagged'}
-    
-    // Adds newly added note into local storage
-    allNotes.unshift({
-      ...noteData,
-      created_at: creationDate
-    });
-
-    const toBeSaved = addNote(noteData);
+    {...noteData, created_at: creationDate.toISOString()} : {...noteData, tag: 'untagged', created_at: creationDate.toISOString()}
 
     if (title && !invalidTag) {
-      localStorage.setItem('notes', JSON.stringify(allNotes));
+      console.log(noteData);
       e.currentTarget.reset();
       setShowForm(false);
     }

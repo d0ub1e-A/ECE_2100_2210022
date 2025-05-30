@@ -1,4 +1,4 @@
-import HomePageHeader from "../components/header/HeaderHomePage";
+import HomePageHeader from "../components/header/HeaderPublicSection";
 import ContactCard from "../components/card/CardContact";
 import { useRef } from "react";
 

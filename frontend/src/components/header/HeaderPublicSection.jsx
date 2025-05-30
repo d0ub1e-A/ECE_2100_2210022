@@ -1,11 +1,10 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { GlobalState } from "../../App";
 
 import MenuIcon from "../../assets/icon/IconMenu";
+import { isMobile, isTablet } from "react-device-detect";
 
-export default function HomePageHeader({ scrollTo }) {
-  const { width } = useContext(GlobalState);
+export default function PublicSectionHeader({ scrollTo }) {
   const menuRef = useRef(null);
 
   const [isBurgerMenuOpen, setIsBurgerMenuOpen] = useState(false);
@@ -46,7 +45,7 @@ export default function HomePageHeader({ scrollTo }) {
         />
         <Link to={`/`}>
           <h1
-            onClick={() => width <= 768 ? updateSelectMenu('Home') : scrollTo.homeSection?.current.scrollIntoView()}
+            onClick={() => isMobile || isTablet ? updateSelectMenu('Home') : scrollTo.homeSection?.current.scrollIntoView()}
             className="text-2xl sm:text-4xl md:text-5xl text-[#83c6f3] font-bold font-[roboto]">Quick Notes</h1>
         </Link>
       </div>
@@ -54,8 +53,8 @@ export default function HomePageHeader({ scrollTo }) {
       {/* Navigation bar */}
       <nav className={`w-full flex justify-end`}>
 
-        {width <= 768 ?
-          // Active in mobile width
+        {isMobile || isTablet ?
+          // Active in touch screen devices
           <div className="p-1.5 relative">
 
             {/* Menu Icon */}
