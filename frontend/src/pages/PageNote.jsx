@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 
-import NotePageHeader from "../components/header/HeaderUserSection";
 import CreateNoteForm from "../components/form/FormCreateNote";
-import DialogBox from "../components/modal/ModalDialogBox";
+import UnsaveDialog from "../components/modal/ModalUnsaveDialog";
 import AddIcon from "../assets/icon/IconAdd";
 import NoteCard from "../components/card/CardNote";
 import NotePreviewer from "../components/misc/NotePreviewer";
@@ -10,12 +9,14 @@ import { api } from "../assets/util/UtilApi";
 
 export default function NotePage() {
   const [showForm, setShowForm] = useState(false);
-  const [showDialog, setShowDialog] = useState(false);
+  const [showUnsaveDialog, setShowUnsaveDialog] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [editableContent, setEditableContent] = useState({});
   const [previewableContent, setPreviewableContent] = useState({});
+  const [deletableContent, setDeletableContent] = useState({});
 
-  const [userNotes, setUserNotes] = useState(null);
+  const [userNotes, setUserNotes] = useState([]);
 
   // Handles keydown event for closing previewer
   useEffect(() => {
@@ -28,13 +29,13 @@ export default function NotePage() {
   }, [showPreview]);
 
   useEffect(() => {
-    async function fetchUserNotes () {
+    async function fetchUserNotes() {
       try {
         const serverRes = await api.get(`/user/notes`);
 
         setUserNotes(serverRes.data);
       }
-      catch(error) {
+      catch (error) {
         console.error(error.status + error.message);
       }
     }
@@ -49,73 +50,65 @@ export default function NotePage() {
   }
 
   return (
-    <div className={`fixed h-screen w-screen grid grid-cols-12 grid-rows-12`}>
+    <div className={`h-full pb-18 bg-indigo-50 dark:bg-slate-800`}>
 
-      <header className={`col-span-12 row-start-0 row-end-1`}>
-        <NotePageHeader />
-      </header>
+      {/* Create or edit note form */}
+      <>
+        <div
+          onClick={() => setShowForm(false)}
+          className={`fixed z-20 bg-black/10 w-full h-full backdrop-blur-sm overflow-y-scroll ${!showForm && 'hidden'}`}
+        ></div>
+        <CreateNoteForm
+          showForm={showForm}
+          setShowForm={setShowForm}
+          setShowUnsaveDialog={setShowUnsaveDialog}
+          editableContent={editableContent}
+        />
+      </>
 
-      <main className={`col-span-12 row-start-1 row-end-13 overflow-y-scroll pb-18 bg-indigo-100/40 dark:bg-slate-800`}>
+      {/* Note previewer */}
+      <>
+        <div
+          onClick={() => setShowPreview(false)}
+          className={`fixed z-20 bg-black/10 w-full h-full backdrop-blur-sm overflow-y-scroll ${!showPreview && 'hidden'}`}
+        ></div>
+        <NotePreviewer
+          previewableContent={previewableContent}
+          showPreview={showPreview}
+        />
+      </>
 
-        {/* Create or edit note form */}
-        <>
-          <div
-            onClick={() => setShowForm(false)}
-            className={`fixed z-20 bg-black/10 w-full h-full backdrop-blur-sm overflow-y-scroll ${!showForm && 'hidden'}`}
-          ></div>
-          <CreateNoteForm
-            showForm={showForm}
+      {/* Dialog box for confirmation of discarding unsaved changes */}
+      <>
+        <div className={`fixed z-40 bg-black/10 w-full h-full backdrop-blur-xs ${!showUnsaveDialog && 'hidden'}`}></div>
+        <UnsaveDialog
+          showUnsaveDialog={showUnsaveDialog}
+          setShowUnsaveDialog={setShowUnsaveDialog}
+          setShowForm={setShowForm}
+        />
+      </>
+
+      {/* Notes Container */}
+      <section className={`pt-10 pb-16 px-5 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5`}>
+        {userNotes?.map((note, index) =>
+          <NoteCard
+            key={index}
+            note={note}
+            setPreviewableContent={setPreviewableContent}
+            setEditableContent={setEditableContent}
+            setShowPreview={setShowPreview}
             setShowForm={setShowForm}
-            setShowDialog={setShowDialog}
-            editableContent={editableContent}
           />
-        </>
+        )}
+      </section>
 
-        {/* Note previewer */}
-        <>
-          <div
-            onClick={() => setShowPreview(false)}
-            className={`fixed z-20 bg-black/10 w-full h-full backdrop-blur-sm overflow-y-scroll ${!showPreview && 'hidden'}`}
-          ></div>
-          <NotePreviewer
-            previewableContent={previewableContent}
-            showPreview={showPreview}
-          />
-        </>
-
-        {/* Dialog box for confirmation of discarding unsaved changes */}
-        <>
-          <div className={`fixed z-40 bg-black/10 w-full h-full backdrop-blur-xs ${!showDialog && 'hidden'}`}></div>
-          <DialogBox
-            showDialog={showDialog}
-            setShowDialog={setShowDialog}
-            setShowForm={setShowForm}
-          />
-        </>
-
-        {/* Notes Container */}
-        <section className={`pt-10 pb-16 px-5 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5`}>
-          {userNotes?.map((note, index) =>
-            <NoteCard
-              key={index}
-              note={note}
-              setPreviewableContent={setPreviewableContent}
-              setEditableContent={setEditableContent}
-              setShowPreview={setShowPreview}
-              setShowForm={setShowForm}
-            />
-          )}
-        </section>
-
-        {/* Add Note button */}
-        <button
-          onClick={createNewNote}
-          title="Create Note"
-          className={`fixed ${showForm ? 'z-0 scale-0' : 'z-10 scale-100'} transition-all duration-400 top-[85svh] right-[10svw] shadow-2xl border border-slate-400 active:bg-white text-2xl p-2 md:p-3 rounded-xl bg-[#bbbdfb]/25 dark:bg-slate-100 backdrop-blur-xs`}
-        ><AddIcon />
-        </button>
-
-      </main>
+      {/* Add Note button */}
+      <button
+        onClick={createNewNote}
+        title="Create Note"
+        className={`fixed ${showForm ? 'z-0 scale-0' : 'z-10 scale-100'} transition-all duration-400 top-[85svh] right-[10svw] shadow-2xl border border-slate-400 active:bg-white text-2xl p-2 md:p-3 rounded-xl bg-[#bbbdfb]/25 dark:bg-slate-100 backdrop-blur-xs`}
+      ><AddIcon />
+      </button>
 
     </div>
   );

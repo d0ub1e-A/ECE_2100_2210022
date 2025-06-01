@@ -7,6 +7,7 @@ import { markdownStyling, markDownToText } from "../../assets/util/UtilMarkdownS
 import PreviewIcon from '../../assets/icon/IconPreview.jsx';
 import EditIcon from '../../assets/icon/IconEdit.jsx';
 import ThreeDotIcon from '../../assets/icon/IconThreeDot.jsx';
+import DeleteIcon from '../../assets/icon/IconDelete.jsx';
 
 export default function NoteCard({ note, setPreviewableContent, setEditableContent, setShowPreview, setShowForm }) {
   const menuRef = useRef(null);
@@ -32,12 +33,21 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
     setShowPreview(true);
   }
 
+  function deleteNote() {
+    setDeletableContent(note);
+  }
+
   return (
     <div className={`relative flex flex-col gap-7 px-3 py-4 rounded-lg shadow-xl bg-amber-100/20 dark:bg-slate-700 dark:text-white hover:scale-105 transition-all duration-300`}>
 
       {/* Title + 3 dot menu section */}
       <div className={`relative items-center font-bold cal-sans text-xl md:text-3xl flex justify-between`}>
         <h2 className={`w-full truncate`}>{note.title ? note.title : 'Untitled'}</h2>
+        <button 
+        onClick={deleteNote}
+        className={`p-1.5 rounded-full hover:border hover:border-red-300 hover:bg-slate-300/80 transition-all duration-300`}>
+          <DeleteIcon/>
+        </button>
 
         {/* Menu active in mobile or tablet */}
         {(isMobile || isTablet) &&

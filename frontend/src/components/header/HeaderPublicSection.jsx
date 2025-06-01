@@ -23,14 +23,7 @@ export default function PublicSectionHeader({ scrollTo }) {
 
   // Handles menu (opens only when in monile width) ops
   function updateSelectMenu(option) {
-    const scrollSection = {
-      Home: scrollTo.homeSection,
-      Contacts: scrollTo.contactsSection,
-    }
-
-    setSelectedValue(option);
-    document.title = option;
-    scrollSection[option]?.current.scrollIntoView();
+    
   }
 
   return (
@@ -75,12 +68,12 @@ export default function PublicSectionHeader({ scrollTo }) {
                 className="p-2 font-bold text-left hover:bg-slate-100"
               >Home</button>
               <button
-                onClick={() => updateSelectMenu('Contacts')}
+                onClick={() => updateSelectMenu('Contact')}
                 className="p-2 font-bold text-left hover:bg-slate-100"
               >Contacts</button>
               <Link
                 onClick={() => setIsBurgerMenuOpen(false)}
-                to={`/login-signup`}
+                to={`/login`}
                 className="p-2 font-bold text-left hover:bg-slate-100"
               >Login/Signup</Link>
 
@@ -88,19 +81,19 @@ export default function PublicSectionHeader({ scrollTo }) {
 
           </div>
           :
-          // Active other than mobile width
+          // Active other than touch screen devices
           <div className="flex gap-5 md:text-[20px] font-bold font-[roboto] text-[#e8f1f1] items-end">
 
             <button
-              onClick={() => scrollTo.homeSection?.current.scrollIntoView()}
+              onClick={() => updateSelectMenu('Home')}
               className="hover:text-indigo-200 cursor-pointer"
             >Home</button>
             <button
-              onClick={() => scrollTo.contactsSection?.current.scrollIntoView()}
+              onClick={() => updateSelectMenu('Contact')}
               className="hover:text-indigo-200 cursor-pointer"
             >Contacts</button>
             <Link
-              to={`/login-signup`}
+              to={`/login`}
               className="hover:text-indigo-200"
             >Login/Register</Link>
 

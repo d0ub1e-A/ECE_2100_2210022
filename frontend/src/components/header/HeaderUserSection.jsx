@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import UIQuickNotesLogo from "../ui/UIQuickNotesLogo.png"
 
 export default function UserSectionHeader() {
   return (
@@ -7,7 +8,7 @@ export default function UserSectionHeader() {
       {/* Logo and name section */}
       <div className="flex gap-3 items-center">
         <img
-          src="src\components\ui\UIQuickNotesLogo.png"
+          src={UIQuickNotesLogo}
           alt="Quick Notes Logo"
           className="w-10 md:w-16 drop-shadow-lg"
         />

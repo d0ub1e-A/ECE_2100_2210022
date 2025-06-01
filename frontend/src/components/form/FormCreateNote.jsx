@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { isDesktop, isMobile, isTablet } from "react-device-detect";
 import EditIcon from "../../assets/icon/IconEdit";
 
-export default function CreateNoteForm({ showForm, setShowDialog, setShowForm, editableContent }) {
+export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowForm, editableContent }) {
   const titleRef = useRef(null);
   const formRef = useRef(null);
 
@@ -66,7 +66,7 @@ export default function CreateNoteForm({ showForm, setShowDialog, setShowForm, e
 
   // Check whether user want to close the form with unsaved data
   function closeNoteForm() {
-    if (note !== '' || tag !== '' || title !== '') setShowDialog(true);
+    if (note !== '' || tag !== '' || title !== '') setShowUnsaveDialog(true);
     else if (!note && !tag && !title) setShowForm(false);
   }
 

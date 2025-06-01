@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { isValidMail, isValidPassword, isValidName } from "../assets/util/UtilCheckInfo";
 
 import MailIcon from '../assets/icon/IconMail';
@@ -14,8 +14,6 @@ export default function LoginPage() {
 
   const [inLogInPage, setInLoginPage] = useState(true);
   const [wrongInput, setWrongInput] = useState([]);
-
-  const navigateTo = useNavigate();
 
   // Get the greeting message
   function getMessage() {
@@ -86,14 +84,6 @@ export default function LoginPage() {
 
   return (
     <div className={`h-screen flex flex-col gap-5 items-center justify-center dark:bg-slate-800`}>
-
-      {/* App name + link to go to home page */}
-      <Link to={`/`}>
-        <h1
-          title="Go back to home page"
-          className={`text-6xl md:text-7xl text-center -mt-10 bg-transparent dark:text-white text-slate-800 font-bold font-[roboto] hover:scale-110 transition duration-300`}
-        >Quick Notes</h1>
-      </Link>
 
       <div className={`flex flex-col-reverse gap-6 md:gap-0 shadow-2xl bg-indigo-600 rounded-xl transition duration-300 ${inLogInPage ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
 
