@@ -14,6 +14,8 @@ export const markdownStyling = {
     <ul className="list-disc px-8 mb-4 patrick-hand tracking-wider" {...props}></ul>,
   ol: ({ node, ...props }) =>
     <ol className="list-decimal ml-6 mb-4 patrick-hand tracking-wider" {...props}></ol>,
+  li: ({ node, ...props }) =>
+    <li className="ml-10 my-2.5 patrick-hand tracking-wider" {...props}></li>,
   table: ({ node, ...props }) =>
     <table className={`w-full my-2 patrick-hand tracking-wider`} {...props}></table>,
   td: ({ node, ...props }) =>
@@ -38,7 +40,7 @@ export const markdownStyling = {
     );
   },
   blockquote: ({ node, ...props }) =>
-    <blockquote className={`bg-gray-200 text-slate-800 p-2.5 rounded-lg my-4`} {...props}></blockquote>,
+    <blockquote className={`bg-gray-900 text-slate-100 p-2.5 rounded-lg my-4`} {...props}></blockquote>,
 }
 
 export function markDownToText(mdText) {

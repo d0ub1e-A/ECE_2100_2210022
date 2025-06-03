@@ -45,7 +45,7 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
 
     return noteData;
   }
-  
+
   // Thorough check on submitted data
   function handlesubmit(e) {
     e.preventDefault();
@@ -53,8 +53,8 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
     const creationDate = new Date();
     let noteData = acquireFormData(e);
 
-    noteData = tag ? 
-    {...noteData, created_at: creationDate.toISOString()} : {...noteData, tag: 'untagged', created_at: creationDate.toISOString()}
+    noteData = tag ?
+      { ...noteData, created_at: creationDate.toISOString() } : { ...noteData, tag: 'untagged', created_at: creationDate.toISOString() }
 
     if (title && !invalidTag) {
       console.log(noteData);
@@ -74,8 +74,7 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
     <form
       ref={formRef}
       onSubmit={handlesubmit}
-      className={`bg-gray-100 fixed top-27 left-1/2 -translate-x-1/2 border border-slate-300 shadow-md flex flex-col p-5 rounded-lg gap-2 md:gap-3 max-h-[90svh] overflow-y-scroll z-30 ${showForm ? 'scale-100 skew-0' : 'scale-0 -skew-x-15'} duration-300 transition-all`}
-      // className={`bg-gray-100 fixed top-27 left-1/2 -translate-x-1/2 border border-slate-300 shadow-xl flex flex-col p-5 rounded-lg gap-2 md:gap-3 max-h-[90svh] overflow-y-scroll z-30 duration-300 transition-all`}
+      className={`bg-gray-100 dark:bg-gray-700 fixed top-27 left-1/2 -translate-x-1/2 border border-slate-300 shadow-md flex flex-col p-5 rounded-lg gap-2 md:gap-3 max-h-[90svh] overflow-y-scroll z-30 ${showForm ? 'scale-100 skew-0' : 'scale-0 -skew-x-15'} duration-300 transition-all`}
     >
       {(isMobile || isTablet) &&
         <button
@@ -92,20 +91,20 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
         ref={titleRef}
         onChange={(e) => setTitle(e.target.value)}
         value={editableContent?.title}
-        className={`bg-gray-100/90 ${title === '' ? '' : 'border border-slate-400'} outline-none text-lg md:text-2xl p-2 rounded font-semibold`}
+        className={`bg-gray-100/90 dark:bg-gray-500 dark:text-slate-200 ${title === '' ? '' : 'border border-slate-400'} outline-none text-lg md:text-2xl p-2 rounded font-semibold`}
       />
       <div>
         <label
           htmlFor="note"
-          className={`font-semibold text-lg md:text-2xl text-black flex items-center gap-3`}
-        ><EditIcon/> Note</label>
+          className={`font-semibold text-lg md:text-2xl text-black dark:text-white flex items-center gap-3`}
+        ><EditIcon /> Note</label>
         <textarea
           name="note"
           id="note"
           placeholder="Write in markdown for a better view..."
           onChange={(e) => setNote(e.target.value)}
           defaultValue={editableContent?.note ? editableContent.note : ''}
-          className={`min-h-[40svh] min-w-[85svw] md:min-w-[55svw] mt-2 bg-white p-2 text-sm md:text-[16px] resize-none outline-none shadow-inner rounded`}
+          className={`min-h-[40svh] min-w-[85svw] md:min-w-[55svw] mt-2 bg-white dark:bg-gray-500 dark:text-slate-200 p-2 text-sm md:text-[16px] resize-none outline-none shadow-inner rounded`}
         ></textarea>
       </div>
       <input
@@ -114,7 +113,7 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
         placeholder="Add a tag to categorize easily e.g. project"
         onChange={(e) => setTag(e.target.value)}
         value={editableContent?.tag}
-        className={`border border-slate-200 bg-white outline-none shadow-md rounded p-2 text-sm md:text-[16px]`}
+        className={`bg-white dark:bg-gray-500 dark:text-slate-200 outline-none shadow-md rounded p-2 text-sm md:text-[16px]`}
       />
       <p className={`text-red-400 ${invalidTag ? 'scale-100' : 'scale-0'} text-left transition-all duration-200`}>You can not use this tag...</p>
       <div className="flex gap-3 flex-col sm:flex-row">

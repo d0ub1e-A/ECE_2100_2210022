@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
+import { api } from "../assets/util/UtilApi";
 
 import CreateNoteForm from "../components/form/FormCreateNote";
 import UnsaveDialog from "../components/modal/ModalUnsaveDialog";
 import AddIcon from "../assets/icon/IconAdd";
-import NoteCard from "../components/card/CardNote";
 import NotePreviewer from "../components/misc/NotePreviewer";
-import { api } from "../assets/util/UtilApi";
+import NoteContainerUI from "../components/ui/UINoteContainer";
 
 export default function NotePage() {
   const [showForm, setShowForm] = useState(false);
@@ -17,23 +17,27 @@ export default function NotePage() {
   const [deletableContent, setDeletableContent] = useState({});
 
   const [userNotes, setUserNotes] = useState([]);
+  const [renderedNotes, setRenderedNotes] = useState([]);
+  const [tagList, setTagList] = useState([]);
 
   // Handles keydown event for closing previewer
   useEffect(() => {
     const closePreview = event =>
-      (event.key === 'Escape' && showPreview) && setShowPreview(false);
+      (event.key === 'Escape' && showPreview && !showUnsaveDialog) && setShowPreview(false);
 
     window.addEventListener('keydown', closePreview);
 
     return () => window.removeEventListener('keydown', closePreview);
   }, [showPreview]);
 
+  // Fetch notes created by the user from the server
   useEffect(() => {
     async function fetchUserNotes() {
       try {
         const serverRes = await api.get(`/user/notes`);
+        const allNotes = serverRes.data;
 
-        setUserNotes(serverRes.data);
+        arrangeNotes(allNotes);
       }
       catch (error) {
         console.error(error.status + error.message);
@@ -43,6 +47,22 @@ export default function NotePage() {
     fetchUserNotes();
   }, []);
 
+  // Arrange the notes by tag name and create a new array of objects containing the tag name and associated array
+  function arrangeNotes(notes) {
+    const tags = [...new Set(notes.map(note => note.tag))];
+    const categorizedNotes = tags.map(tag => ({
+      tag: tag,
+      notes: notes.filter(note => note.tag === tag),
+    }));
+
+    // console.log(tags);
+    // console.log(categorizedNotes);
+
+    setTagList(tags);
+    setUserNotes(categorizedNotes);
+    setRenderedNotes(categorizedNotes);
+  }
+
   // Kind of refreshes the form after every time it gets rendered
   function createNewNote() {
     setEditableContent({});
@@ -50,7 +70,7 @@ export default function NotePage() {
   }
 
   return (
-    <div className={`h-full pb-18 bg-indigo-50 dark:bg-slate-800`}>
+    <div className={`pb-18 bg-indigo-50 dark:bg-slate-800`}>
 
       {/* Create or edit note form */}
       <>
@@ -89,18 +109,16 @@ export default function NotePage() {
       </>
 
       {/* Notes Container */}
-      <section className={`pt-10 pb-16 px-5 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5`}>
-        {userNotes?.map((note, index) =>
-          <NoteCard
-            key={index}
-            note={note}
-            setPreviewableContent={setPreviewableContent}
-            setEditableContent={setEditableContent}
-            setShowPreview={setShowPreview}
-            setShowForm={setShowForm}
-          />
-        )}
-      </section>
+      {renderedNotes?.map((note, index) =>
+        <NoteContainerUI
+          key={index}
+          groupedNotes={note}
+          setPreviewableContent={setPreviewableContent}
+          setEditableContent={setEditableContent}
+          setShowPreview={setShowPreview}
+          setShowForm={setShowForm}
+        />
+      )}
 
       {/* Add Note button */}
       <button
