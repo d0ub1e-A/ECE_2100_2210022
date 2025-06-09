@@ -46,7 +46,7 @@ input[type=submit] {
 }
 
 .homepage-section {
-  background-image: url(assets/HomeBG.svg);
+  background-image: url(src/components/ui/UIHomeBG.svg);
   background-size: 1rem;
 }
 

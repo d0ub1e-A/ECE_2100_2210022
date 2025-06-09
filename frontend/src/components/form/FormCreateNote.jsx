@@ -1,8 +1,8 @@
 import { useRef, useState, useEffect } from "react";
 import { isDesktop, isMobile, isTablet } from "react-device-detect";
-import EditIcon from "../assets/EditIcon";
+import EditIcon from "../../assets/icon/IconEdit";
 
-export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setShowForm, editableContent }) {
+export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowForm, editableContent }) {
   const titleRef = useRef(null);
   const formRef = useRef(null);
 
@@ -13,7 +13,7 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
   const [invalidTag, setInvalidTag] = useState(false);
 
   // Handles default job after opening or closing the not taking form
-  useEffect(() => {console.log( editableContent ? 'something' : 'nothing');
+  useEffect(() => {
     if (showForm) {
       titleRef.current?.focus();
       formRef.current?.reset();
@@ -46,14 +46,6 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
     return noteData;
   }
 
-  function addNote(note) {
-    let noteIndex = null;
-    
-    allNotes.some((el, index) => {
-      noteIndex = (el.created_at === editableContent.created_at) ? index : null;
-    });
-  }
-  
   // Thorough check on submitted data
   function handlesubmit(e) {
     e.preventDefault();
@@ -61,19 +53,11 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
     const creationDate = new Date();
     let noteData = acquireFormData(e);
 
-    noteData = tag ? 
-    {...noteData} : {...noteData, tag: 'untagged'}
-    
-    // Adds newly added note into local storage
-    allNotes.unshift({
-      ...noteData,
-      created_at: creationDate
-    });
-
-    const toBeSaved = addNote(noteData);
+    noteData = tag ?
+      { ...noteData, created_at: creationDate.toISOString() } : { ...noteData, tag: 'untagged', created_at: creationDate.toISOString() }
 
     if (title && !invalidTag) {
-      localStorage.setItem('notes', JSON.stringify(allNotes));
+      console.log(noteData);
       e.currentTarget.reset();
       setShowForm(false);
     }
@@ -82,7 +66,7 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
 
   // Check whether user want to close the form with unsaved data
   function closeNoteForm() {
-    if (note !== '' || tag !== '' || title !== '') setShowDialog(true);
+    if (note !== '' || tag !== '' || title !== '') setShowUnsaveDialog(true);
     else if (!note && !tag && !title) setShowForm(false);
   }
 
@@ -90,8 +74,7 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
     <form
       ref={formRef}
       onSubmit={handlesubmit}
-      className={`bg-gray-100 fixed top-27 left-1/2 -translate-x-1/2 border border-slate-300 shadow-md flex flex-col p-5 rounded-lg gap-2 md:gap-3 max-h-[90svh] overflow-y-scroll z-30 ${showForm ? 'scale-100 skew-0' : 'scale-0 -skew-x-15'} duration-300 transition-all`}
-      // className={`bg-gray-100 fixed top-27 left-1/2 -translate-x-1/2 border border-slate-300 shadow-xl flex flex-col p-5 rounded-lg gap-2 md:gap-3 max-h-[90svh] overflow-y-scroll z-30 duration-300 transition-all`}
+      className={`bg-gray-100 dark:bg-gray-700 fixed top-27 left-1/2 -translate-x-1/2 border border-slate-300 shadow-md flex flex-col p-5 rounded-lg gap-2 md:gap-3 max-h-[90svh] overflow-y-scroll z-30 ${showForm ? 'scale-100 skew-0' : 'scale-0 -skew-x-15'} duration-300 transition-all`}
     >
       {(isMobile || isTablet) &&
         <button
@@ -108,20 +91,20 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
         ref={titleRef}
         onChange={(e) => setTitle(e.target.value)}
         value={editableContent?.title}
-        className={`bg-gray-100/90 ${title === '' ? '' : 'border border-slate-400'} outline-none text-lg md:text-2xl p-2 rounded font-semibold`}
+        className={`bg-gray-100/90 dark:bg-gray-500 dark:text-slate-200 ${title === '' ? '' : 'border border-slate-400'} outline-none text-lg md:text-2xl p-2 rounded font-semibold`}
       />
       <div>
         <label
           htmlFor="note"
-          className={`font-semibold text-lg md:text-2xl text-black flex items-center gap-3`}
-        ><EditIcon/> Note</label>
+          className={`font-semibold text-lg md:text-2xl text-black dark:text-white flex items-center gap-3`}
+        ><EditIcon /> Note</label>
         <textarea
           name="note"
           id="note"
           placeholder="Write in markdown for a better view..."
           onChange={(e) => setNote(e.target.value)}
           defaultValue={editableContent?.note ? editableContent.note : ''}
-          className={`min-h-[40svh] min-w-[85svw] md:min-w-[55svw] mt-2 bg-white p-2 text-sm md:text-[16px] resize-none outline-none shadow-inner rounded`}
+          className={`min-h-[40svh] min-w-[85svw] md:min-w-[55svw] mt-2 bg-white dark:bg-gray-500 dark:text-slate-200 p-2 text-sm md:text-[16px] resize-none outline-none shadow-inner rounded`}
         ></textarea>
       </div>
       <input
@@ -130,7 +113,7 @@ export default function CreateNoteForm({ allNotes, showForm, setShowDialog, setS
         placeholder="Add a tag to categorize easily e.g. project"
         onChange={(e) => setTag(e.target.value)}
         value={editableContent?.tag}
-        className={`border border-slate-200 bg-white outline-none shadow-md rounded p-2 text-sm md:text-[16px]`}
+        className={`bg-white dark:bg-gray-500 dark:text-slate-200 outline-none shadow-md rounded p-2 text-sm md:text-[16px]`}
       />
       <p className={`text-red-400 ${invalidTag ? 'scale-100' : 'scale-0'} text-left transition-all duration-200`}>You can not use this tag...</p>
       <div className="flex gap-3 flex-col sm:flex-row">

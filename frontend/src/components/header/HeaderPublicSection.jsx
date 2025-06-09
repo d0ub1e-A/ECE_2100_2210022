@@ -1,11 +1,10 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { GlobalState } from "../App";
 
-import MenuIcon from "./MenuIcon";
+import MenuIcon from "../../assets/icon/IconMenu";
+import { isMobile, isTablet } from "react-device-detect";
 
-export default function HomePageHeader({ scrollTo }) {
-  const { width } = useContext(GlobalState);
+export default function PublicSectionHeader({ scrollTo }) {
   const menuRef = useRef(null);
 
   const [isBurgerMenuOpen, setIsBurgerMenuOpen] = useState(false);
@@ -24,14 +23,7 @@ export default function HomePageHeader({ scrollTo }) {
 
   // Handles menu (opens only when in monile width) ops
   function updateSelectMenu(option) {
-    const scrollSection = {
-      Home: scrollTo.homeSection,
-      Contacts: scrollTo.contactsSection,
-    }
-
-    setSelectedValue(option);
-    document.title = option;
-    scrollSection[option]?.current.scrollIntoView();
+    
   }
 
   return (
@@ -40,13 +32,13 @@ export default function HomePageHeader({ scrollTo }) {
       {/* Logo and name section */}
       <div className="flex gap-3 items-center w-full">
         <img
-          src="src\assets\quickNotesLogo.png"
+          src="src\components\ui\UIQuickNotesLogo.png"
           alt="Quick Notes Logo"
           className="w-15 md:w-25 drop-shadow-lg"
         />
         <Link to={`/`}>
           <h1
-            onClick={() => width <= 768 ? updateSelectMenu('Home') : scrollTo.homeSection?.current.scrollIntoView()}
+            onClick={() => isMobile || isTablet ? updateSelectMenu('Home') : scrollTo.homeSection?.current.scrollIntoView()}
             className="text-2xl sm:text-4xl md:text-5xl text-[#83c6f3] font-bold font-[roboto]">Quick Notes</h1>
         </Link>
       </div>
@@ -54,8 +46,8 @@ export default function HomePageHeader({ scrollTo }) {
       {/* Navigation bar */}
       <nav className={`w-full flex justify-end`}>
 
-        {width <= 768 ?
-          // Active in mobile width
+        {isMobile || isTablet ?
+          // Active in touch screen devices
           <div className="p-1.5 relative">
 
             {/* Menu Icon */}
@@ -76,12 +68,12 @@ export default function HomePageHeader({ scrollTo }) {
                 className="p-2 font-bold text-left hover:bg-slate-100"
               >Home</button>
               <button
-                onClick={() => updateSelectMenu('Contacts')}
+                onClick={() => updateSelectMenu('Contact')}
                 className="p-2 font-bold text-left hover:bg-slate-100"
               >Contacts</button>
               <Link
                 onClick={() => setIsBurgerMenuOpen(false)}
-                to={`/login-signup`}
+                to={`/login`}
                 className="p-2 font-bold text-left hover:bg-slate-100"
               >Login/Signup</Link>
 
@@ -89,19 +81,19 @@ export default function HomePageHeader({ scrollTo }) {
 
           </div>
           :
-          // Active other than mobile width
+          // Active other than touch screen devices
           <div className="flex gap-5 md:text-[20px] font-bold font-[roboto] text-[#e8f1f1] items-end">
 
             <button
-              onClick={() => scrollTo.homeSection?.current.scrollIntoView()}
+              onClick={() => updateSelectMenu('Home')}
               className="hover:text-indigo-200 cursor-pointer"
             >Home</button>
             <button
-              onClick={() => scrollTo.contactsSection?.current.scrollIntoView()}
+              onClick={() => updateSelectMenu('Contact')}
               className="hover:text-indigo-200 cursor-pointer"
             >Contacts</button>
             <Link
-              to={`/login-signup`}
+              to={`/login`}
               className="hover:text-indigo-200"
             >Login/Register</Link>
 
