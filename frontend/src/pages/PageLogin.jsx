@@ -5,6 +5,7 @@ import { isValidMail, isValidPassword, isValidName } from "../assets/util/UtilCh
 import MailIcon from '../assets/icon/IconMail';
 import PasswordIcon from '../assets/icon/IconPassword';
 import PersonIcon from '../assets/icon/IconPerson';
+import { api } from "../assets/util/UtilApi";
 
 export default function LoginPage() {
   const formRef = useRef(null);
@@ -39,10 +40,15 @@ export default function LoginPage() {
   // function to send login data
   async function sendLoginInfo(email, password) {
     try {
+      const loginRes = await api.post(`/auth/login`, {
+        email: email,
+        password: password,
+      });
 
+      console.log(loginRes);
     }
     catch(error) {
-
+      console.error(error);
     }
   }
 
@@ -78,9 +84,9 @@ export default function LoginPage() {
     if(inLogInPage) {
       if(mailValid && passValid) {
         e.currentTarget.reset();
-        console.log(`Email: ${email}`);
-        console.log(`Password: ${password}`);
-        // sendLoginInfo(email, password);
+        // console.log(`Email: ${email}`);
+        // console.log(`Password: ${password}`);
+        sendLoginInfo(email, password);
       }
     }
     else {
@@ -146,6 +152,7 @@ export default function LoginPage() {
                 required
                 type="email"
                 name="email"
+                defaultValue={`mrfhsn@gmail.com`}
                 ref={mailRef}
                 placeholder="e.g. yourname@example.com"
                 className={`border-b-2 ${wrongInputs.includes(mailRef) ? 'border-red-600' : 'border-gray-400 focus:border-blue-700'} transition-all duration-300 outline-none py-2 text-md w-full`}
@@ -163,6 +170,7 @@ export default function LoginPage() {
                 required
                 type="password"
                 name="password"
+                defaultValue={`123456789`}
                 ref={passRef}
                 className={`border-b-2 ${wrongInputs.includes(passRef) ? 'border-red-600' : 'border-gray-400 focus:border-blue-700'} transition-all duration-300 outline-none py-2 w-full`}
               />
