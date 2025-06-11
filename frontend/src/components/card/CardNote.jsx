@@ -8,6 +8,7 @@ import PreviewIcon from '../../assets/icon/IconPreview.jsx';
 import EditIcon from '../../assets/icon/IconEdit.jsx';
 import ThreeDotIcon from '../../assets/icon/IconThreeDot.jsx';
 import DeleteIcon from '../../assets/icon/IconDelete.jsx';
+import { calcDateTime } from "../../assets/util/UtilCalcDateTime.js";
 
 export default function NoteCard({ note, setPreviewableContent, setEditableContent, setShowPreview, setShowForm }) {
   const menuRef = useRef(null);
@@ -71,6 +72,12 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
                 <EditIcon />
                 Edit
               </button>
+              <button
+                onClick={deleteNote}
+                className={`flex gap-3 text-sm p-4 active:bg-amber-100 items-center`}>
+                <DeleteIcon />
+                Edit
+              </button>
             </div>
           </div>
         }
@@ -108,8 +115,7 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
       {/* Note tag and creation date */}
       <div className={`flex justify-between items-center`}>
         <p className={`bg-indigo-300 max-w-1/2 truncate p-1.5 rounded-full fira-mono`}>{note?.tag}</p>
-        {/* <p className={`fira-mono max-w-1/2`}>{new Date(note.created_at?.replace('Z', '+06:00')).toISOString()}</p> */}
-        <p className={`fira-mono max-w-1/2`}>{note?.created_at}</p>
+        <p className={`fira-mono max-w-1/2`}>{calcDateTime(note?.created_at)}</p>
       </div>
     </div>
   );

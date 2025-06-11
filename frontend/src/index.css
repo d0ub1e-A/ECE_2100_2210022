@@ -41,6 +41,10 @@ input[type=submit] {
   @apply cursor-pointer;
 }
 
+input {
+  outline: none;
+}
+
 .menu-path {
   transition: d 0.3s ease-in-out;
 }

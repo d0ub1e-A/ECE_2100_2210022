@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { api } from "../assets/util/UtilApi";
+import { SearchContext } from "./layout/LayoutUser";
 
 import CreateNoteForm from "../components/form/FormCreateNote";
 import UnsaveDialog from "../components/modal/ModalUnsaveDialog";
@@ -8,6 +9,8 @@ import NotePreviewer from "../components/misc/NotePreviewer";
 import NoteContainerUI from "../components/ui/UINoteContainer";
 
 export default function NotePage() {
+  const { searchedTag } = useContext(SearchContext);
+
   const [showForm, setShowForm] = useState(false);
   const [showUnsaveDialog, setShowUnsaveDialog] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -15,10 +18,10 @@ export default function NotePage() {
   const [editableContent, setEditableContent] = useState({});
   const [previewableContent, setPreviewableContent] = useState({});
   const [deletableContent, setDeletableContent] = useState({});
+  const [showNotFound, setShowNotFound] = useState(false);
 
   const [userNotes, setUserNotes] = useState([]);
   const [renderedNotes, setRenderedNotes] = useState([]);
-  const [tagList, setTagList] = useState([]);
 
   // Handles keydown event for closing previewer
   useEffect(() => {
@@ -34,7 +37,7 @@ export default function NotePage() {
   useEffect(() => {
     async function fetchUserNotes() {
       try {
-        const serverRes = await api.get(`/user/notes`);
+        const serverRes = await api.get(`/user/notes`);console.log(serverRes);
         const allNotes = serverRes.data;
 
         arrangeNotes(allNotes);
@@ -47,6 +50,18 @@ export default function NotePage() {
     fetchUserNotes();
   }, []);
 
+  // Controls the real time search
+  useEffect(() => {
+    setShowNotFound(false);
+
+    if (searchedTag === '') setRenderedNotes(userNotes);
+    else {
+      const toBeRendered = userNotes.filter(note => note.tag.toLowerCase().includes(searchedTag.toLowerCase()));
+
+      toBeRendered.length ? setRenderedNotes(toBeRendered) : setShowNotFound(true);
+    }
+  }, [searchedTag]);
+
   // Arrange the notes by tag name and create a new array of objects containing the tag name and associated array
   function arrangeNotes(notes) {
     const tags = [...new Set(notes.map(note => note.tag))];
@@ -55,10 +70,6 @@ export default function NotePage() {
       notes: notes.filter(note => note.tag === tag),
     }));
 
-    // console.log(tags);
-    // console.log(categorizedNotes);
-
-    setTagList(tags);
     setUserNotes(categorizedNotes);
     setRenderedNotes(categorizedNotes);
   }
@@ -70,7 +81,7 @@ export default function NotePage() {
   }
 
   return (
-    <div className={`pb-18 bg-indigo-50 dark:bg-slate-800`}>
+    <div className={`pb-18`}>
 
       {/* Create or edit note form */}
       <>
@@ -109,16 +120,20 @@ export default function NotePage() {
       </>
 
       {/* Notes Container */}
-      {renderedNotes?.map((note, index) =>
-        <NoteContainerUI
-          key={index}
-          groupedNotes={note}
-          setPreviewableContent={setPreviewableContent}
-          setEditableContent={setEditableContent}
-          setShowPreview={setShowPreview}
-          setShowForm={setShowForm}
-        />
-      )}
+      {showNotFound ?
+        <h1 className={`dark:text-slate-100 fira-mono text-center mt-[40svh] text-xl md:text-3xl lg:text-4xl`}>Nothing Matched Your Search</h1>
+        :
+        renderedNotes?.map((note, index) =>
+          <NoteContainerUI
+            key={index}
+            groupedNotes={note}
+            setPreviewableContent={setPreviewableContent}
+            setEditableContent={setEditableContent}
+            setShowPreview={setShowPreview}
+            setShowForm={setShowForm}
+          />
+        )
+      }
 
       {/* Add Note button */}
       <button

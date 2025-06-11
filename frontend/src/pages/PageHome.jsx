@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import { ScrollContext } from "./layout/LayoutPublic";
 
 import ContactCard from "../components/card/CardContact";
 import IconGithub from '../assets/icon/IconGithub.svg';
@@ -7,6 +8,7 @@ import IconGmail from '../assets/icon/IconGmail.svg';
 export default function HomePage() {
   const home = useRef(null);
   const contacts = useRef(null);
+  const {setHomeSection, setContactsSection} = useContext(ScrollContext);
 
   const [scrolledPixels, setScrolledPixels] = useState(null);
 
@@ -23,8 +25,13 @@ export default function HomePage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    setHomeSection(home);
+    setContactsSection(contacts);
+  }, []);
+
   return (
-    <div className={`homepage-section bg-[url('src/components/ui/UIHomeBG.svg')]_ dark:bg-blend-soft-light bg-slate-100 dark:bg-slate-700`}>
+    <div className={`homepage-section dark:bg-blend-soft-light bg-slate-100 dark:bg-slate-700`}>
 
       {/* Welcome section */}
       <section

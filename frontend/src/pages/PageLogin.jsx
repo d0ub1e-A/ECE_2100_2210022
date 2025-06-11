@@ -13,7 +13,9 @@ export default function LoginPage() {
   const passRef = useRef(null);
 
   const [inLogInPage, setInLoginPage] = useState(true);
-  const [wrongInput, setWrongInput] = useState([]);
+  const [wrongInputs, setWrongInputs] = useState([]);
+
+  document.title = inLogInPage ? `Login` : `Sign Up`;
 
   // Get the greeting message
   function getMessage() {
@@ -28,14 +30,32 @@ export default function LoginPage() {
   // Clear the unwanted input from user name
   const clearName = name => name.trim().replace(/[^a-zA-Z0-9\']/g, ' ').replace(/\s+/g, ' ');
 
-  // Handles swapping of signup and login section
-  function swapSignLogin() {
-    setInLoginPage(prevCond => !prevCond);
-    setWrongInput([]);
-    formRef.current.reset();
-    setTimeout(() => formRef.current[0].focus(), 300);
+  // Shows the incorrect input warning
+  const checkIfWrong = (isValid, inputRef) =>
+    isValid ?
+      setWrongInputs(prevInputs => prevInputs.filter(input => input !== inputRef)) :
+      setWrongInputs(prevInputs => wrongInputs.includes(inputRef) ? [...prevInputs] : [...prevInputs, inputRef]);
+
+  // function to send login data
+  async function sendLoginInfo(email, password) {
+    try {
+
+    }
+    catch(error) {
+
+    }
   }
 
+  // function to send signup data
+  async function sendSignupInfo(name, email, password) {
+    try {
+
+    }
+    catch(error) {
+
+    }
+  }
+  
   // Store user input
   function handleSubmit(e) {
     e.preventDefault();
@@ -43,47 +63,45 @@ export default function LoginPage() {
     const formData = new FormData(e.currentTarget);
     const userInput = Object.fromEntries(formData);
     
-    isValidMail(userInput.email) ?
-    setWrongInput(prevInputs => prevInputs.filter(input => input !== mailRef)) :
-    setWrongInput(prevInputs => wrongInput.includes(mailRef) ? [...prevInputs] : [...prevInputs, mailRef]);
-    
-    isValidPassword(userInput.password) ?
-    setWrongInput(prevInputs => prevInputs.filter(input => input !== passRef)) :
-    setWrongInput(prevInputs => wrongInput.includes(passRef) ? [...prevInputs] : [...prevInputs, passRef]);
-    
-    if(!inLogInPage) {
-      isValidPassword(clearName(userInput.name)) ?
-        setWrongInput(prevInputs => prevInputs.filter(input => input !== nameRef)) :
-        setWrongInput(prevInputs => wrongInput.includes(nameRef) ? [...prevInputs] : [...prevInputs, nameRef]);
-    }
+    const name = clearName(userInput.name || '');
+    const email = userInput.email;
+    const password = userInput.password;
 
-    // Demonstrtes the post method
-    // console.log(inLogInPage ? userInput : {
-    //   ...userInput,
-    //   name: clearName(userInput.name)
-    // });
+    const mailValid = isValidMail(email);
+    const passValid = isValidPassword(password);
+    const nameValid = isValidName(name);
+
+    checkIfWrong(mailValid, mailRef);
+    checkIfWrong(passValid, passRef);
+    !inLogInPage && checkIfWrong(nameValid, nameRef);
 
     if(inLogInPage) {
-      if (isValidMail(userInput.email) && isValidPassword(userInput.password)) {
+      if(mailValid && passValid) {
         e.currentTarget.reset();
-        setWrongInput([]);
+        console.log(`Email: ${email}`);
+        console.log(`Password: ${password}`);
+        // sendLoginInfo(email, password);
       }
     }
     else {
-      if (isValidMail(userInput.email) && isValidPassword(userInput.password) && isValidName(clearName(userInput.name))) {
+      if(mailValid && passValid && nameValid) {
         e.currentTarget.reset();
-        setWrongInput([]);
+        console.log(`Name: ${name}`);
+        console.log(`Email: ${email}`);
+        console.log(`Password: ${password}`);
+        // sendSingnupInfo(name, email, password);
       }
     }
   }
 
   useEffect(() => {
     inLogInPage ? mailRef.current?.focus() : nameRef.current?.focus();
-    document.title = `Quick Notes - Never Lose Your Ideas`;
-  }, []);
+    setWrongInputs([]);
+    formRef.current.reset();
+  }, [inLogInPage]);
 
   return (
-    <div className={`h-screen flex flex-col gap-5 items-center justify-center dark:bg-slate-800`}>
+    <div className={`flex flex-col items-center justify-center h-full w-full`}>
 
       <div className={`flex flex-col-reverse gap-6 md:gap-0 shadow-2xl bg-indigo-600 rounded-xl transition duration-300 ${inLogInPage ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
 
@@ -96,13 +114,15 @@ export default function LoginPage() {
             className={`flex flex-col gap-5 relative ${inLogInPage ? 'animate-slide-from-left' : 'animate-slide-from-right'}`}
           >
 
-            <h2 className={`text-center font-bold mb-3 text-3xl`}>{inLogInPage ? 'Login' : 'Sign Up'}</h2>
+            <h2
+              tabIndex={-1}
+              className={`text-center font-bold mb-3 text-3xl`}
+            >{inLogInPage ? 'Login' : 'Sign Up'}</h2>
 
             {!inLogInPage && (
               <label>
                 <span className="flex gap-2 items-center">
-                <PersonIcon />
-                Name
+                  <PersonIcon />Name
                 </span>
                 <input
                   required
@@ -110,42 +130,43 @@ export default function LoginPage() {
                   name="name"
                   ref={nameRef}
                   placeholder="e.g. Abdur Rahman"
-                  className={`border-b-2 ${wrongInput.includes(nameRef) ? 'border-red-600' : 'border-gray-400 focus:border-blue-700'} transition-all duration-300 outline-none py-2 w-full`}
+                  className={`border-b-2 ${wrongInputs.includes(nameRef) ? 'border-red-600' : 'border-gray-400 focus:border-blue-700'} transition-all duration-300 outline-none py-2 w-full`}
                 />
-                {wrongInput.includes(nameRef) &&
+                {wrongInputs.includes(nameRef) &&
                   <p className={`text-red-500 text-xs md:text-sm py-1`}>Name can't be empty</p>
                 }
               </label>
             )}
 
             <label>
-              <span className="flex gap-2 items-center"><MailIcon />Mail</span>
+              <span className="flex gap-2 items-center">
+                <MailIcon />Mail
+              </span>
               <input
                 required
                 type="email"
                 name="email"
                 ref={mailRef}
                 placeholder="e.g. yourname@example.com"
-                className={`border-b-2 ${wrongInput.includes(mailRef) ? 'border-red-600' : 'border-gray-400 focus:border-blue-700'} transition-all duration-300 outline-none py-2 text-md w-full`}
+                className={`border-b-2 ${wrongInputs.includes(mailRef) ? 'border-red-600' : 'border-gray-400 focus:border-blue-700'} transition-all duration-300 outline-none py-2 text-md w-full`}
               />
-              {wrongInput.includes(mailRef) &&
+              {wrongInputs.includes(mailRef) &&
                 <p className={`text-red-500 text-xs md:text-sm py-1`}>Please enter a valid mail</p>
               }
             </label>
 
             <label>
               <span className="flex gap-2 items-center">
-              <PasswordIcon />
-              Password
+                <PasswordIcon />Password
               </span>
               <input
                 required
                 type="password"
                 name="password"
                 ref={passRef}
-                className={`border-b-2 ${wrongInput.includes(passRef) ? 'border-red-600' : 'border-gray-400 focus:border-blue-700'} transition-all duration-300 outline-none py-2 w-full`}
+                className={`border-b-2 ${wrongInputs.includes(passRef) ? 'border-red-600' : 'border-gray-400 focus:border-blue-700'} transition-all duration-300 outline-none py-2 w-full`}
               />
-              {wrongInput.includes(passRef) &&
+              {wrongInputs.includes(passRef) &&
                 <p className={`text-red-500 text-xs md:text-sm py-1`}>Need at least 8 characters</p>
               }
             </label>
@@ -161,7 +182,7 @@ export default function LoginPage() {
           <div className="flex  gap-3 justify-center text-[.9rem]">
             <span>{inLogInPage ? 'Don\'t have ' : 'Already have '}an account?</span>
             <button
-              onClick={swapSignLogin}
+              onClick={() => setInLoginPage(prevCond => !prevCond)}
               className="text-indigo-600 cursor-pointer hover:scale-125 transition duration-200"
             >{inLogInPage ? 'Sign Up' : 'Login'}</button>
           </div>
@@ -174,6 +195,7 @@ export default function LoginPage() {
         </div>
 
       </div>
+
     </div>
   );
 }

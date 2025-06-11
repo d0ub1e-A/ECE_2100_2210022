@@ -36,7 +36,7 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
     window.addEventListener('keydown', handleKeydown);
 
     return () => window.removeEventListener('keydown', handleKeydown);
-  }, [showForm]);
+  }, [showForm, title, note, tag]);
 
   // Primarily form data are turned into objects
   function acquireFormData(e) {

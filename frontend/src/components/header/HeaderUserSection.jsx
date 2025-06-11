@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import UIQuickNotesLogo from "../ui/UIQuickNotesLogo.png"
+import UIQuickNotesLogo from "../ui/UIQuickNotesLogo.png";
 
-export default function UserSectionHeader() {
+export default function UserSectionHeader({setSearchedTag}) {
   return (
     <div className={`flex justify-between items-center px-4 md:px-8 py-4 md:py-2 bg-gradient-to-r from-indigo-600 to-indigo-400 shadow-xl`}>
 
@@ -17,10 +17,17 @@ export default function UserSectionHeader() {
         </Link>
       </div>
 
-      {/* Navigation bar */}
-      <nav>
+      <form>
+        <input 
+          type="text" 
+          name="searchTag" 
+          id="searchTag" 
+          placeholder="🔎 Search By Tag"
+          onChange={e => setSearchedTag(e.target.value)}
+          className={`px-1 py-1.5 bg-slate-200 rounded-xl outline-none`}
+        />
+      </form>
 
-      </nav>
     </div>
   );
 }
