@@ -24,10 +24,10 @@ async function login(req, res) {
 
         // if the user doesn't exist
         if (result.rowCount === 0) {
-            res.status(401).json({ error: "email or password incorrect" });
+            return res.status(401).json({ error: "email or password incorrect" });
         }
 
-        const match = bcrypt.compareSync(password, result.rows[0].password);
+        const match = await bcrypt.compare(password, result.rows[0].password);
 
         // if (result.rows[0].password === password) {
         if (match) {
