@@ -37,7 +37,7 @@ async function allNote(req, res) {
         const { user_id } = req.user.user_info;
 
         const result = await db.query(
-            `SELECT * FROM "note" WHERE user_id = $1`,
+            `SELECT note_id, title, note, tag, created_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Dhaka' AS created_at FROM "note" WHERE user_id = $1`,
             [user_id]
         );
 
@@ -57,7 +57,7 @@ async function oneNote(req, res) {
         const { id } = req.params;
 
         const result = await db.query(
-            `SELECT * FROM "note" WHERE user_id = $1 AND note_id = $2`,
+            `SELECT note_id, title, note, tag, created_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Dhaka' AS created_at FROM "note" WHERE user_id = $1 AND note_id = $2`,
             [user_id, id]
         );
 
