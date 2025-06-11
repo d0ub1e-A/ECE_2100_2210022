@@ -11,6 +11,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 // cors settings
+require('dotenv').config();
 const ALLOWED_ORIGIN = process.env.FRONTEND_URL;
 app.use(cors({
     origin: function (origin, callback) {
@@ -26,7 +27,7 @@ app.use(cors({
 
 // all api routes
 const apiRoutes = require('./routes/apiRoutes');
-app.use('/', apiRoutes);
+app.use('/api', apiRoutes);
 
 
 // Error handling middlewares
