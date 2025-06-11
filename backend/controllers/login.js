@@ -27,7 +27,7 @@ async function login(req, res) {
             return res.status(401).json({ error: "email or password incorrect" });
         }
 
-        const match = bcrypt.compareSync(password, result.rows[0].password);
+        const match = await bcrypt.compare(password, result.rows[0].password);
 
         // if (result.rows[0].password === password) {
         if (match) {
