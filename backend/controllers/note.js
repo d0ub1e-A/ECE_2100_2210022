@@ -1,5 +1,4 @@
 const db = require('../config/dbConfig');
-const bcrypt = require('bcrypt');
 
 // new note
 async function newNote(req, res) {
@@ -11,10 +10,6 @@ async function newNote(req, res) {
 
         if (!title || !note) {
             return res.status(400).json({ error: "provide all the request data" });
-        }
-
-        if (!tag) {
-            tag = null;
         }
 
         await db.query(
@@ -37,7 +32,7 @@ async function allNote(req, res) {
         const { user_id } = req.user.user_info;
 
         const result = await db.query(
-            `SELECT note_id, title, note, tag, created_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Dhaka' AS created_at FROM "note" WHERE user_id = $1 ORDER BY created_at`,
+            `SELECT note_id, title, note, tag, pinned, created_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Dhaka' AS created_at FROM "note" WHERE user_id = $1 ORDER BY note_id DESC`,
             [user_id]
         );
 
@@ -57,7 +52,7 @@ async function oneNote(req, res) {
         const { id } = req.params;
 
         const result = await db.query(
-            `SELECT note_id, title, note, tag, created_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Dhaka' AS created_at FROM "note" WHERE user_id = $1 AND note_id = $2`,
+            `SELECT note_id, title, note, tag, pinned, created_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Dhaka' AS created_at FROM "note" WHERE user_id = $1 AND note_id = $2`,
             [user_id, id]
         );
 
@@ -82,36 +77,12 @@ async function updateNote(req, res) {
         const { title, note, tag } = req.body;
 
         const result = await db.query(
-            `SELECT 1 AS ok FROM "note" WHERE note_id = $1 AND user_id = $2`,
-            [id, user_id]
+            `UPDATE "note" SET title = COALESCE($1, title), note = COALESCE($2, note), tag = COALESCE($3, tag) WHERE note_id = $4 AND user_id = $5`,
+            [title, note, tag, id, user_id]
         );
 
         if (result.rowCount === 0) {
             return res.sendStatus(404);
-        }
-
-        // title update
-        if (title) {
-            await db.query(
-                `UPDATE "note" SET title = $1 WHERE note_id = $2`,
-                [title, id]
-            );
-        }
-
-        // note update
-        if (note) {
-            await db.query(
-                `UPDATE "note" SET note = $1 WHERE note_id = $2`,
-                [note, id]
-            );
-        }
-
-        // tag update
-        if (tag) {
-            await db.query(
-                `UPDATE "note" SET tag = $1 WHERE note_id = $2`,
-                [tag, id]
-            );
         }
 
         res.sendStatus(200);
@@ -130,7 +101,7 @@ async function deleteNote(req, res) {
         const { id } = req.params;
 
         const result = await db.query(
-            `SELECT 1 AS ok FROM "note" WHERE note_id = $1 AND user_id = $2`,
+            `DELETE FROM "note" WHERE note_id = $1 AND user_id = $2`,
             [id, user_id]
         );
 
@@ -138,15 +109,34 @@ async function deleteNote(req, res) {
             return res.sendStatus(404);
         }
 
-        await db.query(
-            `DELETE FROM "note" WHERE note_id = $1`,
-            [id]
-        );
-
         res.sendStatus(200);
 
     } catch (error) {
         console.error("note deletion error: ", error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+// pin/unpin a note
+async function pinNote(req, res) {
+    try {
+
+        const { user_id } = req.user.user_info;
+        const { id } = req.params;
+
+        const result = await db.query(
+            `UPDATE "note" SET pinned = NOT pinned WHERE note_id = $1 AND user_id = $2`,
+            [id, user_id]
+        );
+
+        if (result.rowCount === 0) {
+            return res.sendStatus(404);
+        }
+
+        res.sendStatus(200);
+
+    } catch (error) {
+        console.error("note pin/unpin error: ", error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
@@ -157,5 +147,6 @@ module.exports = {
     allNote,
     oneNote,
     updateNote,
-    deleteNote
+    deleteNote,
+    pinNote
 }
