@@ -8,214 +8,246 @@ All endpoints are under the `/api` base path.
 - Tokens are provided through:
   - `accessToken` cookie (for authentication)
   - `refreshToken` cookie (for token refresh)
+ 
 
-## Endpoints
+## Auth Endpoints
+### POST `/auth/signup`
+- Description: Create a new user account
+- Request Body:
+  ```json
+  {
+    "name": string (required),
+    "email": string (required),
+    "password": string (required)
+  }
+  ```
+- Response:
+  ```json
+  {
+    "name": string
+  }
+  ```
+- Status Codes:
+  - 201: User created successfully
+  - 400: Bad request
+  - 401: Email already exists
+  - 500: Internal server error
 
-### Authentication Routes
+### POST `/auth/login`
+- Description: Authenticate existing user
+- Request Body:
+  ```json
+  {
+    "email": string (required),
+    "password": string (required)
+  }
+  ```
+- Response:
+  ```json
+  {
+    "name": string
+  }
+  ```
+  Sets HTTP-only cookies for accessToken and refreshToken
+- Status Codes:
+  - 200: Login successful
+  - 400: Bad request
+  - 401: Invalid credentials
+  - 500: Internal server error
 
-#### 1. POST `/auth/signup`
-Create a new user account.
+### POST `/auth/logout`
+- Description: Logout current user
+- Response:
+  - Clears accessToken and refreshToken cookies
+- Status Codes:
+  - 200: Logout successful
+  - 500: Internal server error
 
-**Request Body:**
-```json
-{
-  "name": string,
-  "email": string,
-  "password": string
-}
-```
+## User Endpoints
+### GET `/user`
+- Description: Get current user information
+- Requires Authentication: Yes (accessToken)
+- Response:
+  ```json
+  {
+    "name": string,
+    "email": string
+  }
+  ```
+- Status Codes:
+  - 200: User info retrieved
+  - 401: Unauthorized
+  - 500: Internal server error
 
-**Responses:**
-| Status Code | Description          | Response Body               |
-|-------------|------------------------|------------------------------|
-| 201 Created| User created successfully | `{ "name": string }` |
-| 400 Bad Request | Missing required fields | - |
-| 401 Unauthorized | Email already exists | `{ "error": "email already exist" }` |
+### PATCH `/user`
+- Description: Update user information
+- Requires Authentication: Yes (accessToken)
+- Request Body:
+  ```json
+  {
+    "name": string (optional),
+    "email": string (optional)
+  }
+  ```
+- Status Codes:
+  - 200: User updated successfully
+  - 400: Bad request
+  - 401: Unauthorized
+  - 500: Internal server error
 
----
+### DELETE `/user`
+- Description: Delete user account
+- Requires Authentication: Yes (accessToken)
+- Status Codes:
+  - 200: User deleted successfully
+  - 401: Unauthorized
+  - 500: Internal server error
 
-#### 2. POST `/auth/login`
-Authenticate existing user.
+### PATCH `/user/password`
+- Description: Update user password
+- Requires Authentication: Yes (accessToken)
+- Request Body:
+  ```json
+  {
+    "old_password": string (required),
+    "new_password": string (required)
+  }
+  ```
+- Status Codes:
+  - 200: Password updated successfully
+  - 400: Bad request
+  - 401: Unauthorized
+  - 500: Internal server error
 
-**Request Body:**
-```json
-{
-  "email": string,
-  "password": string
-}
-```
+## Note Endpoints
+### POST `/notes`
+- Description: Create a new note
+- Requires Authentication: Yes (accessToken)
+- Request Body:
+  ```json
+  {
+    "title": string (required),
+    "note": string (required),
+    "tag": string (optional)
+  }
+  ```
+- Status Codes:
+  - 201: Note created successfully
+  - 400: Bad request
+  - 401: Unauthorized
+  - 500: Internal server error
 
-**Responses:**
-| Status Code | Description          | Response Body               |
-|-------------|------------------------|------------------------------|
-| 200 OK     | Login successful     | `{ "name": string }` |
-| 401 Unauthorized | Invalid credentials | `{ "error": "email or password incorrect" }` |
+### GET `/notes`
+- Description: Get all notes for current user
+- Requires Authentication: Yes (accessToken)
+- Response:
+  ```json
+  [
+    {
+      "note_id": number,
+      "title": string,
+      "note": string,
+      "tag": string,
+      "pinned": boolean,
+      "created_at": string
+    }
+  ]
+  ```
+- Status Codes:
+  - 200: Notes retrieved successfully
+  - 401: Unauthorized
+  - 500: Internal server error
 
----
+### GET `/notes/:id`
+- Description: Get a specific note
+- Requires Authentication: Yes (accessToken)
+- Path Parameters:
+  ```
+  {
+    "id": number (required)
+  }
+  ```
+- Response:
+  ```json
+  {
+    "note_id": number,
+    "title": string,
+    "note": string,
+    "tag": string,
+    "pinned": boolean,
+    "created_at": string
+  }
+  ```
+- Status Codes:
+  - 200: Note retrieved successfully
+  - 404: Note not found
+  - 401: Unauthorized
+  - 500: Internal server error
 
-#### 3. POST `/auth/logout`
-Log out the current user.
+### PATCH `/notes/:id`
+- Description: Update a specific note
+- Requires Authentication: Yes (accessToken)
+- Path Parameters:
+  ```
+  {
+    "id": number (required)
+  }
+  ```
+- Request Body:
+  ```json
+  {
+    "title": string (optional),
+    "note": string (optional),
+    "tag": string (optional)
+  }
+  ```
+- Status Codes:
+  - 200: Note updated successfully
+  - 400: Bad request
+  - 401: Unauthorized
+  - 404: Note not found
+  - 500: Internal server error
 
-**Responses:**
-| Status Code | Description          | Response Body               |
-|-------------|------------------------|------------------------------|
-| 200 OK     | Logout successful    | - |
-| 500 Internal Server Error | Logout failed | `{ "error": "Internal server error" }` |
+### DELETE `/notes/:id`
+- Description: Delete a specific note
+- Requires Authentication: Yes (accessToken)
+- Path Parameters:
+  ```
+  {
+    "id": number (required)
+  }
+  ```
+- Status Codes:
+  - 200: Note deleted successfully
+  - 401: Unauthorized
+  - 404: Note not found
+  - 500: Internal server error
 
-### User Routes
-All user routes require authentication through `accessToken`.
-
-#### 1. GET `/user`
-Get current user information.
-
-**Responses:**
-| Status Code | Description          | Response Body               |
-|-------------|------------------------|------------------------------|
-| 200 OK     | User information retrieved | `{ "name": string, "email": string }` |
-| 500 Internal Server Error | Failed to retrieve user info | `{ "error": "Internal server error" }` |
-
----
-
-#### 2. PATCH `/user`
-Update user information.
-
-**Request Body:**
-```json
-{
-  "name": string,
-  "email": string
-}
-```
-
-**Responses:**
-| Status Code | Description          | Response Body               |
-|-------------|------------------------|------------------------------|
-| 200 OK     | Update successful     | - |
-| 500 Internal Server Error | Update failed | `{ "error": "Internal server error" }` |
-
----
-
-#### 3. DELETE `/user`
-Delete user account.
-
-**Responses:**
-| Status Code | Description          | Response Body               |
-|-------------|------------------------|------------------------------|
-| 200 OK     | User deleted successfully | - |
-| 500 Internal Server Error | Deletion failed | `{ "error": "Internal server error" }` |
-
----
-
-#### 4. PATCH `/user/password`
-Update user password.
-
-**Request Body:**
-```json
-{
-  "old_password": string,
-  "new_password": string
-}
-```
-
-**Responses:**
-| Status Code | Description          | Response Body               |
-|-------------|------------------------|------------------------------|
-| 200 OK     | Password updated successfully | - |
-| 401 Unauthorized | Wrong old password | `{ "error": "wrong password" }` |
-| 500 Internal Server Error | Update failed | `{ "error": "Internal server error" }` |
-
-### Note Routes
-All note routes require authentication through `accessToken`.
-
-#### 1. POST `/notes`
-Create a new note.
-
-**Request Body:**
-```json
-{
-  "title": string,
-  "note": string,
-  "tag": string (optional)
-}
-```
-
-**Responses:**
-| Status Code | Description          | Response Body               |
-|-------------|------------------------|------------------------------|
-| 201 Created| Note created successfully | - |
-| 400 Bad Request | Missing required fields | `{ "error": "provide all the request data" }` |
-
----
-
-#### 2. GET `/notes`
-Get all notes for the current user.
-
-**Responses:**
-| Status Code | Description          | Response Body               |
-|-------------|------------------------|------------------------------|
-| 200 OK     | Notes retrieved successfully | `[ { "note_id": integer, "title": string, "note": string, "tag": string, "created_at": string } ]` |
-| 500 Internal Server Error | Failed to retrieve notes | `{ "error": "Internal server error" }` |
-
----
-
-#### 3. GET `/notes/:id`
-Get a specific note.
-
-**Path Parameters:**
-- `id`: note_id of the note to retrieve
-
-**Responses:**
-| Status Code | Description          | Response Body               |
-|-------------|------------------------|------------------------------|
-| 200 OK     | Note retrieved successfully | `{ "note_id": integer, "title": string, "note": string, "tag": string, "created_at": string }` |
-| 404 Not Found | Note not found | - |
-
----
-
-#### 4. PATCH `/notes/:id`
-Update a specific note.
-
-**Path Parameters:**
-- `id`: note_id of the note to update
-
-**Request Body:**
-```json
-{
-  "title": string,
-  "note": string
-}
-```
-
-**Responses:**
-| Status Code | Description          | Response Body               |
-|-------------|------------------------|------------------------------|
-| 200 OK     | Note updated successfully | - |
-| 404 Not Found | Note not found | - |
-| 500 Internal Server Error | Update failed | `{ "error": "Internal server error" }` |
-
----
-
-#### 5. DELETE `/notes/:id`
-Delete a specific note.
-
-**Path Parameters:**
-- `id`: note_id of the note to delete
-
-**Responses:**
-| Status Code | Description          | Response Body               |
-|-------------|------------------------|------------------------------|
-| 200 OK     | Note deleted successfully | - |
-| 404 Not Found | Note not found | - |
-| 500 Internal Server Error | Deletion failed | `{ "error": "Internal server error" }` |
+### PATCH `/notes/:id/pin`
+- Description: Pin/Unpin a note
+- Requires Authentication: Yes (accessToken)
+- Path Parameters:
+  ```
+  {
+    "id": number (required)
+  }
+  ```
+- Status Codes:
+  - 200: Note updated successfully
+  - 401: Unauthorized
+  - 404: Note not found
+  - 500: Internal server error
 
 ## Error Handling
-The API returns standard HTTP status codes:
+The API returns standard HTTP status codes and error messages in JSON format:
+```json
+{
+  "error": string
+}
+```
 
-| Status Code | Description          |
-|-------------|------------------------|
-| 200 OK     | Request succeeded    |
-| 201 Created| Resource created     |
-| 400 Bad Request | Missing or invalid request data |
-| 401 Unauthorized | Invalid credentials |
-| 404 Not Found | Resource not found  |
-| 500 Internal Server Error | Server-side error |
+Common Status Codes:
+- 400: Bad request
+- 401: Unauthorized
+- 404: Resource not found
+- 500: Internal server error
