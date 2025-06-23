@@ -2,7 +2,7 @@ const checkAMPM = hour => hour >= 12 ? `PM` : `AM`;
 const hourIn12hFormat = hour => hour > 12 ? (hour - 12) : hour;
 
 export function calcDateTime(isoString) {
-  const dateString = new Date(isoString).toString();
+  const dateString = new Date(isoString?.replace('Z', '+06:00')).toString();
 
   const month = dateString.slice(4, 7);
   const date = dateString.slice(8, 10);

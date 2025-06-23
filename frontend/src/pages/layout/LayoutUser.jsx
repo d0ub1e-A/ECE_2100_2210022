@@ -1,33 +1,58 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import UserSectionHeader from "../../components/header/HeaderUserSection";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
+import { api } from "../../assets/util/UtilApi";
+import { arrangeNotes } from "../../assets/util/UtilArrangeNotes";
 
-export const SearchContext = createContext();
+export const UserContext = createContext();
 
 export default function UserLayout() {
   const pathName = useLocation().pathname;
-  
+  const navTo = useNavigate();
+
   const [searchedTag, setSearchedTag] = useState('');
+  const [userInfo, setUserInfo] = useState({});
+  const [userNotes, setUserNotes] = useState([]);
+  const [refetch, setRefetch] = useState(false);
 
   const bgStyle = {
     "/me/notes": "bg-indigo-50 dark:bg-slate-800",
     "/me/notes/": "bg-indigo-50 dark:bg-slate-800",
-    "/me": "bg-slate-50 dark:bg-slate-800",
+    "/me": "bg-[hsl(264,0%,100%)] dark:bg-[hsl(264,0%,10%)]",
     "/me/": "bg-slate-50 dark:bg-slate-800",
   };
-  
+
+  useEffect(() => {
+    async function fetchUserData() {
+      try {
+        const userProfileRes = await api.get('/user');
+        const userNotesRes = await api.get('/notes');
+
+        setUserInfo(userProfileRes.data);
+        setUserNotes(arrangeNotes(userNotesRes.data));
+      } catch (error) {
+        error.status === 401 && navTo('/login');
+        console.error(error);
+      }
+    }
+
+    fetchUserData();
+  }, [refetch]);
+
+  useEffect(() => setSearchedTag(''), [pathName]);
+
   return (
     <div className={`fixed h-screen w-screen grid grid-cols-12 grid-rows-12`}>
 
-      <header className={`col-span-12 row-start-0 row-end-1`}>
-        <UserSectionHeader setSearchedTag={setSearchedTag} />
-      </header>
+      <UserContext.Provider value={{ searchedTag, userInfo, userNotes, setRefetch, refetch }}>
+        <header className={`col-span-12 row-start-0 row-end-1`}>
+          <UserSectionHeader setSearchedTag={setSearchedTag} />
+        </header>
 
-      <main className={`col-span-12 row-start-1 row-end-13 overflow-y-scroll ${bgStyle[pathName]}`}>
-        <SearchContext.Provider value={{searchedTag}}>
+        <main className={`col-span-12 row-start-1 row-end-13 overflow-y-scroll ${bgStyle[pathName]}`}>
           <Outlet />
-        </SearchContext.Provider>
-      </main>
+        </main>
+      </UserContext.Provider>
 
     </div>
   );

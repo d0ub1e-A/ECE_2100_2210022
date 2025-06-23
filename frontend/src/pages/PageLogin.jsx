@@ -12,6 +12,7 @@ export default function LoginPage() {
   const nameRef = useRef(null);
   const mailRef = useRef(null);
   const passRef = useRef(null);
+  const navTo = useNavigate();
 
   const [inLogInPage, setInLoginPage] = useState(true);
   const [wrongInputs, setWrongInputs] = useState([]);
@@ -45,9 +46,8 @@ export default function LoginPage() {
         password: password,
       });
 
-      console.log(loginRes);
-    }
-    catch(error) {
+      loginRes.status === 200 && navTo('/me/notes');
+    } catch(error) {
       console.error(error);
     }
   }
@@ -55,10 +55,16 @@ export default function LoginPage() {
   // function to send signup data
   async function sendSignupInfo(name, email, password) {
     try {
+      const signupRes = await api.post(`/auth/login`, {
+        name: name,
+        email: email,
+        password: password,
+      });
 
+      signupRes.status === 201 && navTo('/me/notes');
     }
     catch(error) {
-
+      console.error(error);
     }
   }
   
@@ -84,22 +90,18 @@ export default function LoginPage() {
     if(inLogInPage) {
       if(mailValid && passValid) {
         e.currentTarget.reset();
-        // console.log(`Email: ${email}`);
-        // console.log(`Password: ${password}`);
         sendLoginInfo(email, password);
       }
     }
     else {
       if(mailValid && passValid && nameValid) {
         e.currentTarget.reset();
-        console.log(`Name: ${name}`);
-        console.log(`Email: ${email}`);
-        console.log(`Password: ${password}`);
-        // sendSingnupInfo(name, email, password);
+        sendSignupInfo(name, email, password);
       }
     }
   }
 
+  // Refreshes the whole page everytime page appears
   useEffect(() => {
     inLogInPage ? mailRef.current?.focus() : nameRef.current?.focus();
     setWrongInputs([]);
@@ -107,7 +109,7 @@ export default function LoginPage() {
   }, [inLogInPage]);
 
   return (
-    <div className={`flex flex-col items-center justify-center h-full w-full`}>
+    <div className={`flex flex-col items-center justify-center h-full w-full bg-indigo-50 dark:bg-slate-700`}>
 
       <div className={`flex flex-col-reverse gap-6 md:gap-0 shadow-2xl bg-indigo-600 rounded-xl transition duration-300 ${inLogInPage ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
 

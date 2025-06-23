@@ -1,17 +1,20 @@
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { isDesktop, isMobile, isTablet } from "react-device-detect";
 import { markdownStyling, markDownToText } from "../../assets/util/UtilMarkdownStyling.jsx";
+import { api } from "../../assets/util/UtilApi.js";
 
 import PreviewIcon from '../../assets/icon/IconPreview.jsx';
 import EditIcon from '../../assets/icon/IconEdit.jsx';
 import ThreeDotIcon from '../../assets/icon/IconThreeDot.jsx';
 import DeleteIcon from '../../assets/icon/IconDelete.jsx';
 import { calcDateTime } from "../../assets/util/UtilCalcDateTime.js";
+import { UserContext } from "../../pages/layout/LayoutUser.jsx";
 
 export default function NoteCard({ note, setPreviewableContent, setEditableContent, setShowPreview, setShowForm }) {
   const menuRef = useRef(null);
+  const {refetch, setRefetch} = useContext(UserContext);
 
   const [showMenu, setShowMenu] = useState(false);
 
@@ -34,8 +37,14 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
     setShowPreview(true);
   }
 
-  function deleteNote() {
-    setDeletableContent(note);
+  async function deleteNote(id) {
+    try {
+      const deleteRes = await api.delete(`/notes/${id}`);
+
+      deleteRes.status === 200 && setRefetch(!refetch);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -45,7 +54,7 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
       <div className={`relative items-center font-bold cal-sans text-xl md:text-3xl flex justify-between`}>
         <h2 className={`w-full truncate`}>{note.title ? note.title : 'Untitled'}</h2>
         <button 
-        onClick={deleteNote}
+        onClick={() => deleteNote(note.note_id)}
         className={`p-1.5 rounded-full hover:border hover:border-red-300 hover:bg-slate-300/80 transition-all duration-300`}>
           <DeleteIcon/>
         </button>
@@ -73,7 +82,7 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
                 Edit
               </button>
               <button
-                onClick={deleteNote}
+                onClick={() => deleteNote(note.note_id)}
                 className={`flex gap-3 text-sm p-4 active:bg-amber-100 items-center`}>
                 <DeleteIcon />
                 Edit

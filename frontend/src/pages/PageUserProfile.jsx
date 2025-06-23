@@ -1,28 +1,18 @@
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
+import { api } from "../assets/util/UtilApi";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "./layout/LayoutUser";
 
 import EditProfileIcon from "../assets/icon/IconEditProfile";
-import { api } from "../assets/util/UtilApi";
 
 export default function UserProfilePage() {
+  const navTo = useNavigate();
+  const { userInfo } = useContext(UserContext);
+
   const [inEditMode, setInEditMode] = useState(false);
   const [changedName, setChangedName] = useState('');
   const [changedEmail, setChangedEmail] = useState('');
   const [changedPassword, setChangedPassword] = useState('');
-  const [userInfo, setUserInfo] = useState({});
-
-  useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const profileRes = await api.get(`/user`);console.log(profileRes);
-
-        setUserInfo(profileRes.data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    fetchProfile();
-  }, []);
 
   async function updateUserProfile(e) {
     try {
@@ -30,6 +20,26 @@ export default function UserProfilePage() {
     }
     catch (error) {
 
+    }
+  }
+
+  async function logout() {
+    try {
+      const logoutRes = await api.post('/auth/logout');
+
+      logoutRes.status === 200 & navTo('/login');
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function deleteAccount() {
+    try {
+      const deleteAccRes = await api.delete('/user');
+
+      deleteAccRes.status === 200 && navTo('/');
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -43,7 +53,7 @@ export default function UserProfilePage() {
             onSubmit={updateUserProfile}
             className={`flex flex-col gap-4 fira-mono`}
           >
-            
+
             <label className={`text-2xl`}>Name</label>
             <input
               type="text"
@@ -96,12 +106,24 @@ export default function UserProfilePage() {
             <h2 className={`text-xl sm:text-2xl mb-10 truncate`}>{userInfo.email}</h2>
 
             <label className={`text-lg md:text-xl mb-1 block`}>Password</label>
-            <input 
+            <input
               disabled
-              type="password" 
-              defaultValue={userInfo.password}
-              className={`text-xl md:text-2xl outline-none`} 
+              type="password"
+              defaultValue={`userInfo.password`}
+              className={`text-xl md:text-2xl outline-none mb-10`}
             />
+
+            <div className={`flex justify-between`}>
+              <button
+                onClick={logout}
+                className={`bg-red-300 dark:bg-slate-700 dark:text-red-300 hover:shadow-md border border-yellow-100 px-2 py-1.5 cal-sans rounded-lg text-red-950`}
+              >Logout</button>
+              <button
+                onClick={deleteAccount}
+                className={`bg-red-600 dark:bg-black dark:text-red-600 hover:shadow-md border border-yellow-100 px-2 py-1.5 cal-sans rounded-lg text-white`}
+              >Delete Account</button>
+            </div>
+
           </div>
         }
       </section>

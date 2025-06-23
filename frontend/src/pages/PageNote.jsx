@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { api } from "../assets/util/UtilApi";
-import { SearchContext } from "./layout/LayoutUser";
+import { UserContext } from "./layout/LayoutUser";
 
 import CreateNoteForm from "../components/form/FormCreateNote";
 import UnsaveDialog from "../components/modal/ModalUnsaveDialog";
@@ -9,7 +9,7 @@ import NotePreviewer from "../components/misc/NotePreviewer";
 import NoteContainerUI from "../components/ui/UINoteContainer";
 
 export default function NotePage() {
-  const { searchedTag } = useContext(SearchContext);
+  const { searchedTag, userNotes } = useContext(UserContext);
 
   const [showForm, setShowForm] = useState(false);
   const [showUnsaveDialog, setShowUnsaveDialog] = useState(false);
@@ -20,7 +20,7 @@ export default function NotePage() {
   const [deletableContent, setDeletableContent] = useState({});
   const [showNotFound, setShowNotFound] = useState(false);
 
-  const [userNotes, setUserNotes] = useState([]);
+  // const [userNotes, setUserNotes] = useState([]);
   const [renderedNotes, setRenderedNotes] = useState([]);
 
   // Handles keydown event for closing previewer
@@ -33,22 +33,9 @@ export default function NotePage() {
     return () => window.removeEventListener('keydown', closePreview);
   }, [showPreview]);
 
-  // Fetch notes created by the user from the server
   useEffect(() => {
-    async function fetchUserNotes() {
-      try {
-        const serverRes = await api.get(`/user/notes`);console.log(serverRes);
-        const allNotes = serverRes.data;
-
-        arrangeNotes(allNotes);
-      }
-      catch (error) {
-        console.error(error.status + error.message);
-      }
-    }
-
-    fetchUserNotes();
-  }, []);
+    setRenderedNotes(userNotes);
+  }, [userNotes]);
 
   // Controls the real time search
   useEffect(() => {
@@ -61,18 +48,6 @@ export default function NotePage() {
       toBeRendered.length ? setRenderedNotes(toBeRendered) : setShowNotFound(true);
     }
   }, [searchedTag]);
-
-  // Arrange the notes by tag name and create a new array of objects containing the tag name and associated array
-  function arrangeNotes(notes) {
-    const tags = [...new Set(notes.map(note => note.tag))];
-    const categorizedNotes = tags.map(tag => ({
-      tag: tag,
-      notes: notes.filter(note => note.tag === tag),
-    }));
-
-    setUserNotes(categorizedNotes);
-    setRenderedNotes(categorizedNotes);
-  }
 
   // Kind of refreshes the form after every time it gets rendered
   function createNewNote() {
