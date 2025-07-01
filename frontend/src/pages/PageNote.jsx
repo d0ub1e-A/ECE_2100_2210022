@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { api } from "../assets/util/UtilApi";
 import { UserContext } from "./layout/LayoutUser";
 
 import CreateNoteForm from "../components/form/FormCreateNote";
@@ -7,20 +6,18 @@ import UnsaveDialog from "../components/modal/ModalUnsaveDialog";
 import AddIcon from "../assets/icon/IconAdd";
 import NotePreviewer from "../components/misc/NotePreviewer";
 import NoteContainerUI from "../components/ui/UINoteContainer";
+import PinnedNoteContainerUI from "../components/ui/UIPinnedNoteContainer";
 
 export default function NotePage() {
-  const { searchedTag, userNotes } = useContext(UserContext);
+  const { searchedTag, userNotes, userPinnedNotes } = useContext(UserContext);
 
   const [showForm, setShowForm] = useState(false);
   const [showUnsaveDialog, setShowUnsaveDialog] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [editableContent, setEditableContent] = useState({});
   const [previewableContent, setPreviewableContent] = useState({});
-  const [deletableContent, setDeletableContent] = useState({});
   const [showNotFound, setShowNotFound] = useState(false);
 
-  // const [userNotes, setUserNotes] = useState([]);
   const [renderedNotes, setRenderedNotes] = useState([]);
 
   // Handles keydown event for closing previewer
@@ -33,9 +30,8 @@ export default function NotePage() {
     return () => window.removeEventListener('keydown', closePreview);
   }, [showPreview]);
 
-  useEffect(() => {
-    setRenderedNotes(userNotes);
-  }, [userNotes]);
+  // Set the fetched notes in the renderedNotes variable to show
+  useEffect(() => setRenderedNotes(userNotes), [userNotes]);
 
   // Controls the real time search
   useEffect(() => {
@@ -98,16 +94,27 @@ export default function NotePage() {
       {showNotFound ?
         <h1 className={`dark:text-slate-100 fira-mono text-center mt-[40svh] text-xl md:text-3xl lg:text-4xl`}>Nothing Matched Your Search</h1>
         :
-        renderedNotes?.map((note, index) =>
-          <NoteContainerUI
-            key={index}
-            groupedNotes={note}
-            setPreviewableContent={setPreviewableContent}
-            setEditableContent={setEditableContent}
-            setShowPreview={setShowPreview}
-            setShowForm={setShowForm}
-          />
-        )
+        <>
+          {userPinnedNotes.length !== 0 &&
+            <PinnedNoteContainerUI
+              pinnedNotes={userPinnedNotes}
+              setPreviewableContent={setPreviewableContent}
+              setEditableContent={setEditableContent}
+              setShowPreview={setShowPreview}
+              setShowForm={setShowForm}
+            />
+          }
+          {renderedNotes?.map((note, index) =>
+            <NoteContainerUI
+              key={index}
+              groupedNotes={note}
+              setPreviewableContent={setPreviewableContent}
+              setEditableContent={setEditableContent}
+              setShowPreview={setShowPreview}
+              setShowForm={setShowForm}
+            />
+          )}
+        </>
       }
 
       {/* Add Note button */}

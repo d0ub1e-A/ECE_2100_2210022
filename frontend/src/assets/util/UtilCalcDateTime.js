@@ -10,7 +10,8 @@ export function calcDateTime(isoString) {
   const hour = parseInt(dateString.slice(16, 18));
   const minute = dateString.slice(19, 21);
 
-  return `${date} ${month} ${year} at ${hourIn12hFormat(hour)}:${minute} ${checkAMPM(hour)}`;
+  // return `${date} ${month} ${year} at ${hourIn12hFormat(hour)}:${minute} ${checkAMPM(hour)}`;
+  return `${date} ${month} ${year}`;
 }
 
 // Wed Jun 04 2025 23:41:01 GMT+0600 (Bangladesh Standard Time)

@@ -1,18 +1,18 @@
 import { useRef, useState, useEffect, useContext } from "react";
 import { isDesktop, isMobile, isTablet } from "react-device-detect";
 import { api } from "../../assets/util/UtilApi";
-
-import EditIcon from "../../assets/icon/IconEdit";
 import { UserContext } from "../../pages/layout/LayoutUser";
 
-export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowForm, editableContent }) {
+import EditIcon from "../../assets/icon/IconEdit";
+
+export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowForm, editableContent }) {console.log(editableContent.note_id);
   const titleRef = useRef(null);
   const formRef = useRef(null);
-  const { setRefetch, refetch } = useContext(UserContext);
+  const {setRefetch} = useContext(UserContext);
 
-  const [title, setTitle] = useState(editableContent.title || '');
-  const [note, setNote] = useState(editableContent.note || '');
-  const [tag, setTag] = useState(editableContent.tag || '');
+  const [title, setTitle] = useState('');
+  const [note, setNote] = useState('');
+  const [tag, setTag] = useState('');
   const [warning, setWarning] = useState('');
   const [invalidTag, setInvalidTag] = useState(false);
 
@@ -26,15 +26,14 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
     titleRef.current?.focus();
     formRef.current?.reset();
     setWarning('');
-    // setTitle('');
-    // setNote('');
-    // setTag('');
+    setTitle('');
+    setNote('');
+    setTag('');
     setInvalidTag(false);
   }, [showForm]);
 
   // Prevents users from setting tag as 'untagged'
-  useEffect(() => 
-    !inEditMode && setInvalidTag(invalidTags.some(pattern => pattern.test(tag))), [tag]);
+  useEffect(() => !inEditMode && setInvalidTag(invalidTags.some(pattern => pattern.test(tag))), [tag]);
 
   // handles keydown event
   useEffect(() => {
@@ -47,29 +46,37 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
   }, [showForm, title, note, tag]);
 
   // Creates a new note
-  async function sendNoteInfo({ title, note, tag }, e) {
-    const noteObj = {
-      title: title,
-      note: note,
-      tag: tag.toLowerCase() || '',
-    };
-    console.log(`From async`, noteObj);
+  async function createNote(noteData, e) {
+    try {
+      const creationRes = await api.post(`/notes`, noteData);
 
-    // try {
-    //   const sendNoteRes = inEditMode ?
-    //     await api.patch(`/notes/${editableContent.note_id}`, noteObj) :
-    //     await api.post(`/notes`, noteObj);
+      const response = creationRes.status;
 
-    //   const response = sendNoteRes.status;
+      if (response === 201) {
+        e.currentTarget?.reset();
+        setShowForm(false);
+        setRefetch(prev => !prev);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
-    //   if (response === 201 || response === 200) {
-    //     e.currentTarget?.reset();
-    //     setShowForm(false);
-    //     setRefetch(!refetch);
-    //   }
-    // } catch (error) {
-    //   console.error(error);
-    // }
+  // Update the existing note
+  async function updateNote(noteData, e) {
+    try {
+      const updateRes = await api.patch(`/notes/${editableContent.note_id}`, noteData);
+
+      const response = updateRes.status;
+
+      if (response === 200) {
+        e.currentTarget?.reset();
+        setShowForm(false);
+        setRefetch(prev => !prev);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   // Thorough check on submitted data
@@ -78,13 +85,14 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
 
     const formData = new FormData(e.currentTarget);
     const noteData = Object.fromEntries(formData);
-    // console.log(`handle submit:`, noteData);
 
-    if (title && !invalidTag) {
-      sendNoteInfo(noteData, e);
-      console.log(`aaa`);
-    }
-    else setWarning('Provide a title to save the note...');
+    if(inEditMode) updateNote(noteData, e);
+    else (title && !invalidTag) ? createNote(noteData, e) : setWarning('Provide a title to save the note...');
+    
+    // inEditMode ? updateNote(noteData, e) : (title && !invalidTag) && createNote(noteData, e);
+    // if (title && !invalidTag) {
+    // }
+    // else setWarning('Provide a title to save the note...');
   }
 
   // Check whether user want to close the form with unsaved data
