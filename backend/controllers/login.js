@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 const { generateAccessToken, generateRefreshToken } = require('../utility/generateToken');
 const { setToken } = require('../utility/tokenSet');
 const { generateAccessTokenCookie, generateRefreshTokenCookie } = require('../utility/generateCookie');
-require('dotenv').config();
 
 async function login(req, res) {
     try {

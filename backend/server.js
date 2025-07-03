@@ -2,16 +2,14 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const server = http.createServer(app);
+require('dotenv').config();
 
 app.use(express.json());
-app.use(bodyParser.json());
 app.use(cookieParser());
 
 // cors settings
-require('dotenv').config();
 const ALLOWED_ORIGIN = process.env.FRONTEND_URL;
 app.use(cors({
     origin: function (origin, callback) {

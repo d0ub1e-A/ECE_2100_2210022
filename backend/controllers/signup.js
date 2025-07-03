@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 const { generateAccessToken, generateRefreshToken } = require('../utility/generateToken');
 const { setToken } = require('../utility/tokenSet');
 const { generateAccessTokenCookie, generateRefreshTokenCookie } = require('../utility/generateCookie');
-require('dotenv').config();
 
 // signup with password hashing
 async function signup(req, res) {
@@ -28,7 +27,7 @@ async function signup(req, res) {
         }
 
         const salt = 10;
-        const hash = bcrypt.hashSync(password, salt);
+        const hash = await bcrypt.hash(password, salt);
         // console.log(hash);
 
         const result = await db.query(
