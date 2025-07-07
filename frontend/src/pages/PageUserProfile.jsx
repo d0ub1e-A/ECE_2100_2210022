@@ -1,18 +1,20 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { api } from "../assets/util/UtilApi";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "./layout/LayoutUser";
-
-import EditProfileIcon from "../assets/icon/IconEditProfile";
+import { Edit2, LogOut, User2, CircleX, Mail, Lock } from "lucide-react";
 
 export default function UserProfilePage() {
   const navTo = useNavigate();
-  const { userInfo } = useContext(UserContext);
+  const { userInfo, userNotes } = useContext(UserContext);
 
   const [inEditMode, setInEditMode] = useState(false);
   const [changedName, setChangedName] = useState('');
   const [changedEmail, setChangedEmail] = useState('');
   const [changedPassword, setChangedPassword] = useState('');
+
+  const numberOfNotes = userNotes.reduce((acc, note) => acc + note.notes.length, 0);
+  const numberOfTags = userNotes.length;
 
   async function updateUserProfile(e) {
     try {
@@ -44,9 +46,9 @@ export default function UserProfilePage() {
   }
 
   return (
-    <div className={`h-full flex justify-center items-center`}>
+    <div className={`h-full flex justify-center items-center bg-gradient-to-r from-purple-lite to-purple-500 p-16`}>
 
-      <section className={`border dark:text-gray-200 p-5 rounded-md shadow-xl w-svw md:w-[50svw]`}>
+      <section className={`dark:text-gray-200 p-8 rounded-[20px] shadow-xl w-svw md:w-[50svw] bg-[whitesmoke]/90`}>
 
         {inEditMode ?
           <form
@@ -92,36 +94,68 @@ export default function UserProfilePage() {
 
           </form>
           :
-          <div className={`cal-sans`}>
-            <div className={`flex items-center justify-between mb-10 text-3xl sm:text-4xl md:text-5xl`}>
-              <h1>{userInfo.name}</h1>
+          <div className={`cal-sans flex flex-col gap-15`}>
+
+            {/* user name + edit profile button */}
+            <div className={`flex justify-between items-center`}>
+              <div className={`flex items-center gap-3`}>
+                <div className={`bg-gradient-to-br from-purple-lite to-purple-500 rounded-[10px] w-fit p-3`}>
+                  <User2
+                    size={35}
+                    className={`text-white`}
+                  />
+                </div>
+                <div>
+                  <h1 className={`text-[1.2rem]`}>{userInfo.name}</h1>
+                  <p className={`text-grey-mid text-[.8rem]`}>Profile Settings</p>
+                </div>
+              </div>
               <button
                 onClick={() => setInEditMode(prev => !prev)}
-                className={``}
-              ><EditProfileIcon />
+                className={`border-grey-mid border p-2 rounded-[10px] profile-edit-button`}
+              ><Edit2 className={`text-grey-mid`}/>
               </button>
             </div>
 
-            <label className={`text-lg md:text-xl mb-7`}>Email</label>
-            <h2 className={`text-xl sm:text-2xl mb-10 truncate`}>{userInfo.email}</h2>
+            {/* email section */}
+            <div className={`bg-white p-5 rounded-[15px]`}>
+              <h3 className={`flex gap-1 items-center my-2.5`}><Mail className={`text-indigo-500`}/>Email</h3>
+              <h2 className={`truncate`}>{userInfo.email}</h2>
+            </div>
 
-            <label className={`text-lg md:text-xl mb-1 block`}>Password</label>
-            <input
-              disabled
-              type="password"
-              defaultValue={`userInfo.password`}
-              className={`text-xl md:text-2xl outline-none mb-10`}
-            />
+            {/* password section */}
+            <div className={`bg-white p-5 rounded-[15px]`}>
+              <h3 className={`flex gap-1 items-center my-2.5`}><Lock className={`text-indigo-500`}/>Password</h3>
+              <input
+                disabled
+                type="password"
+                defaultValue={`password`}
+                className={`outline-none`}
+              />
+            </div>
 
-            <div className={`flex justify-between`}>
+            {/* Note Stat section */}
+            <div className={`flex justify-around bg-blue-100/80 p-5 rounded-[15px]`}>
+              <div className={`text-center`}>
+                <p className={`text-[1.7rem]`}>{numberOfNotes}</p>
+                <p className={`text-[.8rem] text-grey-mid`}>Total Notes</p>
+              </div>
+              <div className={`text-center`}>
+                <p className={`text-[1.7rem]`}>{numberOfTags}</p>
+                <p className={`text-[.8rem] text-grey-mid`}>Tags Used</p>
+              </div>
+            </div>
+
+            {/* logout + account deletion button */}
+            <div className={`flex justify-between gap-3`}>
               <button
                 onClick={logout}
-                className={`bg-red-300 dark:bg-slate-700 dark:text-red-300 hover:shadow-md border border-yellow-100 px-2 py-1.5 cal-sans rounded-lg text-red-950`}
-              >Logout</button>
+                className={`px-2 py-1.5 cal-sans rounded-[15px] border w-full flex items-center justify-center gap-2`}
+              ><LogOut />Logout</button>
               <button
                 onClick={deleteAccount}
-                className={`bg-red-600 dark:bg-black dark:text-red-600 hover:shadow-md border border-yellow-100 px-2 py-1.5 cal-sans rounded-lg text-white`}
-              >Delete Account</button>
+                className={`border px-2 py-1.5 cal-sans rounded-[15px] w-full flex items-center justify-center gap-2`}
+              ><CircleX />Delete Account</button>
             </div>
 
           </div>

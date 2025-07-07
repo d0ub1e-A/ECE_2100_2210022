@@ -6,6 +6,7 @@ import { markdownStyling, markDownToText } from "../../assets/util/UtilMarkdownS
 import { api } from "../../assets/util/UtilApi.js";
 import { calcDateTime } from "../../assets/util/UtilCalcDateTime.js";
 import { UserContext } from "../../pages/layout/LayoutUser.jsx";
+import { NoteDeleteContext } from "../../pages/PageNote.jsx";
 
 import PreviewIcon from '../../assets/icon/IconPreview.jsx';
 import EditIcon from '../../assets/icon/IconEdit.jsx';
@@ -17,9 +18,11 @@ import PinIcon from '../../assets/icon/IconPin.jsx';
 export default function NoteCard({ note, setPreviewableContent, setEditableContent, setShowPreview, setShowForm }) {
   const menuRef = useRef(null);
   const { setRefetch } = useContext(UserContext);
+  const {setShowDeleteDialog, setDeletableNoteId} = useContext(NoteDeleteContext);
 
   const [showMenu, setShowMenu] = useState(false);
 
+  // handles mouse click for closing the menu in touch screen devices
   useEffect(() => {
     const closeMenu = e =>
       (menuRef.current && !menuRef.current.contains(e.target)) && setShowMenu(false);
@@ -29,26 +32,19 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
     return () => window.removeEventListener('mousedown', closeMenu);
   }, []);
 
+  // opens the form for editing any existing content
   function editNote() {
     setEditableContent(note);
     setShowForm(true);
   }
 
+  // opens the note previewer
   function previewNote() {
     setPreviewableContent(note);
     setShowPreview(true);
   }
 
-  async function deleteNote(id) {
-    try {
-      const deleteRes = await api.delete(`/notes/${id}`);
-
-      deleteRes.status === 200 && setRefetch(prev => !prev);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
+  // pin any note no top
   async function pinNotes(id) {
     try {
       const pinningRes = await api.patch(`/notes/${id}/pin`);
@@ -59,8 +55,14 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
     }
   }
 
+  // function for starting of deletion
+  function startDeleting() {
+    setShowDeleteDialog(true);
+    setDeletableNoteId(note.note_id);
+  }
+
   return (
-    <div className={`relative flex flex-col gap-7 px-3 py-4 rounded-lg shadow-xl bg-amber-100/20 dark:bg-slate-700 dark:text-white hover:scale-105 transition-all duration-300`}>
+    <div className={`relative z-10 flex flex-col gap-7 px-3 py-4 rounded-lg bg-amber-100/20 dark:bg-slate-700 dark:text-white hover:-translate-y-2 transition-all duration-300 note-card`}>
 
       {/* Title + 3 dot menu section for touch screen devices */}
       <div className={`relative items-center font-bold cal-sans text-xl md:text-3xl flex justify-between`}>
@@ -71,10 +73,11 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
         </button>
         <h2 className={`w-full truncate`}>{note?.title}</h2>
 
+        {/* Delete button */}
         {isDesktop &&
           <button
-            onClick={() => deleteNote(note.note_id)}
-            className={`p-1.5 rounded-full hover:border hover:border-red-300 hover:bg-slate-300/80 transition-all duration-300`}
+            onClick={startDeleting}
+            className={`p-1.5 rounded-full hover:border hover:border-red-300 hover:bg-slate-300/80 transition-all`}
           ><DeleteIcon />
           </button>
         }
@@ -101,7 +104,7 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
               ><EditIcon /> Edit
               </button>
               <button
-                onClick={() => deleteNote(note.note_id)}
+                onClick={startDeleting}
                 className={`flex gap-3 text-sm p-4 active:bg-amber-100 items-center`}
               ><DeleteIcon /> Delete
               </button>

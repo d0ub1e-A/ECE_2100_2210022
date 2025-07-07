@@ -2,22 +2,23 @@ import { useRef, useState, useEffect, useContext } from "react";
 import { isDesktop, isMobile, isTablet } from "react-device-detect";
 import { api } from "../../assets/util/UtilApi";
 import { UserContext } from "../../pages/layout/LayoutUser";
+import { BadgeInfo, NotebookPen, NotebookText, RectangleHorizontal, Tag, X } from "lucide-react";
 
-import EditIcon from "../../assets/icon/IconEdit";
-
-export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowForm, editableContent }) {console.log(editableContent.note_id);
+export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowForm, editableContent, allAvailableTags }) {
   const titleRef = useRef(null);
   const formRef = useRef(null);
-  const {setRefetch} = useContext(UserContext);
+  const { setRefetch } = useContext(UserContext);
 
-  const [title, setTitle] = useState('');
-  const [note, setNote] = useState('');
-  const [tag, setTag] = useState('');
+  const [noteTag, setNoteTag] = useState('');
   const [warning, setWarning] = useState('');
   const [invalidTag, setInvalidTag] = useState(false);
+  const [bounceTitleBar, setBounceTitleBar] = useState(false);
+  const [showTagMenu, setShowTagMenu] = useState(false);
 
   const inEditMode = Object.keys(editableContent).length !== 0;
   const invalidTags = [/(?:\s+|^)unt[a@][g&][g&]?[e3]?d?(?:\s+[A-Z]?[0-9]?|$)/i];
+
+  useEffect(() => setNoteTag(editableContent.tag || ''), [editableContent]);
 
   // Handles default job after opening or closing the not taking form
   useEffect(() => {
@@ -26,14 +27,13 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
     titleRef.current?.focus();
     formRef.current?.reset();
     setWarning('');
-    setTitle('');
-    setNote('');
-    setTag('');
     setInvalidTag(false);
   }, [showForm]);
 
   // Prevents users from setting tag as 'untagged'
-  useEffect(() => !inEditMode && setInvalidTag(invalidTags.some(pattern => pattern.test(tag))), [tag]);
+  useEffect(() => {
+    if (!inEditMode) setInvalidTag(invalidTags.some(pattern => pattern.test(noteTag)));
+  }, [noteTag]);
 
   // handles keydown event
   useEffect(() => {
@@ -43,33 +43,18 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
     window.addEventListener('keydown', handleKeydown);
 
     return () => window.removeEventListener('keydown', handleKeydown);
-  }, [showForm, title, note, tag]);
+  }, [showForm, noteTag]);
 
-  // Creates a new note
-  async function createNote(noteData, e) {
+  // Handles both creation of new note and updating existing note
+  async function sendNoteData(noteData, e) {
     try {
-      const creationRes = await api.post(`/notes`, noteData);
+      const res = inEditMode ?
+        await api.patch(`/notes/${editableContent.note_id}`, noteData) :
+        await api.post(`/notes/`, noteData);
 
-      const response = creationRes.status;
+      const status = res.status;
 
-      if (response === 201) {
-        e.currentTarget?.reset();
-        setShowForm(false);
-        setRefetch(prev => !prev);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  // Update the existing note
-  async function updateNote(noteData, e) {
-    try {
-      const updateRes = await api.patch(`/notes/${editableContent.note_id}`, noteData);
-
-      const response = updateRes.status;
-
-      if (response === 200) {
+      if (status === 200 || status === 201) {
         e.currentTarget?.reset();
         setShowForm(false);
         setRefetch(prev => !prev);
@@ -86,17 +71,19 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
     const formData = new FormData(e.currentTarget);
     const noteData = Object.fromEntries(formData);
 
-    if(inEditMode) updateNote(noteData, e);
-    else (title && !invalidTag) ? createNote(noteData, e) : setWarning('Provide a title to save the note...');
-    
-    // inEditMode ? updateNote(noteData, e) : (title && !invalidTag) && createNote(noteData, e);
-    // if (title && !invalidTag) {
-    // }
-    // else setWarning('Provide a title to save the note...');
+    if (noteData.title && !invalidTag) sendNoteData(noteData, e);
+    else {
+      setWarning('Provide a title to save the note...');
+      setBounceTitleBar(true);
+      setTimeout(() => setBounceTitleBar(false), 301);
+    }
   }
 
   // Check whether user want to close the form with unsaved data
   function closeNoteForm() {
+    const formData = new FormData(formRef.current);
+    const { title, note, tag } = Object.fromEntries(formData);
+
     if (note !== '' || tag !== '' || title !== '') setShowUnsaveDialog(true);
     else if (!note && !tag && !title) setShowForm(false);
   }
@@ -105,57 +92,100 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
     <form
       ref={formRef}
       onSubmit={handlesubmit}
-      className={`bg-gray-100 dark:bg-gray-700 fixed top-27 left-1/2 -translate-x-1/2 border border-slate-300 shadow-md flex flex-col p-5 rounded-lg gap-2 md:gap-3 max-h-[90svh] overflow-y-scroll z-30 ${showForm ? 'scale-100 skew-0' : 'scale-0 -skew-x-15'} duration-300 transition-all`}
+      className={`bg-white dark:bg-grey-bold fixed top-27 left-1/2 -translate-x-1/2 border border-slate-300 shadow-md flex flex-col p-5 rounded-lg gap-2 md:gap-3 max-h-[90svh] ${showForm ? 'opacity-100 translate-y-0 z-30' : 'opacity-0 -translate-y-12 z-0'} transition-all`}
     >
+      {/* form closing button for touch screen device */}
       {(isMobile || isTablet) &&
         <button
           type="button"
           onClick={closeNoteForm}
-          className={`bg-slate-300 hover:bg-slate-400/60 cursor-pointer hover:shadow-xl font-normal md:font-semibold sticky top-0 left-full w-10 md:w-12 h-10 md:h-12 md:p-2 rounded-full text-sm md:text-lg z-30`}
-        >❌</button>
+          className={`bg-slate-300 hover:bg-slate-400/60 hover:shadow-xl font-normal md:font-semibold sticky top-0 left-full w-10 md:w-12 h-10 md:h-12 md:p-2 rounded-full text-sm md:text-lg z-30`}
+        ><X /></button>
       }
-      <input
-        type="text"
-        name="title"
-        id="title"
-        placeholder={warning ? warning : "Title"}
-        ref={titleRef}
-        onChange={e => setTitle(e.target.value)}
-        defaultValue={editableContent?.title}
-        className={`bg-gray-100/90 dark:bg-gray-500 dark:text-slate-200 ${title === '' ? '' : 'border border-slate-400'} outline-none text-lg md:text-2xl p-2 rounded font-semibold`}
-      />
-      <div>
+
+      {/* Note title input area */}
+      <>
+        <label
+          htmlFor="title"
+          className={`flex items-center gap-2 font-[700] cal-sans text-lg dark:text-white`}
+        ><RectangleHorizontal />Title</label>
+        <input
+          type="text"
+          name="title"
+          id="title"
+          placeholder={warning || "Set your title here"}
+          ref={titleRef}
+          defaultValue={editableContent?.title}
+          className={`input-style ${warning && 'no-title'} ${bounceTitleBar && 'animate-bounce'} farro dark:bg-grey-lite`}
+        />
+      </>
+
+      {/* Note text input area */}
+      <>
         <label
           htmlFor="note"
-          className={`font-semibold text-lg md:text-2xl text-black dark:text-white flex items-center gap-3`}
-        ><EditIcon /> Note</label>
+          className={`text-lg font-[700] cal-sans dark:text-white inline-flex gap-2`}
+        ><NotebookPen />Note</label>
         <textarea
           name="note"
           id="note"
-          placeholder="Write in markdown for a better view..."
-          onChange={e => setNote(e.target.value)}
-          defaultValue={editableContent?.note || ''}
-          className={`min-h-[40svh] min-w-[85svw] md:min-w-[55svw] mt-2 bg-white dark:bg-gray-500 dark:text-slate-200 p-2 text-sm md:text-[16px] resize-none outline-none shadow-inner rounded`}
+          placeholder="Start writing your note...
+
+You can use markdown formatting:
+• **bold text**
+• *italic text*
+• # Headings
+• - Lists
+• [links](url)
+• `code`"
+          defaultValue={editableContent.note || ''}
+          className={`min-h-[40svh] min-w-[85svw] md:min-w-[55svw] noteTextArea dark:bg-grey-lite resize-none input-style`}
         ></textarea>
+        <p className={`flex items-center gap-1 w-fit text-grey-bold text-[14px] dark:text-[whitesmoke]`}>
+          <BadgeInfo size={15} />Supports Markdown formatting
+        </p>
+      </>
+
+      {/* Note tag input area */}
+      <div className={`relative`}>
+        <label className={`flex gap-2 items-center text-lg font-[700] cal-sans dark:text-white mb-2`}><Tag size={20} />Tag</label>
+        <input
+          name="tag"
+          id="tag"
+          onFocus={() => setShowTagMenu(true)}
+          onBlur={() => setTimeout(() => setShowTagMenu(false), 250)}
+          placeholder="Add a tag to categorize easily e.g. project, ideas etc..."
+          onChange={e => setNoteTag(e.target.value)}
+          value={noteTag}
+          className={`dark:bg-grey-lite border w-full input-style farro`}
+        />
+        <p className={`text-red-400 ${invalidTag ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'} cal-sans text-right transition-all duration-200`}>You can not use this tag...</p>
+
+        {/* Tag menu */}
+        <div className={`absolute w-1/2 top-21 rounded-2xl flex flex-col transition-all ${showTagMenu && allAvailableTags.length > 0 ? 'max-h-36 z-40 tag-menu' : 'max-h-0 z-0 border-0'} overflow-y-auto bg-[whitesmoke] dark:bg-grey-bold dark:text-[whitesmoke]`}>
+          {allAvailableTags.map((tag, i) =>
+            <button
+              key={i}
+              type="button"
+              onClick={() => setNoteTag(tag)}
+              className={`px-5 py-2 hover:bg-grey-mid hover:text-[whitesmoke] transition-all fira-mono`}
+            >{tag}</button>
+          )}
+        </div>
       </div>
-      <input
-        name="tag"
-        id="tag"
-        placeholder="Add a tag to categorize easily e.g. project"
-        onChange={e => setTag(e.target.value)}
-        defaultValue={editableContent?.tag}
-        className={`bg-white dark:bg-gray-500 dark:text-slate-200 outline-none shadow-md rounded p-2 text-sm md:text-[16px]`}
-      />
-      <p className={`text-red-400 ${invalidTag ? 'scale-100' : 'scale-0'} text-left transition-all duration-200`}>You can not use this tag...</p>
-      <div className="flex gap-3 flex-col sm:flex-row">
-        <button className={`bg-purple-500 rounded p-1.5 text-lg w-full md:w-30 mx-auto font-semibold text-white sm:hover:scale-105 transition-all duration-300 shadow-md`}>{inEditMode ? 'Update Note' : 'Create Note'}</button>
+
+      {/* Create/update + cancel button */}
+      <div className="flex justify-end gap-3">
         {isDesktop &&
           <button
             type="button"
             onClick={closeNoteForm}
-            className={`bg-red-500/90 rounded p-1.5 text-lg w-full md:w-30 mx-auto font-semibold text-white sm:hover:scale-105 transition-all duration-300 shadow-md`}
-          >Cancel</button>
+            className={`border-grey-lite border text-grey-mid dark:text-grey-lite cal-sans flex items-center gap-1 rounded-xl p-1.5 text-lg font-semibold sm:hover:scale-105 transition-all duration-300 shadow-md`}
+          ><X />Cancel</button>
         }
+        <button className={`cal-sans inline-flex gap-2 createButton rounded-xl p-1.5 text-lg  font-semibold sm:hover:scale-105 transition-all duration-300 shadow-md`}>
+          <NotebookText />{inEditMode ? 'Update Note' : 'Create Note'}
+        </button>
       </div>
     </form>
   );

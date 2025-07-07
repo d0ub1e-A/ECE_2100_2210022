@@ -48,7 +48,7 @@ export default function UserLayout() {
     <div className={`fixed h-screen w-screen grid grid-cols-12 grid-rows-12`}>
 
       <UserContext.Provider value={{ searchedTag, userInfo, userNotes, setRefetch, userPinnedNotes }}>
-        <header className={`col-span-12 row-start-0 row-end-1`}>
+        <header className={`col-span-12 row-start-0 row-end-1 user-header`}>
           <UserSectionHeader setSearchedTag={setSearchedTag} />
         </header>
 

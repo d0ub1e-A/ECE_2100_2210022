@@ -15,7 +15,7 @@ export default function UserSectionHeader({ setSearchedTag }) {
   useEffect(() => searchRef.current?.reset(), [currentPath]);
 
   return (
-    <div className={`flex justify-between items-center px-4 md:px-8 py-4 md:py-2 bg-gradient-to-r from-indigo-600 to-indigo-400 shadow-xl`}>
+    <div className={`flex justify-between items-center px-4 md:px-8 py-4 md:py-2 bg-gradient-to-r from-purple-mid to-purple-600`}>
 
       {/* Logo and name section */}
       <div className="flex gap-3 items-center">
@@ -47,7 +47,7 @@ export default function UserSectionHeader({ setSearchedTag }) {
         <button
           onClick={() => navTo('/me')}
           title="Go to profile"
-          className={`flex items-center justify-center text-white font-bold text-xl hover:scale-110 transition-all`}
+          className={`flex items-center justify-center text-white text-xl hover:scale-110 transition-all`}
         >{userInfo.name}</button>
       </div>
 
