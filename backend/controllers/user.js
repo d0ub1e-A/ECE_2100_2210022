@@ -28,19 +28,10 @@ async function updateUser(req, res) {
         const { user_id } = req.user.user_info;
         const { name, email } = req.body;
 
-        if (name) {
-            await db.query(
-                `UPDATE "user" SET name = $1 WHERE user_id = $2`,
-                [name, user_id]
-            );
-        }
-
-        if (email) {
-            await db.query(
-                `UPDATE "user" SET email = $1 WHERE user_id = $2`,
-                [email, user_id]
-            );
-        }
+        await db.query(
+            `UPDATE "user" SET name = COALESCE($1, name), email = COALESCE($2, email) WHERE user_id = $3`,
+            [name, email, user_id]
+        );
 
         res.sendStatus(200);
 
