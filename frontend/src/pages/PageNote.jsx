@@ -22,8 +22,14 @@ export default function NotePage() {
   const [previewableContent, setPreviewableContent] = useState({});
   const [deletableNoteId, setDeletableNoteId] = useState('');
   const [showNotFound, setShowNotFound] = useState(false);
+  const [showBackdrop, setShowBackdrop] = useState(false);
 
   const [renderedNotes, setRenderedNotes] = useState([]);
+
+  // handles when to show the modal backdrop
+  useEffect(() => {
+    setShowBackdrop(showForm || showPreview || false);
+  }, [showForm, showPreview]);
 
   // Handles keydown event for closing previewer
   useEffect(() => {
@@ -56,15 +62,22 @@ export default function NotePage() {
     setShowForm(true);
   }
 
+  // Close the backdrop according to the associated modals
+  function closeBackdrop() {
+    if(showForm) setShowForm(false);
+    if(showPreview) setShowPreview(false);
+    else setShowBackdrop(false);
+  }
+
   return (
-    <div className={`pb-18`}>
+    <div className={`py-10`}>
       
       <NoteDeleteContext.Provider value={{ showDeleteDialog, setShowDeleteDialog, setDeletableNoteId }}>
         {/* Create or edit note form */}
         <>
           <div
-            onClick={() => setShowForm(false)}
-            className={`fixed z-20 bg-black/10 w-full h-full backdrop-blur-sm overflow-y-scroll ${!showForm && 'hidden'}`}
+            onClick={closeBackdrop}
+            className={`fixed z-20 top-16 bg-black/10 w-full h-full backdrop-blur-sm overflow-y-scroll_ ${showBackdrop ? '' : 'hidden'}`}
           ></div>
           <CreateNoteForm
             showForm={showForm}
@@ -77,10 +90,10 @@ export default function NotePage() {
 
         {/* Note previewer */}
         <>
-          <div
+          {/* <div
             onClick={() => setShowPreview(false)}
             className={`fixed z-20 bg-black/10 w-full h-full backdrop-blur-sm overflow-y-scroll ${!showPreview && 'hidden'}`}
-          ></div>
+          ></div> */}
           <NotePreviewer
             previewableContent={previewableContent}
             showPreview={showPreview}
@@ -89,7 +102,7 @@ export default function NotePage() {
 
         {/* Dialog box for confirmation of discarding unsaved changes */}
         <>
-          <div className={`fixed z-40 bg-black/10 w-full h-full backdrop-blur-xs ${!showUnsaveDialog && 'hidden'}`}></div>
+          {/* <div className={`fixed z-40 bg-black/10 w-full h-full backdrop-blur-xs ${!showUnsaveDialog && 'hidden'}`}></div> */}
           <UnsaveDialog
             showUnsaveDialog={showUnsaveDialog}
             setShowUnsaveDialog={setShowUnsaveDialog}
@@ -99,7 +112,7 @@ export default function NotePage() {
 
         {/* dialog for confirmation of deleting a note */}
         <>
-          <div className={`fixed z-20 bg-black/10 w-full h-full backdrop-blur-xs ${!showDeleteDialog && 'hidden'}`}></div>
+          {/* <div className={`fixed z-20 bg-black/10 w-full h-full backdrop-blur-xs ${!showDeleteDialog && 'hidden'}`}></div> */}
           <DeleteDialog
             deletableNoteId={deletableNoteId}
           />

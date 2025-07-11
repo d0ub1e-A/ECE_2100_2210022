@@ -32,22 +32,19 @@ export default function PublicSectionHeader() {
   const isInLoginPage = () => pathName === '/login';
 
   return (
-    <div className={`flex justify-between items-center px-4 md:px-8 py-2 md:py-1 bg-indigo-600 shadow-xl`}>
+    <div className={`flex justify-between items-center px-4 md:px-8 py-4 bg-gradient-to-r to-purple-mid from-purple-600`}>
 
       {/* Logo and name section */}
-      <div className="flex gap-3 items-center w-full">
-        <img
-          src="src\components\ui\UIQuickNotesLogo.png"
-          alt="Quick Notes Logo"
-          className="w-15 md:w-25 drop-shadow-lg"
-        />
-        <Link to={`/`}>
-          <h1
-            onClick={() => isMobile || isTablet ? updateSelectMenu('Home') : homeSection.current?.scrollIntoView()}
-            className="text-2xl sm:text-4xl md:text-5xl text-[#83c6f3] font-bold font-[roboto]"
-          >Quick Notes</h1>
-        </Link>
+      <Link
+        to={`/`}
+        className={`w-full`}
+      ><div className={`bg-gradient-to-tr from-grey-lite to-purple-lite bg-clip-text`}>
+        <h1
+          onClick={() => isMobile || isTablet ? updateSelectMenu('Home') : homeSection.current?.scrollIntoView()}
+          className="text-3xl text-transparent font-bold font-[roboto]"
+        >Quick Notes</h1>
       </div>
+      </Link>
 
       {/* Navigation bar */}
       {!isInLoginPage() &&
@@ -86,8 +83,7 @@ export default function PublicSectionHeader() {
 
               </div>
 
-            </div>
-            :
+            </div> :
             // Active other than touch screen devices
             <div className="flex gap-5 md:text-[20px] font-bold font-[roboto] text-[#e8f1f1] items-end">
 

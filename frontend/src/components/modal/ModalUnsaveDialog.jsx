@@ -5,7 +5,7 @@ export default function UnsaveDialog({ showUnsaveDialog, setShowUnsaveDialog, se
   }
 
   return (
-    <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 px-15 py-10 rounded-lg unsave-dialog bg-slate-100 dark:bg-slate-600 border border-grey-lite dark:border-slate-800 ${showUnsaveDialog ? 'opacity-100 -translate-y-1/2 z-50' : 'opacity-0 translate-y-10 z-0'} transition-all duration-400`}>
+    <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 px-15 py-10 rounded-lg bg-slate-100 dark:bg-slate-600 ${showUnsaveDialog ? 'opacity-100 -translate-y-1/2 z-50' : 'opacity-0 translate-y-10 z-0'} transition-all duration-400 dialog-box`}>
       
       <div className={`flex gap-2 items-baseline text-lg sm:text-2xl font-semibold text-grey-bold`}>
         <span className={`warning-icon flex justify-center items-center`}>!</span>

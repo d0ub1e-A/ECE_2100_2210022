@@ -2,26 +2,69 @@ import { useContext, useEffect, useState } from "react";
 import { api } from "../assets/util/UtilApi";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "./layout/LayoutUser";
-import { Edit2, LogOut, User2, CircleX, Mail, Lock } from "lucide-react";
+import { Edit2, LogOut, User2, CircleX, Mail, Lock, User, Check, LockOpen } from "lucide-react";
+import { isValidPassword } from "../assets/util/UtilCheckInfo";
+
+import DeleteAccDialog from "../components/modal/ModalDeleteAccount";
 
 export default function UserProfilePage() {
   const navTo = useNavigate();
-  const { userInfo, userNotes } = useContext(UserContext);
+  const { userInfo, userNotes, setRefetch } = useContext(UserContext);
 
   const [inEditMode, setInEditMode] = useState(false);
   const [changedName, setChangedName] = useState('');
   const [changedEmail, setChangedEmail] = useState('');
-  const [changedPassword, setChangedPassword] = useState('');
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [passwordChangeTrigger, setPasswordChangeTrigger] = useState(false);
+  const [showPassErrMsg, setShowPassErrMsg] = useState(false);
+  const [showDeleteAccDialog, setShowDeleteAccDialog] = useState(false);
 
   const numberOfNotes = userNotes.reduce((acc, note) => acc + note.notes.length, 0);
   const numberOfTags = userNotes.length;
 
-  async function updateUserProfile(e) {
-    try {
+  useEffect(() => setShowPassErrMsg(false), [passwordChangeTrigger]);
 
+  async function updateUserProfile(e) {
+    e.preventDefault();
+
+    try {
+      const nameEmailRes = await api.patch(`/user`, {
+        name: changedName,
+        email: changedEmail
+      });
+
+      if (nameEmailRes.status === 200) {
+        setInEditMode(false);
+        setRefetch(prev => !prev);
+      }
     }
     catch (error) {
+      console.error(error);
+    }
+  }
 
+  async function updatePassword(e) {
+    e.preventDefault();
+
+    if (isValidPassword(newPassword)) {
+      setShowPassErrMsg(false);
+
+      try {
+        const passRes = await api.patch(`/user/password`, {
+          old_password: oldPassword,
+          new_password: newPassword
+        });
+
+        if (passRes.status === 200) {
+          setPasswordChangeTrigger(false);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    else {
+      setShowPassErrMsg(true);
     }
   }
 
@@ -39,7 +82,7 @@ export default function UserProfilePage() {
     try {
       const deleteAccRes = await api.delete('/user');
 
-      deleteAccRes.status === 200 && navTo('/');
+      deleteAccRes.status === 200 && navTo('/login');
     } catch (error) {
       console.error(error);
     }
@@ -47,54 +90,50 @@ export default function UserProfilePage() {
 
   return (
     <div className={`h-full flex justify-center items-center bg-gradient-to-r from-purple-lite to-purple-500 p-16`}>
+      <DeleteAccDialog
+        showDeleteAccDialog={showDeleteAccDialog}
+        deleteAccount={deleteAccount}
+        setShowDeleteAccDialog={setShowDeleteAccDialog}
+      />
 
-      <section className={`dark:text-gray-200 p-8 rounded-[20px] shadow-xl w-svw md:w-[50svw] bg-[whitesmoke]/90`}>
+      <section className={`p-8 ${showDeleteAccDialog ? 'brightness-75' : ''} rounded-[20px] shadow-xl w-svw md:w-[50svw] bg-[whitesmoke]/90 transition-all`}>
 
         {inEditMode ?
           <form
             onSubmit={updateUserProfile}
-            className={`flex flex-col gap-4 fira-mono`}
+            className={`flex flex-col gap-4 fira-mono p-5`}
           >
 
-            <label className={`text-2xl`}>Name</label>
+            <label className={`flex items-center gap-3 text-grey-mid`}><User />Name</label>
             <input
               type="text"
               onChange={e => setChangedName(e.target.value)}
               defaultValue={userInfo.name}
-              className={`px-1 py-1.5 rounded border border-gray-200`}
+              className={`px-4.5 py-2 text-[1.2rem] border border-grey-mid rounded-[15px]`}
             />
 
-            <label className={`text-2xl`}>Email</label>
+            <label className={`flex items-center gap-3 text-grey-mid`}><Mail />Email</label>
             <input
               type="email"
               onChange={e => setChangedEmail(e.target.value)}
               defaultValue={userInfo.email}
-              className={`px-1 py-1.5 rounded border border-gray-200`}
+              className={`px-4.5 py-2 text-[1.2rem] rounded-[15px] border border-grey-mid`}
             />
 
-            <label className={`text-2xl`}>Password</label>
-            <input
-              type="password"
-              onChange={e => setChangedPassword(e.target.value)}
-              defaultValue={userInfo.password}
-              className={`px-1 py-1.5 rounded border border-gray-200`}
-            />
-
-            <div className={`flex justify-between gap-12`}>
+            <div className={`flex justify-between gap-12 mt-10`}>
               <button
-                onClick={() => setInEditMode(false)}
-                className={`bg-emerald-600 p-2 rounded-lg w-full text-xl text-gray-100 font-medium`}
-              >Save</button>
+                onClick={() => { updateUserProfile }}
+                className={`p-2 rounded-[15px] update-profile w-full text-xl text-grey-bold border border-grey-mid flex items-center justify-center gap-3`}
+              ><Check className={`text-green-600`} />Save</button>
               <button
                 type="button"
                 onClick={() => setInEditMode(false)}
-                className={`bg-red-400 p-2 rounded-lg w-full text-xl text-gray-100 font-medium`}
-              >Cancel</button>
+                className={`flex items-center gap-3 justify-center bg-red-mid p-2 rounded-[15px] cancel-edit w-full text-xl text-gray-100 font-medium`}
+              ><CircleX />Cancel</button>
             </div>
 
-          </form>
-          :
-          <div className={`cal-sans flex flex-col gap-15`}>
+          </form> :
+          <div className={`cal-sans flex flex-col gap-10`}>
 
             {/* user name + edit profile button */}
             <div className={`flex justify-between items-center`}>
@@ -113,36 +152,73 @@ export default function UserProfilePage() {
               <button
                 onClick={() => setInEditMode(prev => !prev)}
                 className={`border-grey-mid border p-2 rounded-[10px] profile-edit-button`}
-              ><Edit2 className={`text-grey-mid`}/>
+              ><Edit2 className={`text-grey-mid`} />
               </button>
             </div>
 
             {/* email section */}
             <div className={`bg-white p-5 rounded-[15px]`}>
-              <h3 className={`flex gap-1 items-center my-2.5`}><Mail className={`text-indigo-500`}/>Email</h3>
+              <h3 className={`flex gap-1 items-center my-2.5`}><Mail className={`text-indigo-500`} />Email</h3>
               <h2 className={`truncate`}>{userInfo.email}</h2>
             </div>
 
             {/* password section */}
-            <div className={`bg-white p-5 rounded-[15px]`}>
-              <h3 className={`flex gap-1 items-center my-2.5`}><Lock className={`text-indigo-500`}/>Password</h3>
-              <input
-                disabled
-                type="password"
-                defaultValue={`password`}
-                className={`outline-none`}
-              />
-            </div>
+            {passwordChangeTrigger ?
+              <form
+                onSubmit={updatePassword}
+                className={`flex flex-col gap-3`}
+              >
+                <label className={`flex items-center gap-3 text-grey-mid`}><Lock />Old Password</label>
+                <input
+                  type="password"
+                  onChange={e => setOldPassword(e.target.value)}
+                  className={`px-4.5 py-2 text-[1.2rem] rounded-[15px] border border-grey-mid`}
+                />
+                <label className={`flex items-center gap-3 text-grey-mid`}><LockOpen />New Password</label>
+                <input
+                  type="password"
+                  onChange={e => setNewPassword(e.target.value)}
+                  className={`px-4.5 py-2 text-[1.2rem] rounded-[15px] border border-grey-mid`}
+                />
+                <p className={`text-red-mid text-xs md:text-sm py-1 ${showPassErrMsg ? 'scale-100 translate-x-0' : 'scale-0 translate-x-5'} transition-all`}>Need at least 8 characters</p>
+
+                <div className={`flex justify-between gap-3`}>
+                  <button
+                    onClick={updatePassword}
+                    className={`px-2 py-1.5 cal-sans rounded-[15px] border border-grey-lite logout text-grey-bold w-full flex items-center justify-center gap-2`}
+                  ><Check />Update</button>
+                  <button
+                    onClick={() => { setPasswordChangeTrigger(false) }}
+                    type="button"
+                    className={`delete-account px-2 py-1.5 cal-sans bg-red-mid text-white rounded-[15px] w-full flex items-center justify-center gap-2`}
+                  ><CircleX />Cancel</button>
+                </div>
+              </form> :
+              <div className={`bg-white p-5 rounded-[15px] relative`}>
+                <h3 className={`flex gap-1 items-center my-2.5`}><Lock className={`text-indigo-500`} />Password</h3>
+                <input
+                  disabled
+                  type="password"
+                  defaultValue={`password`}
+                  className={`outline-none`}
+                />
+                <button
+                  onClick={() => { setPasswordChangeTrigger(true) }}
+                  className={`absolute border border-grey-mid/50 change-password px-3 py-1.5 text-[15px] rounded-[10px] right-4 top-1/2 -translate-y-1/2 bg-blue-100/60`}>Change</button>
+              </div>
+            }
 
             {/* Note Stat section */}
-            <div className={`flex justify-around bg-blue-100/80 p-5 rounded-[15px]`}>
-              <div className={`text-center`}>
-                <p className={`text-[1.7rem]`}>{numberOfNotes}</p>
-                <p className={`text-[.8rem] text-grey-mid`}>Total Notes</p>
-              </div>
-              <div className={`text-center`}>
-                <p className={`text-[1.7rem]`}>{numberOfTags}</p>
-                <p className={`text-[.8rem] text-grey-mid`}>Tags Used</p>
+            <div className={`bg-blue-200/50 rounded-[15px]`}>
+              <div className={`flex justify-around p-2.5 rounded-[15px] bg-clip-text bg-gradient-to-r from-blue-600 to-red-600`}>
+                <div className={`text-center`}>
+                  <p className={`text-[2rem] font-bold text-transparent`}>{numberOfNotes}</p>
+                  <p className={`text-[.8rem] text-grey-mid`}>Total Notes</p>
+                </div>
+                <div className={`text-center`}>
+                  <p className={`text-[2rem] font-bold text-transparent`}>{numberOfTags}</p>
+                  <p className={`text-[.8rem] text-grey-mid`}>Tags Used</p>
+                </div>
               </div>
             </div>
 
@@ -150,18 +226,17 @@ export default function UserProfilePage() {
             <div className={`flex justify-between gap-3`}>
               <button
                 onClick={logout}
-                className={`px-2 py-1.5 cal-sans rounded-[15px] border w-full flex items-center justify-center gap-2`}
+                className={`px-2 py-1.5 cal-sans rounded-[15px] border border-grey-lite logout text-grey-bold w-full flex items-center justify-center gap-2`}
               ><LogOut />Logout</button>
               <button
-                onClick={deleteAccount}
-                className={`border px-2 py-1.5 cal-sans rounded-[15px] w-full flex items-center justify-center gap-2`}
+                onClick={() => {setShowDeleteAccDialog(true)}}
+                className={`delete-account px-2 py-1.5 cal-sans bg-red-mid text-white rounded-[15px] w-full flex items-center justify-center gap-2`}
               ><CircleX />Delete Account</button>
             </div>
 
           </div>
         }
       </section>
-
     </div>
   );
 }

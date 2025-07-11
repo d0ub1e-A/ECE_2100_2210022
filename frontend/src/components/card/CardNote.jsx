@@ -62,14 +62,14 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
   }
 
   return (
-    <div className={`relative z-10 flex flex-col gap-7 px-3 py-4 rounded-lg bg-amber-100/20 dark:bg-slate-700 dark:text-white hover:-translate-y-2 transition-all duration-300 note-card`}>
+    <div className={`relative w-[300px] group z-10 flex flex-col gap-7 p-8 rounded-lg bg-amber-100/20 dark:bg-slate-700 dark:text-white hover:-translate-y-2_ transition-all duration-300 note-card`}>
 
-      {/* Title + 3 dot menu section for touch screen devices */}
+      {/* Title + pin icon + 3 dot menu section for touch screen devices */}
       <div className={`relative items-center font-bold cal-sans text-xl md:text-3xl flex justify-between`}>
         <button
           onClick={() => pinNotes(note.note_id)}
-          className={`hover:scale-105 transition-all absolute bottom-full -left-6`}
-        ><PinIcon className={`${note.pinned ? '-rotate-45' : 'rotate-0'}`} />
+          className={`hover:scale-110 transition-all absolute -top-[45px] -left-[45px]`}
+        ><PinIcon className={`${note.pinned ? '-rotate-45' : 'translate-y-[20px] translate-x-[15px] group-hover:translate-y-0 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all'}`} />
         </button>
         <h2 className={`w-full truncate`}>{note?.title}</h2>
 
@@ -127,14 +127,14 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
           <div className={`absolute opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 inset-0 bg-gradient-to-b to-[#F8F7F7] dark:to-slate-600 from-transparent flex justify-around items-center gap-6 w-full transition-all duration-300`}>
             <button
               onClick={previewNote}
-              className={`bg-indigo-200 text-slate-800 p-2 rounded-full active:brightness-80 flex items-center gap-2 w-27 justify-center font-semibold hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 h-fit`}
+              className={`bg-indigo-200 text-slate-800 p-2 rounded-full active:brightness-80 flex items-center gap-2 w-27 justify-center font-semibold hover:shadow-2xl hover:-translate-y-2 transition-all h-fit`}
             >
               <PreviewIcon />
               Preview
             </button>
             <button
               onClick={editNote}
-              className={`bg-orange-400 text-slate-700 p-2 rounded-full active:brightness-80 flex items-center gap-4 w-27 justify-center font-semibold hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 h-fit`}
+              className={`bg-orange-400 text-slate-700 p-2 rounded-full active:brightness-80 flex items-center gap-4 w-27 justify-center font-semibold hover:shadow-2xl hover:-translate-y-2 transition-all h-fit`}
             >
               <EditIcon />
               Edit
@@ -145,8 +145,8 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
 
       {/* Note tag and creation date showed in both type of devices */}
       <div className={`flex justify-between items-center`}>
-        <p className={`bg-indigo-300 max-w-1/2 truncate p-1.5 rounded-full fira-mono`}>{note?.tag}</p>
-        <p className={`fira-mono max-w-1/2 flex items-center gap-3`}>
+        <p className={`bg-indigo-300 max-w-1/3 truncate px-2.5 py-2 rounded-full fira-mono`}>{note?.tag}</p>
+        <p className={`fira-mono max-w-2/3 flex items-center gap-3`}>
           <CalendarIcon className={`scale-[1.5]`} />
           {calcDateTime(note?.created_at)}
         </p>

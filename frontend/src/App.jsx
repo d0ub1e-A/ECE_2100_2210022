@@ -1,5 +1,6 @@
 import './index.css';
 
+import { createContext, useState } from 'react';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import HomePage from "./pages/PageHome.jsx";
@@ -8,8 +9,15 @@ import NotePage from './pages/PageNote.jsx';
 import UserLayout from './pages/layout/LayoutUser.jsx';
 import PublicLayout from './pages/layout/LayoutPublic.jsx';
 import UserProfilePage from './pages/PageUserProfile.jsx';
+import Toaster from './components/modal/ModalToaster.jsx';
+
+export const GlobalContext = createContext();
 
 export default function App() {
+  const [toasterType, setToasterType] = useState('');
+  const [toasterText, setToasterText] = useState('');
+  const [showToaster, setShowToaster] = useState(false);
+
   const allRoutes = createBrowserRouter([
     {
       path: `/`,
@@ -41,7 +49,22 @@ export default function App() {
     },
   ]);
 
+  function notifyUser(notificationType, notificationText) {
+    setToasterType(notificationType);
+    setToasterText(notificationText);
+
+    setTimeout(() => setShowToaster(true), 25);
+    setTimeout(() => setShowToaster(false), 3000);
+  }
+
   return (
-    <RouterProvider router={allRoutes} />
+    <GlobalContext.Provider value={{notifyUser}}>
+      <Toaster
+        showToaster={showToaster}
+        type={toasterType}
+        text={toasterText}
+      />
+      <RouterProvider router={allRoutes} />
+    </GlobalContext.Provider>
   );
 }
