@@ -77,7 +77,7 @@ export default function NotePage() {
         <>
           <div
             onClick={closeBackdrop}
-            className={`fixed z-20 top-16 bg-black/10 w-full h-full backdrop-blur-sm overflow-y-scroll_ ${showBackdrop ? '' : 'hidden'}`}
+            className={`fixed z-30 top-16 bg-black/10 w-full h-full backdrop-blur-sm overflow-y-scroll_ ${showBackdrop ? '' : 'hidden'}`}
           ></div>
           <CreateNoteForm
             showForm={showForm}

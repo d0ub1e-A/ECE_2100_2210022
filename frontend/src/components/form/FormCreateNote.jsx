@@ -92,7 +92,7 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
     <form
       ref={formRef}
       onSubmit={handlesubmit}
-      className={`bg-white dark:bg-grey-bold fixed top-27 left-1/2 -translate-x-1/2 border border-slate-300 shadow-md flex flex-col p-5 rounded-lg gap-2 md:gap-3 max-h-[90svh] ${showForm ? 'opacity-100 translate-y-0 z-30' : 'opacity-0 -translate-y-12 z-0'} transition-all`}
+      className={`bg-white dark:bg-grey-bold fixed top-27 left-1/2 -translate-x-1/2 border border-slate-300 shadow-md flex flex-col p-5 rounded-lg gap-2 md:gap-3 max-h-[90svh] ${showForm ? 'opacity-100 translate-y-0 z-40' : 'opacity-0 -translate-y-12 z-0'} transition-all`}
     >
       {/* form closing button for touch screen device */}
       {(isMobile || isTablet) &&

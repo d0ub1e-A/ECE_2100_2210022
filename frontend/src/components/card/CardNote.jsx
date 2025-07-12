@@ -145,7 +145,7 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
 
       {/* Note tag and creation date showed in both type of devices */}
       <div className={`flex justify-between items-center`}>
-        <p className={`bg-indigo-300 max-w-1/3 truncate px-2.5 py-2 rounded-full fira-mono`}>{note.tag || 'untagged'}</p>
+        <p className={`bg-indigo-300 max-w-1/3 truncate px-2.5 py-2 rounded-full fira-mono`}>{note.tag}</p>
         <p className={`fira-mono max-w-2/3 flex items-center gap-3`}>
           <CalendarIcon className={`scale-[1.5]`} />
           {calcDateTime(note?.created_at)}
