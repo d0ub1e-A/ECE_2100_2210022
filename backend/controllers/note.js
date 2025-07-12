@@ -13,7 +13,7 @@ async function newNote(req, res) {
         }
 
         await db.query(
-            `INSERT INTO "note" (user_id, title, note, tag) VALUES ($1, $2, $3, $4)`,
+            `INSERT INTO "note" (user_id, title, note, tag) VALUES ($1, $2, $3, COALESCE($4, 'untagged'))`,
             [user_id, title, note, tag]
         );
 
