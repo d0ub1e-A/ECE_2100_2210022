@@ -19,6 +19,12 @@
   --color-toaster-bg-light: oklch(.98 .01 200);
   --color-toaster-bg-dark: oklch(.02 .01 200);
 
+  --gradient-shadow: linear-grdient(
+    90deg,
+    oklch(50% 0.15 276),
+    oklch(.5 0.244 30 / .5)
+  );
+
   @keyframes slide-from-left {
     0% {
       transform: translateX(-100%);
@@ -213,4 +219,8 @@ input {
 
 .toaster {
   box-shadow: 0 0 0.3rem oklch(.8 .02  200);
+}
+
+.title-shadow {
+  box-shadow: inset 0px -3px 5px var(--color-purple-lite);
 }

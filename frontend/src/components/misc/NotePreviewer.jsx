@@ -18,7 +18,7 @@ export default function NotePreviewer({previewableContent, showPreview }) {
         >{markDownToText(previewableContent?.note)}
         </Markdown>
       </div>
-      <p className={`w-fit h-fit row-start-12 row-end-13 ${randomColor} shadow-md fira-mono truncate p-1.5 flex items-center rounded-full`}>{previewableContent.tag}</p>
+      <p className={`w-fit h-fit row-start-12 row-end-13 ${randomColor} shadow-md fira-mono truncate p-1.5 flex items-center rounded-full`}>{previewableContent.tag || 'untagged'}</p>
     </div>
   );
 }

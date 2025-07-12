@@ -65,13 +65,13 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
     <div className={`relative w-[300px] group z-10 flex flex-col gap-7 p-8 rounded-lg bg-amber-100/20 dark:bg-slate-700 dark:text-white hover:-translate-y-2_ transition-all duration-300 note-card`}>
 
       {/* Title + pin icon + 3 dot menu section for touch screen devices */}
-      <div className={`relative items-center font-bold cal-sans text-xl md:text-3xl flex justify-between`}>
+      <div className={`relative items-center font-bold cal-sans text-3xl flex justify-between`}>
         <button
           onClick={() => pinNotes(note.note_id)}
           className={`hover:scale-110 transition-all absolute -top-[45px] -left-[45px]`}
         ><PinIcon className={`${note.pinned ? '-rotate-45' : 'translate-y-[20px] translate-x-[15px] group-hover:translate-y-0 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all'}`} />
         </button>
-        <h2 className={`w-full truncate`}>{note?.title}</h2>
+        <h2 className={`w-full truncate text-2xl p-3 rounded-[20px] title-shadow`}>{note?.title}</h2>
 
         {/* Delete button */}
         {isDesktop &&
@@ -145,7 +145,7 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
 
       {/* Note tag and creation date showed in both type of devices */}
       <div className={`flex justify-between items-center`}>
-        <p className={`bg-indigo-300 max-w-1/3 truncate px-2.5 py-2 rounded-full fira-mono`}>{note?.tag}</p>
+        <p className={`bg-indigo-300 max-w-1/3 truncate px-2.5 py-2 rounded-full fira-mono`}>{note.tag || 'untagged'}</p>
         <p className={`fira-mono max-w-2/3 flex items-center gap-3`}>
           <CalendarIcon className={`scale-[1.5]`} />
           {calcDateTime(note?.created_at)}

@@ -42,6 +42,13 @@ export default function LoginPage() {
 
   // function to send login data
   async function sendLoginInfo(email, password) {
+    const message = {
+      200: 'Successfully logged in.',
+      400: 'Bad request. Please try again!',
+      401: 'Check your login info and try again.',
+      500: 'Internal server error. Please try again!'
+    }
+    
     try {
       const loginRes = await api.post(`/auth/login`, {
         email: email,
@@ -50,16 +57,26 @@ export default function LoginPage() {
 
       if(loginRes.status === 200) {
         navTo('/me/notes');
-        notifyUser('success', 'Successfully logged in');
+        notifyUser('success', message[loginRes.status]);
       }
     } catch (error) {
       console.error(error);
-      notifyUser('error', 'Check your login info and try again');
+
+      if(error.status === 400) notifyUser('error', message[error.status]);
+      if(error.status === 401) notifyUser('error', message[error.status]);
+      if(error.status === 500) notifyUser('error', message[error.status]);
     }
   }
 
   // function to send signup data
-  async function sendSignupInfo(name, email, password) {console.log(name, email, password);
+  async function sendSignupInfo(name, email, password) {
+    const message = {
+      201: 'Account has been created successfully',
+      400: 'Bad request. Please try again!',
+      401: 'Your email is unavailable. Use another email.',
+      500: 'Internal server error. Please try again!'
+    }
+    
     try {
       const signupRes = await api.post(`/auth/signup`, {
         name: name,
@@ -67,10 +84,17 @@ export default function LoginPage() {
         password: password,
       });
 
-      signupRes.status === 201 && navTo('/me/notes');
+      if(signupRes.status === 201) {
+        navTo('/me/notes');
+        notifyUser('success', message[signupRes.status]);
+      }
     }
     catch (error) {
       console.error(error);
+
+      if(error.status === 400) notifyUser('error', message[error.status]);
+      if(error.status === 401) notifyUser('error', message[error.status]);
+      if(error.status === 500) notifyUser('error', message[error.status]);
     }
   }
 

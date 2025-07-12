@@ -4,12 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "./layout/LayoutUser";
 import { Edit2, LogOut, User2, CircleX, Mail, Lock, User, Check, LockOpen } from "lucide-react";
 import { isValidPassword } from "../assets/util/UtilCheckInfo";
+import { GlobalContext } from "../App";
 
 import DeleteAccDialog from "../components/modal/ModalDeleteAccount";
 
 export default function UserProfilePage() {
   const navTo = useNavigate();
   const { userInfo, userNotes, setRefetch } = useContext(UserContext);
+  const {notifyUser} = useContext(GlobalContext);
 
   const [inEditMode, setInEditMode] = useState(false);
   const [changedName, setChangedName] = useState('');
@@ -75,21 +77,34 @@ export default function UserProfilePage() {
       logoutRes.status === 200 & navTo('/login');
     } catch (error) {
       console.error(error);
+
+      if(error.status === 500) {notifyUser('error', 'Internal server error. Please try again!')}
     }
   }
 
   async function deleteAccount() {
+    const message = {
+      200: 'Account has been deleted successfully.',
+      500: 'Internal server error. Please try again!'
+    }
+    
     try {
       const deleteAccRes = await api.delete('/user');
 
-      deleteAccRes.status === 200 && navTo('/login');
+      if(deleteAccRes.status === 200) {
+        navTo('/login');
+        notifyUser('success', message[deleteAccRes.status]);
+      }
     } catch (error) {
       console.error(error);
+
+      if(error.status === 401) navTo(`/login`);
+      if(error.status === 500) notifyUser('error', message[error.status]);
     }
   }
 
   return (
-    <div className={`h-full flex justify-center items-center bg-gradient-to-r from-purple-lite to-purple-500 p-16`}>
+    <div className={`h-full flex justify-center items-center bg-white dark:bg-black p-16`}>
       <DeleteAccDialog
         showDeleteAccDialog={showDeleteAccDialog}
         deleteAccount={deleteAccount}

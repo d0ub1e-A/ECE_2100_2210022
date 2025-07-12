@@ -1,7 +1,8 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "../../assets/util/UtilApi";
 import { arrangeNotes, getPinnedNotes } from "../../assets/util/UtilArrangeNotes";
+import { GlobalContext } from "../../App";
 
 import UserSectionHeader from "../../components/header/HeaderUserSection";
 
@@ -10,6 +11,7 @@ export const UserContext = createContext();
 export default function UserLayout() {
   const pathName = useLocation().pathname;
   const navTo = useNavigate();
+  const {notifyUser} = useContext(GlobalContext);
 
   const [searchedTag, setSearchedTag] = useState('');
   const [userInfo, setUserInfo] = useState({});
@@ -36,8 +38,10 @@ export default function UserLayout() {
         setUserNotes(arrangeNotes(userNotesRes.data));
         setUserPinnedNotes(getPinnedNotes(userNotesRes.data));
       } catch (error) {
-        error.status === 401 && navTo('/login');
         console.error(error);
+
+        if(error.status === 401) navTo('/login');
+        if(error.status === 500) notifyUser('error', 'Internal server error. Please try again!');
       }
     }
 
