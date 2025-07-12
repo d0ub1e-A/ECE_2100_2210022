@@ -3,28 +3,65 @@
 @theme {
   --animate-slide-from-left: slide-from-left 0.3s ease-out;
   --animate-slide-from-right: slide-from-right 0.3s ease-out;
+  --animate-bounce: bounce 0.3s ease-in-out;
+
   --color-black: #1e1e1f;
   --color-white: #fafafa;
+  --color-grey-lite: oklch(80% 0.01 245);
+  --color-grey-mid: oklch(60% 0.01 245);
+  --color-grey-bold: oklch(40% 0.01 245);
+  --color-purple-bold: oklch(10% 0.35 245);
+  --color-purple-mid: oklch(40% 0.15 276);
+  --color-purple-lite: oklch(50% 0.15 276);
+  --color-red-bold: oklch(.5 0.244 30);
+  --color-red-mid: oklch(.5 0.244 30);
+  --color-red-lite: oklch(.75 0.25 30);
+  --color-toaster-bg-light: oklch(.98 .01 200);
+  --color-toaster-bg-dark: oklch(.02 .01 200);
+
+  --gradient-shadow: linear-grdient(
+    90deg,
+    oklch(50% 0.15 276),
+    oklch(.5 0.244 30 / .5)
+  );
 
   @keyframes slide-from-left {
     0% {
-      right: 100%;
-      opacity: 0;
+      transform: translateX(-100%);
     }
     100% {
-      right: 0%;
-      opacity: 1;
+      transform: translateX(0%);
     }
   }
   
   @keyframes slide-from-right {
-    0% {
-      left: 100%;
-      opacity: 0;
+    0
+    % {
+      transform: translateX(100%);
     }
     100% {
-      left: 0%;
-      opacity: 1;
+      transform: translateX(0%);
+    }
+  }
+
+  @keyframes bounce {
+    0% {
+      transform: translateY(0);
+    }
+    20% {
+      transform: translateY(-10px);
+    }
+    40% {
+      transform: translateY(0);
+    }
+    60% {
+      transform: translateY(-5px);
+    }
+    80% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(0);
     }
   }
 }
@@ -76,4 +113,114 @@ input {
 
 .blur-effect {
   @apply relative before:absolute before:bottom-0 before:w-full before:h-20 before:bg-gradient-to-t before:from-[#F8F7F7] before:to-transparent before:dark:from-slate-600 before:dark:to-transparent;
+}
+
+.input-style {
+  @apply border-[2px] border-grey-lite dark:focus:border-white focus:border-purple-bold focus:-translate-y-1 transition-all outline-none p-2 rounded-2xl;
+}
+
+.createButton {
+  background: linear-gradient(
+    140deg,
+    var(--color-purple-mid) ,
+    var(--color-purple-lite) 50%
+  );
+  color: var(--color-white);
+}
+
+.noteTextArea {
+  font-family: 'Fira Mono';
+  line-height: 1.7;
+  font-weight: 600;
+}
+
+.noteTextArea::placeholder {
+  font-family: 'Fira mono';
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.8;
+}
+
+.no-title::placeholder {
+  color: var(--color-red-lite);
+}
+
+.warning-icon {
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: whitesmoke;
+  border-radius: 50%;
+}
+
+.discard-button, .delete-account, .cancel-edit {
+  box-shadow: 0 0 0.2rem var(--color-red-mid);
+}
+
+.discard-button:hover, .delete-account:hover, .cancel-edit:hover {
+  box-shadow: 0 0 0rem var(--color-red-mid);
+}
+
+.cancel-unsave:hover, .logout, .update-profile, .change-password {
+  box-shadow: 0 0 0.1rem var(--color-grey-mid);
+}
+
+.cancel-delete:hover, .logout:hover, .update-profile:hover, .change-password:hover {
+  box-shadow: 0 0 0.4rem var(--color-grey-lite);
+}
+
+.tag-menu {
+  border: 1.5px solid var(--color-grey-lite);
+}
+
+.note-card {
+  box-shadow: 0 0 0.4rem var(--color-grey-lite);
+}
+
+.note-card:hover {
+  box-shadow: 0 0 0.8rem var(--color-grey-lite);
+}
+
+.user-header {
+  box-shadow: 5px 5px 0 red;
+}
+
+.profile-edit-button:hover {
+  box-shadow: 0 0 0.4rem var(--color-grey-lite);
+}
+
+.dialog-box {
+  box-shadow: 0 0 2.5rem var(--color-grey-mid);
+}
+
+.demo1 {
+	height: 300px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.ui-success,.ui-error {
+	width: 100px; height: 100px;
+	margin: 40px;
+	/* border:1px solid #eee; */
+}
+
+.success-banner {
+  border: 3px solid oklch(0.723 0.219 149.579);
+  color: oklch(0.723 0.219 149.579);
+  box-shadow: 0 0 0.3rem oklch(0.723 0.219 149.579 / .6);
+}
+
+.error-banner {
+  border: 3px solid oklch(.5 0.244 30 / .7);
+  color: oklch(.5 0.244 30 / .7);
+  box-shadow: 0 0 0.3rem oklch(.5 0.244 30 / .67);
+}
+
+.toaster {
+  box-shadow: 0 0 0.3rem oklch(.8 .02  200);
+}
+
+.title-shadow {
+  box-shadow: inset 0px -3px 5px var(--color-purple-lite);
 }

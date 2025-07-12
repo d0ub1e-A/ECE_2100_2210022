@@ -1,7 +1,8 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "../../assets/util/UtilApi";
 import { arrangeNotes, getPinnedNotes } from "../../assets/util/UtilArrangeNotes";
+import { GlobalContext } from "../../App";
 
 import UserSectionHeader from "../../components/header/HeaderUserSection";
 
@@ -10,6 +11,7 @@ export const UserContext = createContext();
 export default function UserLayout() {
   const pathName = useLocation().pathname;
   const navTo = useNavigate();
+  const {notifyUser} = useContext(GlobalContext);
 
   const [searchedTag, setSearchedTag] = useState('');
   const [userInfo, setUserInfo] = useState({});
@@ -24,6 +26,8 @@ export default function UserLayout() {
     "/me/": "bg-slate-50 dark:bg-slate-800",
   };
 
+  document.title = 'Quick Notes';
+
   useEffect(() => {
     async function fetchUserData() {
       try {
@@ -34,8 +38,10 @@ export default function UserLayout() {
         setUserNotes(arrangeNotes(userNotesRes.data));
         setUserPinnedNotes(getPinnedNotes(userNotesRes.data));
       } catch (error) {
-        error.status === 401 && navTo('/login');
         console.error(error);
+
+        if(error.status === 401) navTo('/login');
+        if(error.status === 500) notifyUser('error', 'Internal server error. Please try again!');
       }
     }
 
@@ -45,10 +51,9 @@ export default function UserLayout() {
   useEffect(() => setSearchedTag(''), [pathName]);
 
   return (
-    <div className={`fixed h-screen w-screen grid grid-cols-12 grid-rows-12`}>
-
+    <div className={`fixed z-90_ h-screen w-screen grid grid-cols-12 grid-rows-12`}>
       <UserContext.Provider value={{ searchedTag, userInfo, userNotes, setRefetch, userPinnedNotes }}>
-        <header className={`col-span-12 row-start-0 row-end-1`}>
+        <header className={`col-span-12 row-start-0 row-end-1 user-header`}>
           <UserSectionHeader setSearchedTag={setSearchedTag} />
         </header>
 
