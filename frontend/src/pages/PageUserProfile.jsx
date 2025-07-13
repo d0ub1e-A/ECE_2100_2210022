@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { api } from "../assets/util/UtilApi";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "./layout/LayoutUser";
-import { Edit2, LogOut, User2, CircleX, Mail, Lock, User, Check, LockOpen } from "lucide-react";
+import { Edit2, LogOut, User2, CircleX, Mail, Lock, User, Check, LockOpen, Eye, EyeOff } from "lucide-react";
 import { isValidPassword } from "../assets/util/UtilCheckInfo";
 import { GlobalContext } from "../App";
 
@@ -11,24 +11,64 @@ import DeleteAccDialog from "../components/modal/ModalDeleteAccount";
 export default function UserProfilePage() {
   const navTo = useNavigate();
   const { userInfo, userNotes, setRefetch } = useContext(UserContext);
-  const {notifyUser} = useContext(GlobalContext);
+  const { notifyUser } = useContext(GlobalContext);
 
   const [inEditMode, setInEditMode] = useState(false);
-  const [changedName, setChangedName] = useState('');
-  const [changedEmail, setChangedEmail] = useState('');
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [passwordChangeTrigger, setPasswordChangeTrigger] = useState(false);
   const [showPassErrMsg, setShowPassErrMsg] = useState(false);
   const [showDeleteAccDialog, setShowDeleteAccDialog] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   const numberOfNotes = userNotes.reduce((acc, note) => acc + note.notes.length, 0);
   const numberOfTags = userNotes.length;
 
+  // prevents users from setting short length password
   useEffect(() => setShowPassErrMsg(false), [passwordChangeTrigger]);
 
+  // Clears the state for password visibility
+  useEffect(() => {
+    setShowNewPassword(false);
+    setShowOldPassword(false);
+  }, [passwordChangeTrigger]);
+
+  // toggles the old password visibility
+  function toggleOldPasswordVisibility() {
+    setShowOldPassword(prev => !prev);
+
+    const input = document.querySelector('input[type="text"], input[type="password"]');
+
+    setTimeout(() => {
+      if (input) input.selectionStart = input.selectionEnd = input.value.length;
+    }, 0)
+  }
+
+  // toggles the new password visibility
+  function toggleNewPasswordVisibility() {
+    setShowNewPassword(prev => !prev);
+
+    const input = document.querySelector('input[type="text"], input[type="password"]');
+
+    setTimeout(() => {
+      if (input) input.selectionStart = input.selectionEnd = input.value.length;
+    }, 0)
+  }
+
+  // update the name and email only
   async function updateUserProfile(e) {
     e.preventDefault();
+
+    const formInfo = new FormData(e.currentTarget);
+    const {changedName, changedEmail} = Object.fromEntries(formInfo);
+
+    const message = {
+      200: 'Your profile has been updated successfully.',
+      400: 'Bad request. Please try again!',
+      401: 'Wrong credentials. Try again.',
+      500: 'Internal server error. Please try again!'
+    }
 
     try {
       const nameEmailRes = await api.patch(`/user`, {
@@ -39,15 +79,27 @@ export default function UserProfilePage() {
       if (nameEmailRes.status === 200) {
         setInEditMode(false);
         setRefetch(prev => !prev);
+        notifyUser('success', message[nameEmailRes.status])
       }
-    }
-    catch (error) {
+    }catch (error) {
       console.error(error);
+
+      if (error.status === 400) notifyUser('error', message[error.status]);
+      if (error.status === 401) notifyUser('error', message[error.status]);
+      if (error.status === 500) notifyUser('error', message[error.status]);
     }
   }
 
+  // update the password only
   async function updatePassword(e) {
     e.preventDefault();
+
+    const message = {
+      200: 'Password has been updated successfully.',
+      400: 'Bad request. Please try again!',
+      401: 'Wrong password. Try again.',
+      500: 'Internal server error. Please try again!'
+    }
 
     if (isValidPassword(newPassword)) {
       setShowPassErrMsg(false);
@@ -60,9 +112,14 @@ export default function UserProfilePage() {
 
         if (passRes.status === 200) {
           setPasswordChangeTrigger(false);
+          notifyUser('success', message[passRes.status]);
         }
       } catch (error) {
         console.error(error);
+
+        if (error.status === 400) notifyUser('error', message[error.status]);
+        if (error.status === 401) notifyUser('error', message[error.status]);
+        if (error.status === 500) notifyUser('error', message[error.status]);
       }
     }
     else {
@@ -70,6 +127,7 @@ export default function UserProfilePage() {
     }
   }
 
+  // handles logout
   async function logout() {
     try {
       const logoutRes = await api.post('/auth/logout');
@@ -78,33 +136,36 @@ export default function UserProfilePage() {
     } catch (error) {
       console.error(error);
 
-      if(error.status === 500) {notifyUser('error', 'Internal server error. Please try again!')}
+      if (error.status === 500) { notifyUser('error', 'Internal server error. Please try again!') }
     }
   }
 
+  // deletes the account and send to the login page
   async function deleteAccount() {
     const message = {
       200: 'Account has been deleted successfully.',
       500: 'Internal server error. Please try again!'
     }
-    
+
     try {
       const deleteAccRes = await api.delete('/user');
 
-      if(deleteAccRes.status === 200) {
+      if (deleteAccRes.status === 200) {
         navTo('/login');
         notifyUser('success', message[deleteAccRes.status]);
       }
     } catch (error) {
       console.error(error);
 
-      if(error.status === 401) navTo(`/login`);
-      if(error.status === 500) notifyUser('error', message[error.status]);
+      if (error.status === 401) navTo(`/login`);
+      if (error.status === 500) notifyUser('error', message[error.status]);
     }
   }
 
   return (
     <div className={`h-full flex justify-center items-center bg-white dark:bg-black p-16`}>
+      
+      {/* modal for confirming account deletion */}
       <DeleteAccDialog
         showDeleteAccDialog={showDeleteAccDialog}
         deleteAccount={deleteAccount}
@@ -114,6 +175,7 @@ export default function UserProfilePage() {
       <section className={`p-8 ${showDeleteAccDialog ? 'brightness-75' : ''} rounded-[20px] shadow-xl w-svw md:w-[50svw] bg-[whitesmoke]/90 transition-all`}>
 
         {inEditMode ?
+          // form for chnaging name and email only
           <form
             onSubmit={updateUserProfile}
             className={`flex flex-col gap-4 fira-mono p-5`}
@@ -122,7 +184,7 @@ export default function UserProfilePage() {
             <label className={`flex items-center gap-3 text-grey-mid`}><User />Name</label>
             <input
               type="text"
-              onChange={e => setChangedName(e.target.value)}
+              name="changedName"
               defaultValue={userInfo.name}
               className={`px-4.5 py-2 text-[1.2rem] border border-grey-mid rounded-[15px]`}
             />
@@ -130,7 +192,7 @@ export default function UserProfilePage() {
             <label className={`flex items-center gap-3 text-grey-mid`}><Mail />Email</label>
             <input
               type="email"
-              onChange={e => setChangedEmail(e.target.value)}
+              name="changedEmail"
               defaultValue={userInfo.email}
               className={`px-4.5 py-2 text-[1.2rem] rounded-[15px] border border-grey-mid`}
             />
@@ -148,6 +210,7 @@ export default function UserProfilePage() {
             </div>
 
           </form> :
+          // shows the profile info + password changing section
           <div className={`cal-sans flex flex-col gap-10`}>
 
             {/* user name + edit profile button */}
@@ -184,17 +247,34 @@ export default function UserProfilePage() {
                 className={`flex flex-col gap-3`}
               >
                 <label className={`flex items-center gap-3 text-grey-mid`}><Lock />Old Password</label>
-                <input
-                  type="password"
-                  onChange={e => setOldPassword(e.target.value)}
-                  className={`px-4.5 py-2 text-[1.2rem] rounded-[15px] border border-grey-mid`}
-                />
+                <div className={`rounded-[15px] border border-grey-mid flex items-center pr-4.5`}>
+                  <input
+                    type={showOldPassword ? 'text' : 'password'}
+                    onChange={e => setOldPassword(e.target.value)}
+                    className={`px-4.5 py-2 text-[1.2rem] w-full`}
+                  />
+                  <button
+                    type="button"
+                    onClick={toggleOldPasswordVisibility}
+                    className={`text-grey-mid`}
+                  >{showOldPassword ? <EyeOff /> : <Eye />}
+                  </button>
+                </div>
+
                 <label className={`flex items-center gap-3 text-grey-mid`}><LockOpen />New Password</label>
-                <input
-                  type="password"
-                  onChange={e => setNewPassword(e.target.value)}
-                  className={`px-4.5 py-2 text-[1.2rem] rounded-[15px] border border-grey-mid`}
-                />
+                <div className={`rounded-[15px] border border-grey-mid flex items-center pr-4.5`}>
+                  <input
+                    type={showNewPassword ? 'text' : 'password'}
+                    onChange={e => setNewPassword(e.target.value)}
+                    className={`px-4.5 py-2 text-[1.2rem] w-full`}
+                  />
+                  <button
+                    type="button"
+                    onClick={toggleNewPasswordVisibility}
+                    className={`text-grey-mid`}
+                  >{showNewPassword ? <EyeOff /> : <Eye />}
+                  </button>
+                </div>
                 <p className={`text-red-mid text-xs md:text-sm py-1 ${showPassErrMsg ? 'scale-100 translate-x-0' : 'scale-0 translate-x-5'} transition-all`}>Need at least 8 characters</p>
 
                 <div className={`flex justify-between gap-3`}>
@@ -244,7 +324,7 @@ export default function UserProfilePage() {
                 className={`px-2 py-1.5 cal-sans rounded-[15px] border border-grey-lite logout text-grey-bold w-full flex items-center justify-center gap-2`}
               ><LogOut />Logout</button>
               <button
-                onClick={() => {setShowDeleteAccDialog(true)}}
+                onClick={() => { setShowDeleteAccDialog(true) }}
                 className={`delete-account px-2 py-1.5 cal-sans bg-red-mid text-white rounded-[15px] w-full flex items-center justify-center gap-2`}
               ><CircleX />Delete Account</button>
             </div>

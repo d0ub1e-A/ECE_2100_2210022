@@ -11,7 +11,7 @@ export const UserContext = createContext();
 export default function UserLayout() {
   const pathName = useLocation().pathname;
   const navTo = useNavigate();
-  const {notifyUser} = useContext(GlobalContext);
+  const { notifyUser } = useContext(GlobalContext);
 
   const [searchedTag, setSearchedTag] = useState('');
   const [userInfo, setUserInfo] = useState({});
@@ -28,6 +28,7 @@ export default function UserLayout() {
 
   document.title = 'Quick Notes';
 
+  // Fetch the user info and notes info
   useEffect(() => {
     async function fetchUserData() {
       try {
@@ -40,8 +41,11 @@ export default function UserLayout() {
       } catch (error) {
         console.error(error);
 
-        if(error.status === 401) navTo('/login');
-        if(error.status === 500) notifyUser('error', 'Internal server error. Please try again!');
+        if (error.status === 401) {
+          navTo('/login');
+          notifyUser('error', 'Login into your account to see your notes');
+        }
+        if (error.status === 500) notifyUser('error', 'Internal server error. Please try again!');
       }
     }
 
@@ -51,8 +55,8 @@ export default function UserLayout() {
   useEffect(() => setSearchedTag(''), [pathName]);
 
   return (
-    <div className={`fixed z-90_ h-screen w-screen grid grid-cols-12 grid-rows-12`}>
-      <UserContext.Provider value={{ searchedTag, userInfo, userNotes, setRefetch, userPinnedNotes }}>
+    <UserContext.Provider value={{ searchedTag, userInfo, userNotes, setRefetch, userPinnedNotes }}>
+      <div className={`fixed h-screen w-screen grid grid-cols-12 grid-rows-12`}>
         <header className={`col-span-12 row-start-0 row-end-1 user-header`}>
           <UserSectionHeader setSearchedTag={setSearchedTag} />
         </header>
@@ -60,8 +64,7 @@ export default function UserLayout() {
         <main className={`col-span-12 row-start-1 row-end-13 overflow-y-scroll ${bgStyle[pathName]}`}>
           <Outlet />
         </main>
-      </UserContext.Provider>
-
-    </div>
+      </div>
+    </UserContext.Provider>
   );
 }

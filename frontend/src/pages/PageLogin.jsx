@@ -7,17 +7,21 @@ import MailIcon from '../assets/icon/IconMail';
 import PasswordIcon from '../assets/icon/IconPassword';
 import PersonIcon from '../assets/icon/IconPerson';
 import { GlobalContext } from "../App";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const formRef = useRef(null);
   const nameRef = useRef(null);
   const mailRef = useRef(null);
   const passRef = useRef(null);
+  const passSectionRef = useRef(null); console.log(passSectionRef);
   const navTo = useNavigate();
-  const {notifyUser} = useContext(GlobalContext);
+  const { notifyUser } = useContext(GlobalContext);
 
   const [inLogInPage, setInLoginPage] = useState(true);
   const [wrongInputs, setWrongInputs] = useState([]);
+  const [showPassword, setShowPassword] = useState(false);
+  const [passSectionFocuesd, setPassSectionFocuesd] = useState(false);
 
   document.title = inLogInPage ? `Login` : `Sign Up`;
 
@@ -48,23 +52,23 @@ export default function LoginPage() {
       401: 'Check your login info and try again.',
       500: 'Internal server error. Please try again!'
     }
-    
+
     try {
       const loginRes = await api.post(`/auth/login`, {
         email: email,
         password: password,
       });
 
-      if(loginRes.status === 200) {
+      if (loginRes.status === 200) {
         navTo('/me/notes');
         notifyUser('success', message[loginRes.status]);
       }
     } catch (error) {
       console.error(error);
 
-      if(error.status === 400) notifyUser('error', message[error.status]);
-      if(error.status === 401) notifyUser('error', message[error.status]);
-      if(error.status === 500) notifyUser('error', message[error.status]);
+      if (error.status === 400) notifyUser('error', message[error.status]);
+      if (error.status === 401) notifyUser('error', message[error.status]);
+      if (error.status === 500) notifyUser('error', message[error.status]);
     }
   }
 
@@ -76,7 +80,7 @@ export default function LoginPage() {
       401: 'Your email is unavailable. Use another email.',
       500: 'Internal server error. Please try again!'
     }
-    
+
     try {
       const signupRes = await api.post(`/auth/signup`, {
         name: name,
@@ -84,7 +88,7 @@ export default function LoginPage() {
         password: password,
       });
 
-      if(signupRes.status === 201) {
+      if (signupRes.status === 201) {
         navTo('/me/notes');
         notifyUser('success', message[signupRes.status]);
       }
@@ -92,9 +96,9 @@ export default function LoginPage() {
     catch (error) {
       console.error(error);
 
-      if(error.status === 400) notifyUser('error', message[error.status]);
-      if(error.status === 401) notifyUser('error', message[error.status]);
-      if(error.status === 500) notifyUser('error', message[error.status]);
+      if (error.status === 400) notifyUser('error', message[error.status]);
+      if (error.status === 401) notifyUser('error', message[error.status]);
+      if (error.status === 500) notifyUser('error', message[error.status]);
     }
   }
 
@@ -129,6 +133,17 @@ export default function LoginPage() {
         sendSignupInfo(name, email, password);
       }
     }
+  }
+
+  // toggles the password visibility
+  function togglePasswordVisibility() {
+    setShowPassword(prev => !prev);
+
+    const input = document.querySelector('input[type="text"], input[type="password"]');
+    
+    setTimeout(() => {
+      if(input) input.selectionStart = input.selectionEnd = input.value.length;
+    }, 0)
   }
 
   // Refreshes the whole page everytime page appears
@@ -199,14 +214,26 @@ export default function LoginPage() {
               <span className="flex gap-2 items-center">
                 <PasswordIcon />Password
               </span>
-              <input
-                required
-                type="password"
-                name="password"
-                defaultValue={`jkluiojkl`}
-                ref={passRef}
-                className={`border-b-2 ${wrongInputs.includes(passRef) ? 'border-red-600' : 'border-gray-400 focus:border-blue-700'} transition-all duration-300 outline-none py-2 w-full`}
-              />
+              <div
+                tabIndex={0}
+                ref={passSectionRef}
+                onFocus={() => setPassSectionFocuesd(true)}
+                onBlur={() => setPassSectionFocuesd(false)}
+                className={`flex items-center border-b-2 transition-all ${wrongInputs.includes(passRef) && 'border-red-600'} ${passSectionFocuesd ? 'border-blue-700' : 'border-gray-400'}`}>
+                <input
+                  required
+                  type={`${showPassword ? 'text' : 'password'}`}
+                  name="password"
+                  ref={passRef}
+                  className={`outline-none py-2 w-full`}
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className={`text-grey-mid`}
+                >{showPassword ? <EyeOff /> : <Eye />}
+                </button>
+              </div>
               {wrongInputs.includes(passRef) &&
                 <p className={`text-red-mid text-xs md:text-sm py-1`}>Need at least 8 characters</p>
               }

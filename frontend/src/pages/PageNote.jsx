@@ -64,59 +64,47 @@ export default function NotePage() {
 
   // Close the backdrop according to the associated modals
   function closeBackdrop() {
-    if(showForm) setShowForm(false);
-    if(showPreview) setShowPreview(false);
+    if (showForm) setShowForm(false);
+    if (showPreview) setShowPreview(false);
     else setShowBackdrop(false);
   }
 
   return (
     <div className={`py-10`}>
-      
+
       <NoteDeleteContext.Provider value={{ showDeleteDialog, setShowDeleteDialog, setDeletableNoteId }}>
+        {/* common backdrop for form and previewer */}
+        <div
+          onClick={closeBackdrop}
+          className={`fixed z-30 top-16 bg-black/10 w-full h-full backdrop-blur-sm overflow-y-scroll_ ${showBackdrop ? '' : 'hidden'}`}
+        ></div>
         {/* Create or edit note form */}
-        <>
-          <div
-            onClick={closeBackdrop}
-            className={`fixed z-30 top-16 bg-black/10 w-full h-full backdrop-blur-sm overflow-y-scroll_ ${showBackdrop ? '' : 'hidden'}`}
-          ></div>
-          <CreateNoteForm
-            showForm={showForm}
-            setShowForm={setShowForm}
-            setShowUnsaveDialog={setShowUnsaveDialog}
-            editableContent={editableContent}
-            allAvailableTags={userNotes.map(note => note.tag)}
-          />
-        </>
+
+        <CreateNoteForm
+          showForm={showForm}
+          setShowForm={setShowForm}
+          setShowUnsaveDialog={setShowUnsaveDialog}
+          editableContent={editableContent}
+          allAvailableTags={userNotes.map(note => note.tag)}
+        />
 
         {/* Note previewer */}
-        <>
-          {/* <div
-            onClick={() => setShowPreview(false)}
-            className={`fixed z-20 bg-black/10 w-full h-full backdrop-blur-sm overflow-y-scroll ${!showPreview && 'hidden'}`}
-          ></div> */}
-          <NotePreviewer
-            previewableContent={previewableContent}
-            showPreview={showPreview}
-          />
-        </>
+        <NotePreviewer
+          previewableContent={previewableContent}
+          showPreview={showPreview}
+        />
 
         {/* Dialog box for confirmation of discarding unsaved changes */}
-        <>
-          {/* <div className={`fixed z-40 bg-black/10 w-full h-full backdrop-blur-xs ${!showUnsaveDialog && 'hidden'}`}></div> */}
-          <UnsaveDialog
-            showUnsaveDialog={showUnsaveDialog}
-            setShowUnsaveDialog={setShowUnsaveDialog}
-            setShowForm={setShowForm}
-          />
-        </>
-
+        <UnsaveDialog
+          showUnsaveDialog={showUnsaveDialog}
+          setShowUnsaveDialog={setShowUnsaveDialog}
+          setShowForm={setShowForm}
+        />
+        
         {/* dialog for confirmation of deleting a note */}
-        <>
-          {/* <div className={`fixed z-20 bg-black/10 w-full h-full backdrop-blur-xs ${!showDeleteDialog && 'hidden'}`}></div> */}
-          <DeleteDialog
-            deletableNoteId={deletableNoteId}
-          />
-        </>
+        <DeleteDialog
+          deletableNoteId={deletableNoteId}
+        />
 
         {/* Notes Container */}
         {showNotFound ?
