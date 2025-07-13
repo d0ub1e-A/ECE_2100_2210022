@@ -14,7 +14,7 @@ export default function UserSectionHeader({ setSearchedTag }) {
   useEffect(() => searchRef.current?.reset(), [currentPath]);
 
   return (
-    <div className={`flex justify-between items-center px-4 py-4 md:py-2 bg-gradient-to-r from-purple-mid to-purple-600`}>
+    <div className={`flex relative z-60 justify-between items-center px-4 py-4 md:py-2 bg-gradient-to-r from-purple-mid to-purple-600`}>
 
       {/* Logo and name section */}
       <Link

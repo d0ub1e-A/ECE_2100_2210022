@@ -8,11 +8,12 @@ import NotePreviewer from "../components/misc/NotePreviewer";
 import NoteContainerUI from "../components/ui/UINoteContainer";
 import PinnedNoteContainerUI from "../components/ui/UIPinnedNoteContainer";
 import DeleteDialog from "../components/modal/ModaDeleteDialog";
+import UntaggedNoteContainerUI from "../components/ui/UIUntaggedNoteContainer";
 
 export const NoteDeleteContext = createContext();
 
 export default function NotePage() {
-  const { searchedTag, userNotes, userPinnedNotes } = useContext(UserContext);
+  const { searchedTag, userNotes, userPinnedNotes, untaggedNotes } = useContext(UserContext);
 
   const [showForm, setShowForm] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -100,7 +101,7 @@ export default function NotePage() {
           setShowUnsaveDialog={setShowUnsaveDialog}
           setShowForm={setShowForm}
         />
-        
+
         {/* dialog for confirmation of deleting a note */}
         <DeleteDialog
           deletableNoteId={deletableNoteId}
@@ -130,6 +131,15 @@ export default function NotePage() {
                 setShowForm={setShowForm}
               />
             )}
+            {untaggedNotes.length !== 0 &&
+              <UntaggedNoteContainerUI
+                untaggedNotes={untaggedNotes}
+                setPreviewableContent={setPreviewableContent}
+                setEditableContent={setEditableContent}
+                setShowPreview={setShowPreview}
+                setShowForm={setShowForm}
+              />
+            }
           </>
         }
 

@@ -1,7 +1,7 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "../../assets/util/UtilApi";
-import { arrangeNotes, getPinnedNotes } from "../../assets/util/UtilArrangeNotes";
+import { arrangeNotes, getPinnedNotes, getUntaggedNotes } from "../../assets/util/UtilArrangeNotes";
 import { GlobalContext } from "../../App";
 
 import UserSectionHeader from "../../components/header/HeaderUserSection";
@@ -17,6 +17,7 @@ export default function UserLayout() {
   const [userInfo, setUserInfo] = useState({});
   const [userNotes, setUserNotes] = useState([]);
   const [userPinnedNotes, setUserPinnedNotes] = useState([]);
+  const [untaggedNotes, setUntaggedNotes] = useState([]);
   const [refetch, setRefetch] = useState(false);
 
   const bgStyle = {
@@ -38,6 +39,7 @@ export default function UserLayout() {
         setUserInfo(userProfileRes.data);
         setUserNotes(arrangeNotes(userNotesRes.data));
         setUserPinnedNotes(getPinnedNotes(userNotesRes.data));
+        setUntaggedNotes(getUntaggedNotes(userNotesRes.data));
       } catch (error) {
         console.error(error);
 
@@ -55,7 +57,7 @@ export default function UserLayout() {
   useEffect(() => setSearchedTag(''), [pathName]);
 
   return (
-    <UserContext.Provider value={{ searchedTag, userInfo, userNotes, setRefetch, userPinnedNotes }}>
+    <UserContext.Provider value={{ searchedTag, userInfo, userNotes, setRefetch, userPinnedNotes, untaggedNotes }}>
       <div className={`fixed h-screen w-screen grid grid-cols-12 grid-rows-12`}>
         <header className={`col-span-12 row-start-0 row-end-1 user-header`}>
           <UserSectionHeader setSearchedTag={setSearchedTag} />

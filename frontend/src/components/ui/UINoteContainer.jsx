@@ -6,8 +6,6 @@ export default function NoteContainerUI({groupedNotes, setPreviewableContent, se
   const thisTag = groupedNotes?.tag;
   const thisNotes = groupedNotes?.notes;
   const randomColor = pickAColor();
-
-  console.log(thisTag);
   
   return(
     <section className={`relative px-10 pt-10`}>
