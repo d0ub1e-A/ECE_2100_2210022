@@ -4,7 +4,7 @@ export function arrangeNotes(notes) {
     tag: tag,
     notes: notes.filter(note => note.tag === tag && !note.pinned),
   }));
-  const allTaggedNotes = categorizedNotes.filter(notes => notes.tag !== 'untagged');console.log(allTaggedNotes);
+  const allTaggedNotes = categorizedNotes.filter(notes => notes.tag !== 'untagged');
 
   return allTaggedNotes;
 }

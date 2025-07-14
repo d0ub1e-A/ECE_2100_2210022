@@ -35,8 +35,7 @@
   }
   
   @keyframes slide-from-right {
-    0
-    % {
+    0% {
       transform: translateX(100%);
     }
     100% {
@@ -161,11 +160,11 @@ input {
   box-shadow: 0 0 0rem var(--color-red-mid);
 }
 
-.cancel-unsave:hover, .logout, .update-profile, .change-password {
+.cancel-unsave:hover, .logout, .update-profile, .change-password, .color-picker, .color-palette-button {
   box-shadow: 0 0 0.1rem var(--color-grey-mid);
 }
 
-.cancel-delete:hover, .logout:hover, .update-profile:hover, .change-password:hover {
+.cancel-delete:hover, .logout:hover, .update-profile:hover, .change-password:hover, .color-picker:hover, .color-palette-button:hover {
   box-shadow: 0 0 0.4rem var(--color-grey-lite);
 }
 

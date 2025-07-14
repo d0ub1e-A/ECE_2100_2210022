@@ -112,7 +112,7 @@ export default function NotePage() {
           <h1 className={`dark:text-slate-100 fira-mono text-center mt-[40svh] text-xl md:text-3xl lg:text-4xl`}>Nothing Matched Your Search</h1>
           :
           <>
-            {userPinnedNotes.length !== 0 &&
+            {userPinnedNotes.length !== 0 && searchedTag === '' &&
               <PinnedNoteContainerUI
                 pinnedNotes={userPinnedNotes}
                 setPreviewableContent={setPreviewableContent}
@@ -131,7 +131,16 @@ export default function NotePage() {
                 setShowForm={setShowForm}
               />
             )}
-            {untaggedNotes.length !== 0 &&
+            {searchedTag !== '' &&
+              <PinnedNoteContainerUI
+                pinnedNotes={userPinnedNotes}
+                setPreviewableContent={setPreviewableContent}
+                setEditableContent={setEditableContent}
+                setShowPreview={setShowPreview}
+                setShowForm={setShowForm}
+              />
+            }
+            {untaggedNotes.length !== 0 && searchedTag === '' &&
               <UntaggedNoteContainerUI
                 untaggedNotes={untaggedNotes}
                 setPreviewableContent={setPreviewableContent}
