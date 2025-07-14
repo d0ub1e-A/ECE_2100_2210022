@@ -8,12 +8,12 @@ async function newNote(req, res) {
         const { title, note } = req.body;
         let { tag } = req.body;
 
-        if (!title || !note) {
+        if (!title /* || !note */) {
             return res.status(400).json({ error: "provide all the request data" });
         }
 
         await db.query(
-            `INSERT INTO "note" (user_id, title, note, tag) VALUES ($1, $2, $3, COALESCE($4, 'untagged'))`,
+            `INSERT INTO "note" (user_id, title, note, tag) VALUES ($1, $2, $3, COALESCE(NULLIF($4, ''), 'untagged'))`,
             [user_id, title, note, tag]
         );
 
