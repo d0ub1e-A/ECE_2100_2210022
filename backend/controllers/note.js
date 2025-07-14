@@ -5,16 +5,16 @@ async function newNote(req, res) {
     try {
 
         const { user_id } = req.user.user_info;
-        const { title, note } = req.body;
+        const { title, note, tag_color } = req.body;
         let { tag } = req.body;
 
-        if (!title /* || !note */) {
+        if (!title) {
             return res.status(400).json({ error: "provide all the request data" });
         }
 
         await db.query(
-            `INSERT INTO "note" (user_id, title, note, tag) VALUES ($1, $2, $3, COALESCE(NULLIF($4, ''), 'untagged'))`,
-            [user_id, title, note, tag]
+            `INSERT INTO "note" (user_id, title, note, tag, tag_color) VALUES ($1, $2, $3, COALESCE(NULLIF($4, ''), 'untagged'), $5)`,
+            [user_id, title, note, tag, tag_color]
         );
 
         res.sendStatus(201);
@@ -32,7 +32,7 @@ async function allNote(req, res) {
         const { user_id } = req.user.user_info;
 
         const result = await db.query(
-            `SELECT note_id, title, note, tag, pinned, created_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Dhaka' AS created_at FROM "note" WHERE user_id = $1 ORDER BY note_id DESC`,
+            `SELECT note_id, title, tag_color, note, tag, pinned, created_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Dhaka' AS created_at FROM "note" WHERE user_id = $1 ORDER BY note_id DESC`,
             [user_id]
         );
 
@@ -74,11 +74,11 @@ async function updateNote(req, res) {
 
         const { user_id } = req.user.user_info;
         const { id } = req.params;
-        const { title, note, tag } = req.body;
+        const { title, note, tag, tag_color } = req.body;
 
         const result = await db.query(
-            `UPDATE "note" SET title = COALESCE($1, title), note = COALESCE($2, note), tag = COALESCE($3, tag) WHERE note_id = $4 AND user_id = $5`,
-            [title, note, tag, id, user_id]
+            `UPDATE "note" SET title = COALESCE($1, title), note = COALESCE($2, note), tag = COALESCE($3, tag), tag_color = COALESCE($4, tag_color) WHERE note_id = $5 AND user_id = $6`,
+            [title, note, tag, tag_color, id, user_id]
         );
 
         if (result.rowCount === 0) {

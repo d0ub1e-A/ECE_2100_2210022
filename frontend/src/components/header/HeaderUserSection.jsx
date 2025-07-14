@@ -1,27 +1,34 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "../../pages/layout/LayoutUser";
-import { User2 } from "lucide-react";
+import { User2, Sun, Moon } from "lucide-react";
+import { GlobalContext } from "../../App";
 
-export default function UserSectionHeader({ setSearchedTag }) {
+export default function UserSectionHeader({ setSearchedTag, searchedTag }) {
   const navTo = useNavigate();
-  const { userInfo } = useContext(UserContext);
+  const { userInfo, userNotes } = useContext(UserContext);
+  const { isDarkMode, setIsDarkMode } = useContext(GlobalContext);
   const searchRef = useRef(null);
   const currentPath = useLocation().pathname;
+
+  const [tagArray, setTagArray] = useState([]);
+  const [showTagMenu, setShowTagMenu] = useState(false);
 
   const inProfilePage = /\/me\/?$/.test(currentPath);
 
   useEffect(() => searchRef.current?.reset(), [currentPath]);
 
+  useEffect(() => setTagArray(userNotes.map(notes => notes.tag)), [userNotes]);
+
   return (
-    <div className={`flex relative z-60 justify-between items-center px-4 py-4 md:py-2 bg-gradient-to-r from-purple-mid to-purple-600`}>
+    <div className={`flex relative z-60 justify-between items-center px-4 py-4 md:py-2 bg-gradient-to-r from-purple-mid/30 to-purple-600`}>
 
       {/* Logo and name section */}
-      <Link
-        to={`/me/notes`}>
-        <div className={`bg-gradient-to-tr from-grey-lite to-purple-lite bg-clip-text`}>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl text-transparent font-bold patrick-hand">Your Quick Notes</h1>
-        </div>
+      <Link to={`/me/notes`}>
+        <img
+          className={`w-[5rem] h-[5rem]`}
+          src="/LogoQuickNotes.png"
+        />
       </Link>
 
       {/* Search bar and profile section */}
@@ -31,18 +38,49 @@ export default function UserSectionHeader({ setSearchedTag }) {
             type="text"
             name="searchTag"
             placeholder="Search By tag"
+            value={searchedTag}
             onChange={e => setSearchedTag(e.target.value)}
+            onFocus={() => setShowTagMenu(true)}
+            onBlur={() => setTimeout(() => setShowTagMenu(false), 250)}
             className={`px-5 py-2 bg-grey-lite/50 focus:border border-grey-mid/80 rounded-[15px] outline-none`}
           />
         </form>
       }
+
+      {/* Profile section */}
       <div className={`flex gap-5 items-center`}>
+        {/* <button
+          onClick={toggleTheme}
+          className={`p-3 rounded-full bg-grey-mid/50 backdrop-blur-lg hover:scale-110 transition-all`}
+          title={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
+        >
+          {isDarkMode ?
+            <Sun className="w-5 h-5 text-white" /> :
+            <Moon className="w-5 h-5 text-white" />
+          }
+        </button> */}
+        
         <div className={`bg-grey-mid/50 backdrop-blur-lg p-4 rounded-[50%]`}><User2 className={`text-white`} /></div>
         <button
           onClick={() => navTo('/me')}
           title="Go to profile"
           className={`flex items-center justify-center text-white text-xl hover:scale-110 transition-all`}
         >{userInfo.name}</button>
+      </div>
+
+      {/* tag menu */}
+      <div className={`absolute w-fit -bottom-[11rem] left-1/2 -translate-x-1/2 rounded-2xl flex flex-col transition-all ${showTagMenu && tagArray.length > 0 ? 'max-h-[20rem] z-50 py-[1.2rem] tag-menu' : 'max-h-0 z-0 border-0'} overflow-y-auto bg-[whitesmoke] dark:bg-grey-bold dark:text-[whitesmoke]`}>
+        {tagArray.map((tag, i) =>
+          <button
+            key={i}
+            type="button"
+            onClick={() => {
+              setSearchedTag(tag);
+              setShowTagMenu(false);
+            }}
+            className={`px-5 py-2 hover:bg-grey-mid hover:text-[whitesmoke] transition-all fira-mono`}
+          >{tag}</button>
+        )}
       </div>
 
     </div>

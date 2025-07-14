@@ -45,11 +45,11 @@ export default function LoginPage() {
       setWrongInputs(prevInputs => wrongInputs.includes(inputRef) ? [...prevInputs] : [...prevInputs, inputRef]);
 
   // function to send login data
-  async function sendLoginInfo(email, password) {
+  async function sendLoginInfo(email, password, e) {
     const message = {
       200: 'Successfully logged in.',
       400: 'Bad request. Please try again!',
-      401: 'Check your login info and try again.',
+      401: 'Check your login info and try again.',  
       500: 'Internal server error. Please try again!'
     }
 
@@ -62,6 +62,7 @@ export default function LoginPage() {
       if (loginRes.status === 200) {
         navTo('/me/notes');
         notifyUser('success', message[loginRes.status]);
+        e.currentTarget.reset();
       }
     } catch (error) {
       console.error(error);
@@ -73,7 +74,7 @@ export default function LoginPage() {
   }
 
   // function to send signup data
-  async function sendSignupInfo(name, email, password) {
+  async function sendSignupInfo(name, email, password, e) {
     const message = {
       201: 'Account has been created successfully',
       400: 'Bad request. Please try again!',
@@ -91,6 +92,7 @@ export default function LoginPage() {
       if (signupRes.status === 201) {
         navTo('/me/notes');
         notifyUser('success', message[signupRes.status]);
+        e.currentTarget.reset();
       }
     }
     catch (error) {
@@ -113,23 +115,17 @@ export default function LoginPage() {
     const email = userInput.email;
     const password = userInput.password;
 
-    const mailValid = isValidMail(email);
-    const passValid = isValidPassword(password);
+    const mailValid = inLogInPage ? true : isValidMail(email);
+    const passValid = inLogInPage ? true : isValidPassword(password);
     const nameValid = isValidName(name);
 
     checkIfWrong(mailValid, mailRef);
     checkIfWrong(passValid, passRef);
-    !inLogInPage && checkIfWrong(nameValid, nameRef);
+    if(!inLogInPage) checkIfWrong(nameValid, nameRef);
 
-    if (inLogInPage) {
-      if (mailValid && passValid) {
-        e.currentTarget.reset();
-        sendLoginInfo(email, password);
-      }
-    }
+    if (inLogInPage) sendLoginInfo(email, password);
     else {
       if (mailValid && passValid && nameValid) {
-        e.currentTarget.reset();
         sendSignupInfo(name, email, password);
       }
     }
@@ -234,7 +230,7 @@ export default function LoginPage() {
                 >{showPassword ? <EyeOff /> : <Eye />}
                 </button>
               </div>
-              {wrongInputs.includes(passRef) &&
+              {wrongInputs.includes(passRef) && 
                 <p className={`text-red-mid text-xs md:text-sm py-1`}>Need at least 8 characters</p>
               }
             </label>

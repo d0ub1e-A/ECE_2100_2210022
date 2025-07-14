@@ -32,18 +32,22 @@ export default function PublicSectionHeader() {
   const isInLoginPage = () => pathName === '/login';
 
   return (
-    <div className={`flex justify-between items-center px-4 md:px-8 py-4 bg-gradient-to-r to-purple-mid from-purple-600`}>
+    <div className={`flex justify-between items-center px-4 md:px-8 py-2 bg-gradient-to-r from-purple-mid/30 to-purple-600`}>
 
       {/* Logo and name section */}
       <Link
         to={`/`}
         className={`w-full`}
-      ><div className={`bg-gradient-to-tr from-grey-lite to-purple-lite bg-clip-text`}>
-        <h1
-          onClick={() => isMobile || isTablet ? updateSelectMenu('Home') : homeSection.current?.scrollIntoView()}
-          className="text-3xl text-transparent font-bold font-[roboto]"
-        >Quick Notes</h1>
-      </div>
+      ><div className={`flex items-center`}>
+          <img
+            className={`w-[5rem] h-[5rem]`}
+            src="/LogoQuickNotes.png" 
+          />
+          <h1
+            onClick={() => isMobile || isTablet ? updateSelectMenu('Home') : homeSection.current?.scrollIntoView()}
+            className="text-3xl text-transparent font-bold font-[roboto] bg-gradient-to-tr from-grey-bold to-purple-lite bg-clip-text"
+          >Quick Notes</h1>
+        </div>
       </Link>
 
       {/* Navigation bar */}

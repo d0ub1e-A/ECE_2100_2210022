@@ -7,6 +7,7 @@ import { api } from "../../assets/util/UtilApi.js";
 import { calcDateTime } from "../../assets/util/UtilCalcDateTime.js";
 import { UserContext } from "../../pages/layout/LayoutUser.jsx";
 import { NoteDeleteContext } from "../../pages/PageNote.jsx";
+import { getContrastYIQ } from "../../assets/util/UtilPickRandomColor.js";
 
 import PreviewIcon from '../../assets/icon/IconPreview.jsx';
 import EditIcon from '../../assets/icon/IconEdit.jsx';
@@ -18,7 +19,7 @@ import PinIcon from '../../assets/icon/IconPin.jsx';
 export default function NoteCard({ note, setPreviewableContent, setEditableContent, setShowPreview, setShowForm }) {
   const menuRef = useRef(null);
   const { setRefetch } = useContext(UserContext);
-  const {setShowDeleteDialog, setDeletableNoteId} = useContext(NoteDeleteContext);
+  const { setShowDeleteDialog, setDeletableNoteId } = useContext(NoteDeleteContext);
 
   const [showMenu, setShowMenu] = useState(false);
 
@@ -77,7 +78,7 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
         {isDesktop &&
           <button
             onClick={startDeleting}
-            className={`p-1.5 rounded-full hover:border hover:border-red-300 hover:bg-slate-300/80 transition-all`}
+            className={`p-1.5 ml-[1rem] rounded-full hover:border hover:border-red-300 hover:bg-slate-300/80 transition-all`}
           ><DeleteIcon />
           </button>
         }
@@ -145,7 +146,12 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
 
       {/* Note tag and creation date showed in both type of devices */}
       <div className={`flex justify-between items-center`}>
-        <p className={`bg-indigo-300 max-w-1/3 truncate px-2.5 py-2 rounded-full fira-mono`}>{note.tag}</p>
+        <p
+          style={{
+            backgroundColor: note.tag_color,
+            color: getContrastYIQ(note.tag_color)
+          }}
+          className={`shadow-inner max-w-1/3 truncate px-2.5 py-2 rounded-full fira-mono`}>{note.tag}</p>
         <p className={`fira-mono max-w-2/3 flex items-center gap-3`}>
           <CalendarIcon className={`scale-[1.5]`} />
           {calcDateTime(note?.created_at)}

@@ -1,6 +1,6 @@
 import './index.css';
 
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import HomePage from "./pages/PageHome.jsx";
@@ -58,7 +58,7 @@ export default function App() {
   }
 
   return (
-    <GlobalContext.Provider value={{notifyUser}}>
+    <GlobalContext.Provider value={{ notifyUser }}>
       <Toaster
         showToaster={showToaster}
         type={toasterType}

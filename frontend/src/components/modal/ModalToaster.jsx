@@ -13,7 +13,7 @@ export default function Toaster({showToaster, type, text}) {
   }
   
   return(
-    <div className={`bg-toaster-bg-light w-[25rem] dark:bg-toaster-bg-dark fixed top-[4.5rem] p-7 flex items-center gap-5 rounded-tl-[20px] rounded-bl-[20px] z-70 transition-all toaster border-[1.5px] border-grey-lite ${showToaster ? 'right-0' : '-right-full'} ease-linear`}>
+    <div className={`bg-toaster-bg-light w-[25rem] dark:bg-toaster-bg-dark fixed top-[6rem] p-7 flex items-center gap-5 rounded-tl-[20px] rounded-bl-[20px] z-70 transition-all toaster border-[1.5px] border-grey-lite ${showToaster ? 'right-0' : '-right-full'} ease-linear`}>
       <div className={`p-1.5 rounded-full ${bannerStyle[type]}`}>
       {iconOf[type]}
       </div>

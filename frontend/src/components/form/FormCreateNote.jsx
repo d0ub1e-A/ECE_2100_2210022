@@ -12,7 +12,7 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
   const formRef = useRef(null);
   const { setRefetch } = useContext(UserContext);
 
-  const [tagColor, setTagColor] = useColor('#363896');
+  const [tagColor, setTagColor] = useColor(`#363896`);
 
   const [noteTag, setNoteTag] = useState('');
   const [warning, setWarning] = useState('');
@@ -20,7 +20,6 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
   const [bounceTitleBar, setBounceTitleBar] = useState(false);
   const [showTagMenu, setShowTagMenu] = useState(false);
   const [showColorPalette, setShowColorPalette] = useState(false);
-
 
   const inEditMode = Object.keys(editableContent).length !== 0;
   const invalidTags = [/(?:\s+|^)unt[a@][g&][g&]?[e3]?d?(?:\s+[A-Z]?[0-9]?|$)/i];
@@ -33,7 +32,14 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
     })
   };
 
-  useEffect(() => setNoteTag(editableContent.tag || ''), [editableContent]);
+  // preset the note tag and tag color according to the editable content
+  useEffect(() => {
+    setNoteTag(editableContent.tag || '');
+    setTagColor(prev => ({
+      ...prev,
+      hex: editableContent.tag_color || `#363896`,
+    }));
+  }, [editableContent]);
 
   // Handles default job after opening or closing the not taking form
   useEffect(() => {
@@ -43,6 +49,7 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
     formRef.current?.reset();
     setWarning('');
     setInvalidTag(false);
+    setShowColorPalette(false);
   }, [showForm]);
 
   // Prevents users from setting tag as 'untagged'
@@ -62,10 +69,15 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
 
   // Handles both creation of new note and updating existing note
   async function sendNoteData(noteData, e) {
+    const fullNoteData = {
+      ...noteData,
+      tag_color: tagColor.hex
+    }
+
     try {
       const res = inEditMode ?
-        await api.patch(`/notes/${editableContent.note_id}`, noteData) :
-        await api.post(`/notes/`, noteData);
+        await api.patch(`/notes/${editableContent.note_id}`, fullNoteData) :
+        await api.post(`/notes/`, fullNoteData);
 
       const status = res.status;
 
@@ -104,47 +116,48 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
   }
 
   return (
-    <form
-      ref={formRef}
-      onSubmit={handlesubmit}
-      className={`bg-white dark:bg-grey-bold fixed top-[5rem] left-1/2 -translate-x-1/2 border border-slate-300 shadow-md flex flex-col p-[2.5rem] rounded-[20px] gap-2 md:gap-3 max-h-[80svh] ${showForm ? 'opacity-100 translate-y-0 z-40' : 'opacity-0 -translate-y-12 z-0'} transition-all overflow-y-scroll`}
-    >
-      {/* form closing button for touch screen device */}
-      {(isMobile || isTablet) &&
-        <button
-          type="button"
-          onClick={closeNoteForm}
-          className={`bg-slate-300 hover:bg-slate-400/60 hover:shadow-xl font-normal md:font-semibold sticky top-0 left-full w-10 md:w-12 h-10 md:h-12 md:p-2 rounded-full text-sm md:text-lg z-30`}
-        ><X /></button>
-      }
+    <div className={`fixed top-[6.3rem] left-1/2 -translate-x-1/2 ${showForm ? 'z-40' : 'z-0'}`}>
+      <form
+        ref={formRef}
+        onSubmit={handlesubmit}
+        className={`bg-white dark:bg-grey-bold relative border border-slate-300 shadow-md flex flex-col p-[2.5rem] rounded-[20px] gap-2 md:gap-3 max-h-[80svh] transition-all overflow-y-scroll ${showForm ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-12'}`}
+      >
+        {/* form closing button for touch screen device */}
+        {(isMobile || isTablet) &&
+          <button
+            type="button"
+            onClick={closeNoteForm}
+            className={`bg-slate-300 hover:bg-slate-400/60 hover:shadow-xl font-normal md:font-semibold sticky top-0 left-full w-10 md:w-12 h-10 md:h-12 md:p-2 rounded-full text-sm md:text-lg z-30`}
+          ><X /></button>
+        }
 
-      {/* Note title input area */}
-      <>
-        <label
-          htmlFor="title"
-          className={`flex items-center gap-2 font-[700] cal-sans text-lg dark:text-white`}
-        ><RectangleHorizontal />Title</label>
-        <input
-          type="text"
-          name="title"
-          id="title"
-          placeholder={warning || "Set your title here"}
-          ref={titleRef}
-          defaultValue={editableContent?.title}
-          className={`input-style ${warning && 'no-title'} ${bounceTitleBar && 'animate-bounce'} farro dark:bg-grey-lite`}
-        />
-      </>
+        {/* Note title input area */}
+        <>
+          <label
+            htmlFor="title"
+            className={`flex items-center gap-2 font-[700] cal-sans text-lg dark:text-white`}
+          ><RectangleHorizontal />Title</label>
+          <input
+            type="text"
+            name="title"
+            id="title"
+            placeholder={warning || "Set your title here"}
+            ref={titleRef}
+            defaultValue={editableContent?.title}
+            className={`input-style ${warning && 'no-title'} ${bounceTitleBar && 'animate-bounce'} farro dark:bg-grey-lite`}
+          />
+        </>
 
-      {/* Note text input area */}
-      <>
-        <label
-          htmlFor="note"
-          className={`text-lg font-[700] cal-sans dark:text-white inline-flex gap-2`}
-        ><NotebookPen />Note</label>
-        <textarea
-          name="note"
-          id="note"
-          placeholder="Start writing your note...
+        {/* Note text input area */}
+        <>
+          <label
+            htmlFor="note"
+            className={`text-lg font-[700] cal-sans dark:text-white inline-flex gap-2`}
+          ><NotebookPen />Note</label>
+          <textarea
+            name="note"
+            id="note"
+            placeholder="Start writing your note...
 
 You can use markdown formatting:
 • **bold text**
@@ -153,85 +166,85 @@ You can use markdown formatting:
 • - Lists
 • [links](url)
 • `code`"
-          defaultValue={editableContent.note || ''}
-          className={`min-h-[30svh] max-h-[40svh] min-w-[85svw] md:min-w-[35svw] noteTextArea dark:bg-grey-lite resize-y input-style`}
-        ></textarea>
-        <p className={`flex items-center gap-1 w-fit text-grey-bold text-[14px] dark:text-[whitesmoke]`}>
-          <BadgeInfo size={15} />Supports Markdown formatting
-        </p>
-      </>
+            defaultValue={editableContent.note || ''}
+            className={`min-h-[30svh] max-h-[40svh] min-w-[85svw] md:min-w-[35svw] noteTextArea dark:bg-grey-lite resize-y input-style`}
+          ></textarea>
+          <p className={`flex items-center gap-1 w-fit text-grey-bold text-[14px] dark:text-[whitesmoke]`}>
+            <BadgeInfo size={15} />Supports Markdown formatting
+          </p>
+        </>
 
-      {/* Note tag input area + color picker */}
-      <div className={`relative`}>
-
-        <div className={`flex justify-between items-center`}>
-          <label className={`flex gap-2 items-center text-lg font-[700] cal-sans dark:text-white mb-2`}><Tag size={20} />Tag</label>
-          <label className={`p-2.5 text-lg font-[700] cal-sans text-transparent bg-clip-text mb-2 flex gap-2`}>
-            <Palette style={{ color: tagColor.hex }} />
-            <p
-              style={{ backgroundColor: tagColor.hex }}
-              className={`bg-clip-text`}
-            >Choose a tag color</p>
-          </label>
-        </div>
-
-        {/* input box + color picker show/hide button */}
+        {/* Note tag input area + color picker */}
         <div className={`relative`}>
-          <input
-            name="tag"
-            id="tag"
-            onFocus={() => setShowTagMenu(true)}
-            onBlur={() => setTimeout(() => setShowTagMenu(false), 250)}
-            placeholder="Add a tag to categorize easily e.g. project, ideas etc..."
-            onChange={e => setNoteTag(e.target.value)}
-            value={noteTag}
-            className={`dark:bg-grey-lite border w-full input-style farro`}
-          />
-          <button
-            type="button"
-            onClick={() => setShowColorPalette(prev => !prev)}
-            style={{
-              backgroundColor: tagColor.hex
-            }}
-            className={`absolute z-40 top-1/2 -translate-y-1/2 -translate-x-[2rem] w-[1.4rem] h-[1.4rem] inline-block rounded-full color-palette-button hover:scale-110 transition-all`}></button>
-        </div>
 
-        {/* color picker */}
-        <div
-          style={{
-            backgroundColor: tagColor.hex
-          }}
-          className={`absolute h-[5rem] right-0 -top-[30rem] ${showColorPalette ? '-translate-x-0 opacity-100 z-50' : 'translate-x-10 opacity-0 -z-10'} transition-all color-picker`}>
-          <ColorPicker color={tagColor} onChange={setTagColor} />
-        </div>
-        <p className={`text-red-400 ${invalidTag ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'} cal-sans text-right transition-all duration-200`}>You can not use this tag...</p>
+          <div className={`flex justify-between items-center`}>
+            <label className={`flex gap-2 items-center text-lg font-[700] cal-sans dark:text-white mb-2`}><Tag size={20} />Tag</label>
+            <label className={`p-2.5 text-lg font-[700] cal-sans text-transparent bg-clip-text mb-2 flex gap-2`}>
+              <Palette style={{ color: tagColor.hex }} />
+              <p
+                style={{ backgroundColor: tagColor.hex }}
+                className={`bg-clip-text`}
+              >Choose a tag color</p>
+            </label>
+          </div>
 
-        {/* Tag menu */}
-        <div className={`absolute w-1/2 top-25 rounded-2xl flex flex-col transition-all ${showTagMenu && allAvailableTags.length > 0 ? 'max-h-36 z-40 tag-menu' : 'max-h-0 z-0 border-0'} overflow-y-auto bg-[whitesmoke] dark:bg-grey-bold dark:text-[whitesmoke]`}>
-          {allAvailableTags.map((tag, i) =>
+          {/* input box + color picker show/hide button */}
+          <div className={`relative`}>
+            <input
+              name="tag"
+              id="tag"
+              onFocus={() => setShowTagMenu(true)}
+              onBlur={() => setTimeout(() => setShowTagMenu(false), 250)}
+              placeholder="Add a tag to categorize easily e.g. project, ideas etc..."
+              onChange={e => setNoteTag(e.target.value)}
+              value={noteTag}
+              className={`dark:bg-grey-lite border w-full input-style farro`}
+            />
             <button
-              key={i}
               type="button"
-              onClick={() => setNoteTag(tag)}
-              className={`px-5 py-2 hover:bg-grey-mid hover:text-[whitesmoke] transition-all fira-mono`}
-            >{tag}</button>
-          )}
-        </div>
-      </div>
+              onClick={() => setShowColorPalette(prev => !prev)}
+              style={{
+                backgroundColor: tagColor.hex
+              }}
+              className={`absolute z-40 top-1/2 -translate-y-1/2 -translate-x-[2rem] w-[1.4rem] h-[1.4rem] inline-block rounded-full color-palette-button hover:scale-110 transition-all`}></button>
+          </div>
 
-      {/* Create/update + cancel button */}
-      <div className="flex justify-end gap-3">
-        {isDesktop &&
+          {/* color picker */}
+          <div className={`absolute h-[5rem] right-0 -top-[30rem] ${showColorPalette ? '-translate-x-0 opacity-100 z-50' : 'translate-x-10 opacity-0 -z-10'} transition-all color-picker`}>
+            <ColorPicker
+              color={tagColor}
+              onChange={setTagColor}
+            />
+          </div>
+          <p className={`text-red-400 ${invalidTag ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'} cal-sans text-right transition-all duration-200`}>You can not use this tag...</p>
+
+        </div>
+
+        {/* Create/update + cancel button */}
+        <div className="flex justify-end gap-3">
+          {isDesktop &&
+            <button
+              type="button"
+              onClick={closeNoteForm}
+              className={`border-grey-lite border text-grey-mid dark:text-grey-lite cal-sans flex items-center gap-1 rounded-xl p-1.5 text-lg font-semibold sm:hover:scale-105 transition-all duration-300 shadow-md`}
+            ><X />Cancel</button>
+          }
+          <button className={`cal-sans inline-flex gap-2 createButton rounded-xl p-1.5 text-lg  font-semibold sm:hover:scale-105 transition-all duration-300 shadow-md`}>
+            <NotebookText />{inEditMode ? 'Update Note' : 'Create Note'}
+          </button>
+        </div>
+      </form>
+      {/* Tag menu */}
+      <div className={`absolute w-1/2 -bottom-[1.8rem] left-[2.5rem] rounded-2xl flex flex-col transition-all ${showTagMenu && allAvailableTags.length > 0 ? 'max-h-36 z-50 py-[1.2rem] tag-menu' : 'max-h-0 z-0 border-0'} overflow-y-auto bg-[whitesmoke] dark:bg-grey-bold dark:text-[whitesmoke]`}>
+        {allAvailableTags.map((tag, i) =>
           <button
+            key={i}
             type="button"
-            onClick={closeNoteForm}
-            className={`border-grey-lite border text-grey-mid dark:text-grey-lite cal-sans flex items-center gap-1 rounded-xl p-1.5 text-lg font-semibold sm:hover:scale-105 transition-all duration-300 shadow-md`}
-          ><X />Cancel</button>
-        }
-        <button className={`cal-sans inline-flex gap-2 createButton rounded-xl p-1.5 text-lg  font-semibold sm:hover:scale-105 transition-all duration-300 shadow-md`}>
-          <NotebookText />{inEditMode ? 'Update Note' : 'Create Note'}
-        </button>
+            onClick={() => setNoteTag(tag)}
+            className={`px-5 py-2 hover:bg-grey-mid hover:text-[whitesmoke] transition-all fira-mono`}
+          >{tag}</button>
+        )}
       </div>
-    </form>
+    </div>
   );
 }

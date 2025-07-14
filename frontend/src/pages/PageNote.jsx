@@ -77,7 +77,7 @@ export default function NotePage() {
         {/* common backdrop for form and previewer */}
         <div
           onClick={closeBackdrop}
-          className={`fixed z-30 top-16 bg-black/10 w-full h-full backdrop-blur-sm overflow-y-scroll_ ${showBackdrop ? '' : 'hidden'}`}
+          className={`fixed z-30 top-[6rem] bg-black/10 w-full h-full backdrop-blur-sm overflow-y-scroll ${showBackdrop ? '' : 'hidden'}`}
         ></div>
         {/* Create or edit note form */}
 
