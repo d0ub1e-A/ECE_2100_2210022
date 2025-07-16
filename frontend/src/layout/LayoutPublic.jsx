@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from "react-router-dom";
-import PublicSectionHeader from "../../components/header/HeaderPublicSection";
 import { createContext, useState } from "react";
+
+import PublicSectionHeader from "../components/header/HeaderPublicSection";
 
 export const ScrollContext = createContext();
 

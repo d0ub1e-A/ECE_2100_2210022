@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { api } from "../assets/util/UtilApi";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "./layout/LayoutUser";
+import { UserContext } from "../layout/LayoutUser";
 import { Edit2, LogOut, User2, CircleX, Mail, Lock, User, Check, LockOpen, Eye, EyeOff } from "lucide-react";
 import { isValidPassword } from "../assets/util/UtilCheckInfo";
 import { GlobalContext } from "../App";

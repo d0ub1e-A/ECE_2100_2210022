@@ -5,16 +5,10 @@ import { isDesktop, isMobile, isTablet } from "react-device-detect";
 import { markdownStyling, markDownToText } from "../../assets/util/UtilMarkdownStyling.jsx";
 import { api } from "../../assets/util/UtilApi.js";
 import { calcDateTime } from "../../assets/util/UtilCalcDateTime.js";
-import { UserContext } from "../../pages/layout/LayoutUser.jsx";
+import { UserContext } from "../../layout/LayoutUser.jsx";
 import { NoteDeleteContext } from "../../pages/PageNote.jsx";
 import { getContrastYIQ } from "../../assets/util/UtilPickRandomColor.js";
-
-import PreviewIcon from '../../assets/icon/IconPreview.jsx';
-import EditIcon from '../../assets/icon/IconEdit.jsx';
-import ThreeDotIcon from '../../assets/icon/IconThreeDot.jsx';
-import DeleteIcon from '../../assets/icon/IconDelete.jsx';
-import CalendarIcon from '../../assets/icon/IconCalendar.jsx'
-import PinIcon from '../../assets/icon/IconPin.jsx';
+import { CalendarDays, SquarePen, Trash2, Pin, SquareChartGantt, EllipsisVertical } from "lucide-react";
 
 export default function NoteCard({ note, setPreviewableContent, setEditableContent, setShowPreview, setShowForm }) {
   const menuRef = useRef(null);
@@ -63,23 +57,35 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
   }
 
   return (
-    <div className={`relative w-[300px] group z-10 flex flex-col gap-7 p-8 rounded-lg bg-amber-100/20 dark:bg-slate-700 dark:text-white hover:-translate-y-2_ transition-all duration-300 note-card`}>
+    <div
+      style={{
+        backgroundColor: note.note_color,
+      }}
+      className={`relative w-[300px] group z-10 flex flex-col gap-7 p-8 rounded-[10px] bg-amber-100/20 dark:bg-slate-700 dark:text-white transition-all duration-300 note-card`}>
 
       {/* Title + pin icon + 3 dot menu section for touch screen devices */}
-      <div className={`relative items-center font-bold cal-sans text-3xl flex justify-between`}>
+      <div
+        style={{
+          color: getContrastYIQ(note.note_color),
+        }}
+        className={`relative items-center font-bold cal-sans text-3xl flex justify-between`}>
         <button
           onClick={() => pinNotes(note.note_id)}
-          className={`hover:scale-110 transition-all absolute -top-[45px] -left-[45px]`}
-        ><PinIcon className={`${note.pinned ? '-rotate-45' : 'translate-y-[20px] translate-x-[15px] group-hover:translate-y-0 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all'}`} />
+          className={`hover:scale-110 text-black dark:text-white transition-all absolute -top-[45px] -left-[45px]`}
+        ><Pin className={`${note.pinned ? '-rotate-45' : 'translate-y-[20px] translate-x-[15px] group-hover:translate-y-0 group-hover:translate-x-0 opacity-0 group-hover:opacity-100 transition-all'}`} />
         </button>
-        <h2 className={`w-full truncate text-2xl p-3 rounded-[20px] title-shadow`}>{note?.title}</h2>
+        <h2
+          style={{
+            boxShadow: `inset 0px -3px 5px ${getContrastYIQ(note.note_color)}`,
+          }}
+          className={`w-full truncate text-2xl bg-clip-text p-3 rounded-[20px]`}>{note?.title}</h2>
 
         {/* Delete button */}
         {isDesktop &&
           <button
             onClick={startDeleting}
             className={`p-1.5 ml-[1rem] rounded-full hover:border hover:border-red-300 hover:bg-slate-300/80 transition-all`}
-          ><DeleteIcon />
+          ><Trash2 size={25} />
           </button>
         }
 
@@ -90,24 +96,24 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
             <button
               onClick={() => setShowMenu(prev => !prev)}
               className={`p-1.5 bg-slate-300 rounded-full w-fit`}
-            ><ThreeDotIcon />
+            ><EllipsisVertical />
             </button>
 
             <div className={`absolute ${showMenu ? 'opacity-100 border border-slate-300 max-h-40' : 'opacity-0 max-h-0'} overflow-y-hidden z-10 right-0 top-10 flex flex-col divide-y divide-slate-300 bg-amber-50 rounded-lg shadow-lg transition-all duration-200`}>
               <button
                 onClick={previewNote}
                 className={`flex gap-3 text-sm p-4 active:bg-amber-100 items-center`}
-              ><PreviewIcon /> Preview
+              ><SquareChartGantt /> Preview
               </button>
               <button
                 onClick={editNote}
                 className={`flex gap-3 text-sm p-4 active:bg-amber-100 items-center`}
-              ><EditIcon /> Edit
+              ><SquarePen size={25} /> Edit
               </button>
               <button
                 onClick={startDeleting}
                 className={`flex gap-3 text-sm p-4 active:bg-amber-100 items-center`}
-              ><DeleteIcon /> Delete
+              ><Trash2 /> Delete
               </button>
             </div>
 
@@ -116,7 +122,12 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
       </div>
 
       {/* Note preview with preview + edit buttons for desktop interaction handling */}
-      <div className={`relative h-50 overflow-hidden blur-effect group dark:bg-slate-700 dark:text-white`}>
+      <div
+        style={{
+          padding: `1rem`,
+          borderRadius: `5px`
+        }}
+        className={`relative h-50 overflow-hidden blur-effect group bg-white dark:bg-slate-700 dark:text-white`}>
         <Markdown
           remarkPlugins={[remarkGfm]}
           components={markdownStyling}
@@ -130,14 +141,14 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
               onClick={previewNote}
               className={`bg-indigo-200 text-slate-800 p-2 rounded-full active:brightness-80 flex items-center gap-2 w-27 justify-center font-semibold hover:shadow-2xl hover:-translate-y-2 transition-all h-fit`}
             >
-              <PreviewIcon />
+              <SquareChartGantt />
               Preview
             </button>
             <button
               onClick={editNote}
               className={`bg-orange-400 text-slate-700 p-2 rounded-full active:brightness-80 flex items-center gap-4 w-27 justify-center font-semibold hover:shadow-2xl hover:-translate-y-2 transition-all h-fit`}
             >
-              <EditIcon />
+              <SquarePen size={25} />
               Edit
             </button>
           </div>}
@@ -148,12 +159,16 @@ export default function NoteCard({ note, setPreviewableContent, setEditableConte
       <div className={`flex justify-between items-center`}>
         <p
           style={{
-            backgroundColor: note.tag_color,
-            color: getContrastYIQ(note.tag_color)
+            backgroundColor: getContrastYIQ(note.note_color),
+            color: note.note_color
           }}
-          className={`shadow-inner max-w-1/3 truncate px-2.5 py-2 rounded-full fira-mono`}>{note.tag}</p>
-        <p className={`fira-mono max-w-2/3 flex items-center gap-3`}>
-          <CalendarIcon className={`scale-[1.5]`} />
+          className={`shadow-inner font-[500] max-w-1/3 truncate px-2.5 py-2 rounded-full fira-mono`}>{note.tag}</p>
+        <p
+          style={{
+            color: getContrastYIQ(note.note_color),
+          }}
+          className={`fira-mono max-w-2/3 flex items-center gap-3`}>
+          <CalendarDays size={25} />
           {calcDateTime(note?.created_at)}
         </p>
       </div>

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { NoteDeleteContext } from "../../pages/PageNote";
-import { UserContext } from "../../pages/layout/LayoutUser";
+import { UserContext } from "../../layout/LayoutUser";
 import { api } from "../../assets/util/UtilApi";
 
 export default function DeleteDialog({deletableNoteId}) {

@@ -1,10 +1,10 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { createContext, useContext, useEffect, useState } from "react";
-import { api } from "../../assets/util/UtilApi";
-import { arrangeNotes, getPinnedNotes, getUntaggedNotes } from "../../assets/util/UtilArrangeNotes";
-import { GlobalContext } from "../../App";
+import { api } from "../assets/util/UtilApi";
+import { arrangeNotes, getPinnedNotes, getUntaggedNotes } from "../assets/util/UtilArrangeNotes";
+import { GlobalContext } from "../App";
 
-import UserSectionHeader from "../../components/header/HeaderUserSection";
+import UserSectionHeader from "../components/header/HeaderUserSection";
 
 export const UserContext = createContext();
 

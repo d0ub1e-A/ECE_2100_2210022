@@ -5,7 +5,7 @@ async function newNote(req, res) {
     try {
 
         const { user_id } = req.user.user_info;
-        const { title, note, tag_color } = req.body;
+        const { title, note, note_color } = req.body;
         let { tag } = req.body;
 
         if (!title) {
@@ -13,8 +13,8 @@ async function newNote(req, res) {
         }
 
         await db.query(
-            `INSERT INTO "note" (user_id, title, note, tag, tag_color) VALUES ($1, $2, $3, COALESCE(NULLIF($4, ''), 'untagged'), $5)`,
-            [user_id, title, note, tag, tag_color]
+            `INSERT INTO "note" (user_id, title, note, tag, note_color) VALUES ($1, $2, $3, COALESCE(NULLIF($4, ''), 'untagged'), $5)`,
+            [user_id, title, note, tag, note_color]
         );
 
         res.sendStatus(201);
@@ -32,7 +32,7 @@ async function allNote(req, res) {
         const { user_id } = req.user.user_info;
 
         const result = await db.query(
-            `SELECT note_id, title, tag_color, note, tag, pinned, created_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Dhaka' AS created_at FROM "note" WHERE user_id = $1 ORDER BY note_id DESC`,
+            `SELECT note_id, title, note_color, note, tag, pinned, created_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Dhaka' AS created_at FROM "note" WHERE user_id = $1 ORDER BY note_id DESC`,
             [user_id]
         );
 
@@ -52,7 +52,7 @@ async function oneNote(req, res) {
         const { id } = req.params;
 
         const result = await db.query(
-            `SELECT note_id, title, note, tag, pinned, created_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Dhaka' AS created_at FROM "note" WHERE user_id = $1 AND note_id = $2`,
+            `SELECT note_id, title, note, tag, pinned, note_color, created_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Dhaka' AS created_at FROM "note" WHERE user_id = $1 AND note_id = $2`,
             [user_id, id]
         );
 
@@ -74,11 +74,11 @@ async function updateNote(req, res) {
 
         const { user_id } = req.user.user_info;
         const { id } = req.params;
-        const { title, note, tag, tag_color } = req.body;
+        const { title, note, tag, note_color } = req.body;
 
         const result = await db.query(
-            `UPDATE "note" SET title = COALESCE($1, title), note = COALESCE($2, note), tag = COALESCE($3, tag), tag_color = COALESCE($4, tag_color) WHERE note_id = $5 AND user_id = $6`,
-            [title, note, tag, tag_color, id, user_id]
+            `UPDATE "note" SET title = COALESCE($1, title), note = COALESCE($2, note), tag = COALESCE($3, tag), note_color = COALESCE($4, note_color) WHERE note_id = $5 AND user_id = $6`,
+            [title, note, tag, note_color, id, user_id]
         );
 
         if (result.rowCount === 0) {

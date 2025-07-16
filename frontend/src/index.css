@@ -111,7 +111,21 @@ input {
 }
 
 .blur-effect {
-  @apply relative before:absolute before:bottom-0 before:w-full before:h-20 before:bg-gradient-to-t before:from-[#F8F7F7] before:to-transparent before:dark:from-slate-600 before:dark:to-transparent;
+  position: relative;
+}
+
+.blur-effect::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 50%;
+  left: 0;
+  background: linear-gradient(
+    to top,
+    #F8F7F7 0%,
+    transparent 100%
+  );
 }
 
 .input-style {
@@ -201,7 +215,6 @@ input {
 .ui-success,.ui-error {
 	width: 100px; height: 100px;
 	margin: 40px;
-	/* border:1px solid #eee; */
 }
 
 .success-banner {
@@ -218,8 +231,4 @@ input {
 
 .toaster {
   box-shadow: 0 0 0.3rem oklch(.8 .02  200);
-}
-
-.title-shadow {
-  box-shadow: inset 0px -3px 5px var(--color-purple-lite);
 }

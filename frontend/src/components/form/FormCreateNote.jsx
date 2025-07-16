@@ -3,16 +3,17 @@ import "react-color-palette/css";
 import { useRef, useState, useEffect, useContext } from "react";
 import { isDesktop, isMobile, isTablet } from "react-device-detect";
 import { api } from "../../assets/util/UtilApi";
-import { UserContext } from "../../pages/layout/LayoutUser";
+import { UserContext } from "../../layout/LayoutUser";
 import { BadgeInfo, NotebookPen, NotebookText, Palette, RectangleHorizontal, Tag, X } from "lucide-react";
 import { ColorPicker, useColor } from "react-color-palette";
+import { getContrastYIQ } from "../../assets/util/UtilPickRandomColor";
 
 export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowForm, editableContent, allAvailableTags }) {
   const titleRef = useRef(null);
   const formRef = useRef(null);
   const { setRefetch } = useContext(UserContext);
 
-  const [tagColor, setTagColor] = useColor(`#363896`);
+  const [noteColor, setNoteColor] = useColor(`#363896`);
 
   const [noteTag, setNoteTag] = useState('');
   const [warning, setWarning] = useState('');
@@ -32,12 +33,12 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
     })
   };
 
-  // preset the note tag and tag color according to the editable content
+  // preset the note tag and note color according to the editable content
   useEffect(() => {
     setNoteTag(editableContent.tag || '');
-    setTagColor(prev => ({
+    setNoteColor(prev => ({
       ...prev,
-      hex: editableContent.tag_color || `#363896`,
+      hex: editableContent.note_color || `#363896`,
     }));
   }, [editableContent]);
 
@@ -71,8 +72,8 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
   async function sendNoteData(noteData, e) {
     const fullNoteData = {
       ...noteData,
-      tag_color: tagColor.hex
-    }
+      note_color: noteColor.hex
+    };
 
     try {
       const res = inEditMode ?
@@ -83,6 +84,7 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
 
       if (status === 200 || status === 201) {
         e.currentTarget?.reset();
+        setShowColorPalette(false);
         setShowForm(false);
         setRefetch(prev => !prev);
       }
@@ -112,7 +114,10 @@ export default function CreateNoteForm({ showForm, setShowUnsaveDialog, setShowF
     const { title, note, tag } = Object.fromEntries(formData);
 
     if (note !== '' || tag !== '' || title !== '') setShowUnsaveDialog(true);
-    else if (!note && !tag && !title) setShowForm(false);
+    else if (!note && !tag && !title) {
+      setShowColorPalette(false);
+      setShowForm(false);
+    }
   }
 
   return (
@@ -167,6 +172,10 @@ You can use markdown formatting:
 • [links](url)
 • `code`"
             defaultValue={editableContent.note || ''}
+            style={{
+              backgroundColor: noteColor.hex,
+              color: getContrastYIQ(noteColor.hex),
+            }}
             className={`min-h-[30svh] max-h-[40svh] min-w-[85svw] md:min-w-[35svw] noteTextArea dark:bg-grey-lite resize-y input-style`}
           ></textarea>
           <p className={`flex items-center gap-1 w-fit text-grey-bold text-[14px] dark:text-[whitesmoke]`}>
@@ -180,11 +189,11 @@ You can use markdown formatting:
           <div className={`flex justify-between items-center`}>
             <label className={`flex gap-2 items-center text-lg font-[700] cal-sans dark:text-white mb-2`}><Tag size={20} />Tag</label>
             <label className={`p-2.5 text-lg font-[700] cal-sans text-transparent bg-clip-text mb-2 flex gap-2`}>
-              <Palette style={{ color: tagColor.hex }} />
+              <Palette style={{ color: noteColor.hex }} />
               <p
-                style={{ backgroundColor: tagColor.hex }}
+                style={{ backgroundColor: noteColor.hex }}
                 className={`bg-clip-text`}
-              >Choose a tag color</p>
+              >Choose an accent color</p>
             </label>
           </div>
 
@@ -204,7 +213,7 @@ You can use markdown formatting:
               type="button"
               onClick={() => setShowColorPalette(prev => !prev)}
               style={{
-                backgroundColor: tagColor.hex
+                backgroundColor: noteColor.hex
               }}
               className={`absolute z-40 top-1/2 -translate-y-1/2 -translate-x-[2rem] w-[1.4rem] h-[1.4rem] inline-block rounded-full color-palette-button hover:scale-110 transition-all`}></button>
           </div>
@@ -212,8 +221,8 @@ You can use markdown formatting:
           {/* color picker */}
           <div className={`absolute h-[5rem] right-0 -top-[30rem] ${showColorPalette ? '-translate-x-0 opacity-100 z-50' : 'translate-x-10 opacity-0 -z-10'} transition-all color-picker`}>
             <ColorPicker
-              color={tagColor}
-              onChange={setTagColor}
+              color={noteColor}
+              onChange={setNoteColor}
             />
           </div>
           <p className={`text-red-400 ${invalidTag ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'} cal-sans text-right transition-all duration-200`}>You can not use this tag...</p>

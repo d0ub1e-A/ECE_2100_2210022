@@ -3,25 +3,22 @@ import { useNavigate } from "react-router-dom";
 import { isValidMail, isValidPassword, isValidName } from "../assets/util/UtilCheckInfo";
 import { api } from "../assets/util/UtilApi";
 
-import MailIcon from '../assets/icon/IconMail';
-import PasswordIcon from '../assets/icon/IconPassword';
-import PersonIcon from '../assets/icon/IconPerson';
 import { GlobalContext } from "../App";
-import { Eye, EyeOff } from "lucide-react";
+import { CircleUserRound, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 
 export default function LoginPage() {
   const formRef = useRef(null);
   const nameRef = useRef(null);
   const mailRef = useRef(null);
   const passRef = useRef(null);
-  const passSectionRef = useRef(null); console.log(passSectionRef);
+  // const passSectionRef = useRef(null); console.log(passSectionRef);
   const navTo = useNavigate();
   const { notifyUser } = useContext(GlobalContext);
 
   const [inLogInPage, setInLoginPage] = useState(true);
   const [wrongInputs, setWrongInputs] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
-  const [passSectionFocuesd, setPassSectionFocuesd] = useState(false);
+  // const [passSectionFocuesd, setPassSectionFocuesd] = useState(false);
 
   document.title = inLogInPage ? `Login` : `Sign Up`;
 
@@ -49,7 +46,7 @@ export default function LoginPage() {
     const message = {
       200: 'Successfully logged in.',
       400: 'Bad request. Please try again!',
-      401: 'Check your login info and try again.',  
+      401: 'Check your login info and try again.',
       500: 'Internal server error. Please try again!'
     }
 
@@ -121,7 +118,7 @@ export default function LoginPage() {
 
     checkIfWrong(mailValid, mailRef);
     checkIfWrong(passValid, passRef);
-    if(!inLogInPage) checkIfWrong(nameValid, nameRef);
+    if (!inLogInPage) checkIfWrong(nameValid, nameRef);
 
     if (inLogInPage) sendLoginInfo(email, password);
     else {
@@ -135,11 +132,11 @@ export default function LoginPage() {
   function togglePasswordVisibility() {
     setShowPassword(prev => !prev);
 
-    const input = document.querySelector('input[type="text"], input[type="password"]');
-    
-    setTimeout(() => {
-      if(input) input.selectionStart = input.selectionEnd = input.value.length;
-    }, 0)
+    // const input = document.querySelector('input[type="text"], input[type="password"]');
+
+    // setTimeout(() => {
+    //   if(input) input.selectionStart = input.selectionEnd = input.value.length;
+    // }, 0)
   }
 
   // Refreshes the whole page everytime page appears
@@ -172,7 +169,7 @@ export default function LoginPage() {
             {!inLogInPage && (
               <label>
                 <span className="flex gap-2 items-center">
-                  <PersonIcon />Name
+                  <CircleUserRound size={20} />Name
                 </span>
                 <input
                   required
@@ -190,7 +187,7 @@ export default function LoginPage() {
 
             <label>
               <span className="flex gap-2 items-center">
-                <MailIcon />Mail
+                <Mail size={20} />Mail
               </span>
               <input
                 required
@@ -207,33 +204,28 @@ export default function LoginPage() {
             </label>
 
             <label>
-              <span className="flex gap-2 items-center">
-                <PasswordIcon />Password
-              </span>
-              <div
-                tabIndex={0}
-                ref={passSectionRef}
-                onFocus={() => setPassSectionFocuesd(true)}
-                onBlur={() => setPassSectionFocuesd(false)}
-                className={`flex items-center border-b-2 transition-all ${wrongInputs.includes(passRef) && 'border-red-600'} ${passSectionFocuesd ? 'border-blue-700' : 'border-gray-400'}`}>
+              <span className="flex gap-2 items-center"><LockKeyhole size={20} />Password</span>
+
+              <div className={`flex items-center transition-all relative border}`}>
                 <input
                   required
                   type={`${showPassword ? 'text' : 'password'}`}
                   name="password"
+                  defaultValue={`newPassword`}
                   ref={passRef}
-                  className={`outline-none py-2 w-full`}
+                  className={`border-b-2 outline-none py-2 w-full ${wrongInputs.includes(passRef) ? 'border-red-600' : 'border-gray-400 focus:border-blue-700'}`}
                 />
                 <button
                   type="button"
                   onClick={togglePasswordVisibility}
-                  className={`text-grey-mid`}
+                  className={`text-grey-mid absolute right-[.5rem]`}
                 >{showPassword ? <EyeOff /> : <Eye />}
                 </button>
               </div>
-              {wrongInputs.includes(passRef) && 
-                <p className={`text-red-mid text-xs md:text-sm py-1`}>Need at least 8 characters</p>
-              }
             </label>
+            {wrongInputs.includes(passRef) &&
+              <p className={`text-red-mid text-xs md:text-sm py-1`}>Need at least 8 characters</p>
+            }
 
             <button className="text-white bg-slate-800 py-1 rounded-3xl">
               {inLogInPage ? 'Login' : 'Register'}
@@ -256,8 +248,8 @@ export default function LoginPage() {
           <h2 className="text-center text-white font-bold text-5xl md:text-6xl">Good {getMessage()}</h2>
         </div>
 
-      </div>
+      </div >
 
-    </div>
+    </div >
   );
 }

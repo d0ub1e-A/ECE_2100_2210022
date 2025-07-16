@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { UserContext } from "./layout/LayoutUser";
+import { UserContext } from "../layout/LayoutUser";
+import { Plus } from "lucide-react";
 
 import CreateNoteForm from "../components/form/FormCreateNote";
 import UnsaveDialog from "../components/modal/ModalUnsaveDialog";
-import AddIcon from "../assets/icon/IconAdd";
 import NotePreviewer from "../components/misc/NotePreviewer";
 import NoteContainerUI from "../components/ui/UINoteContainer";
 import PinnedNoteContainerUI from "../components/ui/UIPinnedNoteContainer";
@@ -157,7 +157,7 @@ export default function NotePage() {
           onClick={createNewNote}
           title="Create Note"
           className={`fixed ${showForm ? 'z-0 scale-0' : 'z-10 scale-100'} transition-all duration-400 top-[85svh] right-[10svw] shadow-2xl border border-slate-400 active:bg-white text-2xl p-2 md:p-3 rounded-xl bg-[#bbbdfb]/25 dark:bg-slate-100 backdrop-blur-xs`}
-        ><AddIcon />
+        ><Plus size={25} />
         </button>
       </NoteDeleteContext.Provider>
     </div>

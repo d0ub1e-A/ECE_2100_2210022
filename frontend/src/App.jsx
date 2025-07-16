@@ -1,13 +1,13 @@
 import './index.css';
 
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useState } from 'react';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import HomePage from "./pages/PageHome.jsx";
 import LoginPage from "./pages/PageLogin.jsx";
 import NotePage from './pages/PageNote.jsx';
-import UserLayout from './pages/layout/LayoutUser.jsx';
-import PublicLayout from './pages/layout/LayoutPublic.jsx';
+import UserLayout from './layout/LayoutUser.jsx';
+import PublicLayout from './layout/LayoutPublic.jsx';
 import UserProfilePage from './pages/PageUserProfile.jsx';
 import Toaster from './components/modal/ModalToaster.jsx';
 

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { isMobile, isTablet } from "react-device-detect";
-import { ScrollContext } from "../../pages/layout/LayoutPublic";
+import { ScrollContext } from "../../layout/LayoutPublic";
 
 import MenuIcon from "../../assets/icon/IconMenu";
 
